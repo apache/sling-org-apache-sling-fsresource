@@ -34,6 +34,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
 import org.apache.sling.hamcrest.ResourceMatchers;
@@ -41,6 +42,7 @@ import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -97,7 +99,7 @@ public class JcrXmlContentTest {
     public void testContent_Root() {
         Resource underTest = fsroot.getChild("folder3/content");
         assertNotNull(underTest);
-        assertEquals("app:Page", underTest.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("app:Page", ResourceUtil.getValueMap(underTest).get("jcr:primaryType", String.class));
         assertEquals("app:Page", underTest.getResourceType());
         assertThat(underTest, ResourceMatchers.hasChildren("jcr:content"));
     }
@@ -106,7 +108,7 @@ public class JcrXmlContentTest {
     public void testContent_Level1() {
         Resource underTest = fsroot.getChild("folder3/content/jcr:content");
         assertNotNull(underTest);
-        assertEquals("app:PageContent", underTest.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("app:PageContent", ResourceUtil.getValueMap(underTest).get("jcr:primaryType", String.class));
         assertEquals("samples/sample-app/components/content/page/homepage", underTest.getResourceType());
         assertThat(underTest, ResourceMatchers.hasChildren("teaserbar", "aside", "content"));
     }
@@ -115,7 +117,7 @@ public class JcrXmlContentTest {
     public void testContent_Level3() {
         Resource underTest = fsroot.getChild("folder3/content/jcr:content/content/contentheadline");
         assertNotNull(underTest);
-        assertEquals("nt:unstructured", underTest.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("nt:unstructured", ResourceUtil.getValueMap(underTest).get("jcr:primaryType", String.class));
         assertEquals("samples/sample-app/components/content/common/contentHeadline", underTest.getResourceType());
         assertFalse(underTest.listChildren().hasNext());
     }
@@ -123,7 +125,7 @@ public class JcrXmlContentTest {
     @Test
     public void testContent_Datatypes() {
         Resource underTest = fsroot.getChild("folder3/content/jcr:content");
-        ValueMap props = underTest.getValueMap();
+        ValueMap props = ResourceUtil.getValueMap(underTest);
         
         assertEquals("en", props.get("jcr:title", String.class));
         assertEquals(true, props.get("includeAside", false));
@@ -141,6 +143,7 @@ public class JcrXmlContentTest {
     }
 
     @Test
+    @Ignore  // jcr overlay is always active with the old sling resource provider API
     public void testJcrMixedContent() throws RepositoryException {
         // prepare mixed JCR content
         Node node = root.adaptTo(Node.class);
@@ -160,11 +163,11 @@ public class JcrXmlContentTest {
         Resource child1 = children.get(0);
         assertEquals("content", child1.getName());
         assertEquals("app:Page", child1.getResourceType());
-        assertEquals("app:Page", child1.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("app:Page", ResourceUtil.getValueMap(child1).get("jcr:primaryType", String.class));
 
         Resource child2 = children.get(1);
         assertEquals("folder31", child2.getName());
-        assertEquals("nt:folder", child2.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("nt:folder", ResourceUtil.getValueMap(child2).get("jcr:primaryType", String.class));
     }
 
 }

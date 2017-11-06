@@ -25,6 +25,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.sling.api.resource.AbstractResource;
 import org.apache.sling.api.resource.ResourceMetadata;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.mapper.jcr.FsNode;
 
@@ -80,14 +81,14 @@ public final class ContentFileResource extends AbstractResource {
 
     public String getResourceSuperType() {
         if (resourceSuperType == null) {
-            resourceSuperType = getValueMap().get("sling:resourceSuperType", String.class);
+            resourceSuperType = ResourceUtil.getValueMap(this).get("sling:resourceSuperType", String.class);
         }
         return resourceSuperType;
     }
 
     public String getResourceType() {
         if (resourceType == null) {
-            ValueMap props = getValueMap();
+            ValueMap props = ResourceUtil.getValueMap(this);
             resourceType = props.get("sling:resourceType", String.class);
             if (resourceType == null) {
                 // fallback to jcr:primaryType when resource type not set

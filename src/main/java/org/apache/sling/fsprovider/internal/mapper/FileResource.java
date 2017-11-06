@@ -41,7 +41,7 @@ import org.apache.sling.api.resource.ResourceMetadata;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.ContentFileExtensions;
-import org.apache.sling.fsprovider.internal.FsResourceProvider;
+import org.apache.sling.fsprovider.internal.FsMode;
 import org.apache.sling.fsprovider.internal.mapper.jcr.FsNode;
 import org.apache.sling.fsprovider.internal.mapper.valuemap.ValueMapDecorator;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
@@ -61,15 +61,15 @@ public final class FileResource extends AbstractResource {
 
     /**
      * The resource type for file system files mapped into the resource tree by
-     * the {@link FsResourceProvider} (value is "nt:file").
+     * the {@link org.apache.sling.fsprovider.internal.FsResourceProvider} (value is "nt:file").
      */
-    static final String RESOURCE_TYPE_FILE = "nt:file";
+    public static final String RESOURCE_TYPE_FILE = "nt:file";
 
     /**
      * The resource type for file system folders mapped into the resource tree
-     * by the {@link FsResourceProvider} (value is "nt:folder").
+     * by the {@link org.apache.sling.fsprovider.internal.FsResourceProvider} (value is "nt:folder").
      */
-    static final String RESOURCE_TYPE_FOLDER = "nt:folder";
+    public static final String RESOURCE_TYPE_FOLDER = "nt:folder";
 
     // the owning resource resolver
     private final ResourceResolver resolver;
@@ -92,6 +92,7 @@ public final class FileResource extends AbstractResource {
 
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
+    private final FsMode fsMode;
 
     private static final Logger log = LoggerFactory.getLogger(FileResource.class);
     
@@ -102,17 +103,19 @@ public final class FileResource extends AbstractResource {
      * @param resourcePath The resource path in the resource tree
      * @param file The wrapped file
      */
-    FileResource(ResourceResolver resolver, String resourcePath, File file) {
-        this(resolver, resourcePath, file, null, null);
+    FileResource(ResourceResolver resolver, String resourcePath, File file, FsMode fsMode) {
+        this(resolver, resourcePath, file, null, null, fsMode);
     }
     
     FileResource(ResourceResolver resolver, String resourcePath, File file,
-            ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache) {
+            ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
+            FsMode fsMode) {
         this.resolver = resolver;
         this.resourcePath = resourcePath;
         this.file = file;
         this.contentFileExtensions = contentFileExtensions;
         this.contentFileCache = contentFileCache;
+        this.fsMode = fsMode;
     }
 
     /**
@@ -133,8 +136,8 @@ public final class FileResource extends AbstractResource {
             metaData.setContentLength(file.length());
             metaData.setModificationTime(file.lastModified());
             metaData.setResolutionPath(resourcePath);
-            if ( this.file.isDirectory() ) {
-                metaData.put(FsResourceProvider.RESOURCE_METADATA_FILE_DIRECTORY, Boolean.TRUE);
+            if (fsMode == FsMode.FILES_FOLDERS && this.file.isDirectory()) {
+                metaData.put(ResourceMetadata.INTERNAL_CONTINUE_RESOLVING, Boolean.TRUE);
             }
         }
         return metaData;
@@ -221,7 +224,6 @@ public final class FileResource extends AbstractResource {
                 .build();
     }
 
-    @Override
     public ValueMap getValueMap() {
         if (valueMap == null) {
             // this resource simulates nt:file/nt:folder behavior by returning it as resource type

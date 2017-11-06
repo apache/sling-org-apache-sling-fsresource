@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-final class ContentElementImpl implements ContentElement {
+public final class ContentElementImpl implements ContentElement {
     
     private final String name;
     private final Map<String, Object> properties;

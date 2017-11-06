@@ -43,6 +43,7 @@ import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
 import org.apache.sling.hamcrest.ResourceMatchers;
@@ -51,6 +52,7 @@ import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -108,7 +110,7 @@ public class JsonContentTest {
     public void testContent_Root() {
         Resource underTest = fsroot.getChild("folder2/content");
         assertNotNull(underTest);
-        assertEquals("app:Page", underTest.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("app:Page", ResourceUtil.getValueMap(underTest).get("jcr:primaryType", String.class));
         assertEquals("app:Page", underTest.getResourceType());
         assertThat(underTest, ResourceMatchers.hasChildren("jcr:content"));
     }
@@ -117,7 +119,7 @@ public class JsonContentTest {
     public void testContent_Level1() {
         Resource underTest = fsroot.getChild("folder2/content/jcr:content");
         assertNotNull(underTest);
-        assertEquals("app:PageContent", underTest.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("app:PageContent", ResourceUtil.getValueMap(underTest).get("jcr:primaryType", String.class));
         assertEquals("sample/components/homepage", underTest.getResourceType());
         assertEquals("sample/components/supertype", underTest.getResourceSuperType());
         assertThat(underTest, ResourceMatchers.hasChildren("par", "header", "newslist", "lead", "image", "carousel", "rightpar"));
@@ -127,14 +129,14 @@ public class JsonContentTest {
     public void testContent_Level5() {
         Resource underTest = fsroot.getChild("folder2/content/jcr:content/par/image/file/jcr:content");
         assertNotNull(underTest);
-        assertEquals("nt:resource", underTest.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("nt:resource", ResourceUtil.getValueMap(underTest).get("jcr:primaryType", String.class));
         assertFalse(underTest.listChildren().hasNext());
     }
 
     @Test
     public void testContent_Datatypes() {
         Resource underTest = fsroot.getChild("folder2/content/toolbar/profiles/jcr:content");
-        ValueMap props = underTest.getValueMap();
+        ValueMap props = ResourceUtil.getValueMap(underTest);
         
         assertEquals("Profiles", props.get("jcr:title", String.class));
         assertEquals(true, props.get("booleanProp", false));
@@ -149,7 +151,7 @@ public class JsonContentTest {
     @Test
     public void testContent_Datatypes_JCR() throws RepositoryException {
         Resource underTest = fsroot.getChild("folder2/content/toolbar/profiles/jcr:content");
-        ValueMap props = underTest.getValueMap();
+        ValueMap props = ResourceUtil.getValueMap(underTest);
         Node node = underTest.adaptTo(Node.class);
         
         assertEquals("/fs-test/folder2/content/toolbar/profiles/jcr:content", node.getPath());
@@ -236,6 +238,7 @@ public class JsonContentTest {
     }
 
     @Test
+    @Ignore  // jcr overlay is always active with the old sling resource provider API
     public void testJcrMixedContent() throws RepositoryException {
         // prepare mixed JCR content
         Node node = root.adaptTo(Node.class);
@@ -255,11 +258,11 @@ public class JsonContentTest {
         Resource child1 = children.get(0);
         assertEquals("content", child1.getName());
         assertEquals("app:Page", child1.getResourceType());
-        assertEquals("app:Page", child1.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("app:Page", ResourceUtil.getValueMap(child1).get("jcr:primaryType", String.class));
 
         Resource child2 = children.get(1);
         assertEquals("folder21", child2.getName());
-        assertEquals("sling:OrderedFolder", child2.getValueMap().get("jcr:primaryType", String.class));
+        assertEquals("sling:OrderedFolder", ResourceUtil.getValueMap(child2).get("jcr:primaryType", String.class));
     }
 
     @Test
@@ -268,7 +271,7 @@ public class JsonContentTest {
         assertEquals("nt:file", file21a.getResourceType());
         assertEquals("/my/super/type", file21a.getResourceSuperType());
         
-        ValueMap props = file21a.getValueMap();
+        ValueMap props = ResourceUtil.getValueMap(file21a);
         assertEquals("nt:file", props.get("jcr:primaryType", String.class));
         assertEquals("/my/super/type", props.get("sling:resourceSuperType", String.class));
         assertEquals("en", props.get("jcr:language", String.class));

@@ -18,6 +18,9 @@
  */
 package org.apache.sling.fsprovider.internal;
 
+import static org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_ADDED;
+import static org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_CHANGED;
+import static org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_REMOVED;
 import static org.apache.sling.fsprovider.internal.TestUtils.assertChange;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -27,9 +30,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.sling.api.resource.observation.ResourceChange;
-import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
-import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.apache.sling.fsprovider.internal.FileMonitor.ResourceChange;
 import org.apache.sling.fsprovider.internal.TestUtils.ResourceListener;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
@@ -37,6 +38,8 @@ import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.apache.sling.testing.mock.sling.junit.SlingContextCallback;
 import org.junit.Rule;
 import org.junit.Test;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
 
 /**
  * Test events when changing file system content (FileVault XML).
@@ -67,19 +70,23 @@ public class FileVaultFileMonitorTest {
                 context.registerInjectActivateService(new FsResourceProvider(),
                         "provider.file", tempDir.getPath() + "/jcr_root",
                         "provider.filevault.filterxml.path", tempDir.getPath() + "/META-INF/vault/filter.xml",
-                        "provider.root", "/content/dam/talk.png",
+                        "provider.roots", "/content/dam/talk.png",
                         "provider.checkinterval", CHECK_INTERVAL,
                         "provider.fs.mode", FsMode.FILEVAULT_XML.name());
                 context.registerInjectActivateService(new FsResourceProvider(),
                         "provider.file", tempDir.getPath() + "/jcr_root",
                         "provider.filevault.filterxml.path", tempDir.getPath() + "/META-INF/vault/filter.xml",
-                        "provider.root", "/content/samples",
+                        "provider.roots", "/content/samples",
                         "provider.checkinterval", CHECK_INTERVAL,
                         "provider.fs.mode", FsMode.FILEVAULT_XML.name());
                 
                 // register resource change listener
-                context.registerService(ResourceChangeListener.class, resourceListener,
-                        ResourceChangeListener.PATHS, new String[] { "/content/dam/talk.png", "/content/samples" });
+                context.registerService(EventHandler.class, resourceListener,
+                        EventConstants.EVENT_TOPIC, new String[] {
+                                TOPIC_RESOURCE_ADDED, 
+                                TOPIC_RESOURCE_CHANGED,
+                                TOPIC_RESOURCE_REMOVED
+                        });
             }
         })
         .afterTearDown(new SlingContextCallback() {
@@ -102,7 +109,7 @@ public class FileVaultFileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(1, changes.size());
-        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions/web.1280.1280.png", ChangeType.CHANGED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions/web.1280.1280.png", TOPIC_RESOURCE_CHANGED);
     }
     
     @Test
@@ -116,8 +123,8 @@ public class FileVaultFileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions", ChangeType.CHANGED);
-        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions/text.txt", ChangeType.ADDED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions/text.txt", TOPIC_RESOURCE_ADDED);
     }
     
     @Test
@@ -131,8 +138,8 @@ public class FileVaultFileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions", ChangeType.CHANGED);
-        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions/web.1280.1280.png", ChangeType.REMOVED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions/web.1280.1280.png", TOPIC_RESOURCE_REMOVED);
     }
     
     @Test
@@ -146,8 +153,8 @@ public class FileVaultFileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/content/dam/talk.png/jcr:content", ChangeType.CHANGED);
-        assertChange(changes, "/content/dam/talk.png/jcr:content/newfolder", ChangeType.ADDED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content/newfolder", TOPIC_RESOURCE_ADDED);
     }
     
     @Test
@@ -161,8 +168,8 @@ public class FileVaultFileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/content/dam/talk.png/jcr:content", ChangeType.CHANGED);
-        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions", ChangeType.REMOVED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/content/dam/talk.png/jcr:content/renditions", TOPIC_RESOURCE_REMOVED);
     }
 
     @Test
@@ -175,9 +182,9 @@ public class FileVaultFileMonitorTest {
         
         Thread.sleep(WAIT_INTERVAL);
 
-        assertChange(changes, "/content/samples/en", ChangeType.REMOVED);
-        assertChange(changes, "/content/samples/en", ChangeType.ADDED);
-        assertChange(changes, "/content/samples/en/jcr:content", ChangeType.ADDED);
+        assertChange(changes, "/content/samples/en", TOPIC_RESOURCE_REMOVED);
+        assertChange(changes, "/content/samples/en", TOPIC_RESOURCE_ADDED);
+        assertChange(changes, "/content/samples/en/jcr:content", TOPIC_RESOURCE_ADDED);
     }
     
     @Test
@@ -195,9 +202,9 @@ public class FileVaultFileMonitorTest {
         
         Thread.sleep(WAIT_INTERVAL);
 
-        assertChange(changes, "/content/samples", ChangeType.CHANGED);
-        assertChange(changes, "/content/samples/fr", ChangeType.ADDED);
-        assertChange(changes, "/content/samples/fr/jcr:content", ChangeType.ADDED);
+        assertChange(changes, "/content/samples", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/content/samples/fr", TOPIC_RESOURCE_ADDED);
+        assertChange(changes, "/content/samples/fr/jcr:content", TOPIC_RESOURCE_ADDED);
     }
     
     @Test
@@ -211,8 +218,8 @@ public class FileVaultFileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/content/samples", ChangeType.CHANGED);
-        assertChange(changes, "/content/samples/en", ChangeType.REMOVED);
+        assertChange(changes, "/content/samples", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/content/samples/en", TOPIC_RESOURCE_REMOVED);
     }
     
     @Test
@@ -226,9 +233,9 @@ public class FileVaultFileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/content/samples/en", ChangeType.CHANGED);
+        assertChange(changes, "/content/samples/en", TOPIC_RESOURCE_CHANGED);
         // this second event is not fully correct, but this is a quite special case, accept it for now 
-        assertChange(changes, "/content/samples/en", ChangeType.REMOVED);
+        assertChange(changes, "/content/samples/en", TOPIC_RESOURCE_REMOVED);
     }
     
 }

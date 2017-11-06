@@ -38,6 +38,7 @@ import org.apache.jackrabbit.vault.util.PlatformNameFormat;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.fsprovider.internal.FsMode;
 import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentElement;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
@@ -71,7 +72,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         // direct file
         File file = getFile(resourcePath);
         if (file != null && file.isFile()) {
-            return new FileResource(resolver, resourcePath, file);
+            return new FileResource(resolver, resourcePath, file, FsMode.FILEVAULT_XML);
         }
         
         // content file
@@ -82,7 +83,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         
         // fallback to directory resource if folder was found but nothing else
         if (file != null && file.isDirectory()) {
-            return new FileResource(resolver, resourcePath, file);
+            return new FileResource(resolver, resourcePath, file, FsMode.FILEVAULT_XML);
         }
         
         return null;

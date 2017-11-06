@@ -18,6 +18,9 @@
  */
 package org.apache.sling.fsprovider.internal;
 
+import static org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_ADDED;
+import static org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_CHANGED;
+import static org.apache.sling.api.SlingConstants.TOPIC_RESOURCE_REMOVED;
 import static org.apache.sling.fsprovider.internal.TestUtils.assertChange;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -27,9 +30,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.sling.api.resource.observation.ResourceChange;
-import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
-import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.apache.sling.fsprovider.internal.FileMonitor.ResourceChange;
 import org.apache.sling.fsprovider.internal.TestUtils.ResourceListener;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
@@ -37,6 +38,8 @@ import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.apache.sling.testing.mock.sling.junit.SlingContextCallback;
 import org.junit.Rule;
 import org.junit.Test;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
 
 /**
  * Test events when changing file system content (Sling-Initial-Content).
@@ -66,14 +69,18 @@ public class FileMonitorTest {
                 // mount temp. directory
                 context.registerInjectActivateService(new FsResourceProvider(),
                         "provider.file", tempDir.getPath(),
-                        "provider.root", "/fs-test",
+                        "provider.roots", "/fs-test",
                         "provider.checkinterval", CHECK_INTERVAL,
                         "provider.fs.mode", FsMode.INITIAL_CONTENT.name(),
                         "provider.initial.content.import.options", "overwrite:=true;ignoreImportProviders:=jcr.xml");
                 
                 // register resource change listener
-                context.registerService(ResourceChangeListener.class, resourceListener,
-                        ResourceChangeListener.PATHS, new String[] { "/fs-test" });
+                context.registerService(EventHandler.class, resourceListener,
+                        EventConstants.EVENT_TOPIC, new String[] {
+                                TOPIC_RESOURCE_ADDED, 
+                                TOPIC_RESOURCE_CHANGED,
+                                TOPIC_RESOURCE_REMOVED
+                        });
             }
         })
         .afterTearDown(new SlingContextCallback() {
@@ -96,7 +103,7 @@ public class FileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(1, changes.size());
-        assertChange(changes, "/fs-test/folder1/file1a.txt", ChangeType.CHANGED);
+        assertChange(changes, "/fs-test/folder1/file1a.txt", TOPIC_RESOURCE_CHANGED);
     }
     
     @Test
@@ -110,8 +117,8 @@ public class FileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/fs-test/folder1", ChangeType.CHANGED);
-        assertChange(changes, "/fs-test/folder1/file1c.txt", ChangeType.ADDED);
+        assertChange(changes, "/fs-test/folder1", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/fs-test/folder1/file1c.txt", TOPIC_RESOURCE_ADDED);
     }
     
     @Test
@@ -125,8 +132,8 @@ public class FileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/fs-test/folder1", ChangeType.CHANGED);
-        assertChange(changes, "/fs-test/folder1/file1a.txt", ChangeType.REMOVED);
+        assertChange(changes, "/fs-test/folder1", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/fs-test/folder1/file1a.txt", TOPIC_RESOURCE_REMOVED);
     }
     
     @Test
@@ -140,8 +147,8 @@ public class FileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/fs-test", ChangeType.CHANGED);
-        assertChange(changes, "/fs-test/folder99", ChangeType.ADDED);
+        assertChange(changes, "/fs-test", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/fs-test/folder99", TOPIC_RESOURCE_ADDED);
     }
     
     @Test
@@ -155,8 +162,8 @@ public class FileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/fs-test", ChangeType.CHANGED);
-        assertChange(changes, "/fs-test/folder1", ChangeType.REMOVED);
+        assertChange(changes, "/fs-test", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/fs-test/folder1", TOPIC_RESOURCE_REMOVED);
     }
 
     @Test
@@ -169,9 +176,9 @@ public class FileMonitorTest {
         
         Thread.sleep(WAIT_INTERVAL);
 
-        assertChange(changes, "/fs-test/folder2/content", ChangeType.REMOVED);
-        assertChange(changes, "/fs-test/folder2/content", ChangeType.ADDED);
-        assertChange(changes, "/fs-test/folder2/content/jcr:content", ChangeType.ADDED);
+        assertChange(changes, "/fs-test/folder2/content", TOPIC_RESOURCE_REMOVED);
+        assertChange(changes, "/fs-test/folder2/content", TOPIC_RESOURCE_ADDED);
+        assertChange(changes, "/fs-test/folder2/content/jcr:content", TOPIC_RESOURCE_ADDED);
     }
     
     @Test
@@ -185,9 +192,9 @@ public class FileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(3, changes.size());
-        assertChange(changes, "/fs-test/folder1", ChangeType.CHANGED);
-        assertChange(changes, "/fs-test/folder1/file1c", ChangeType.ADDED);
-        assertChange(changes, "/fs-test/folder1/file1c/child1", ChangeType.ADDED);
+        assertChange(changes, "/fs-test/folder1", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/fs-test/folder1/file1c", TOPIC_RESOURCE_ADDED);
+        assertChange(changes, "/fs-test/folder1/file1c/child1", TOPIC_RESOURCE_ADDED);
     }
     
     @Test
@@ -201,8 +208,8 @@ public class FileMonitorTest {
         Thread.sleep(WAIT_INTERVAL);
 
         assertEquals(2, changes.size());
-        assertChange(changes, "/fs-test/folder2", ChangeType.CHANGED);
-        assertChange(changes, "/fs-test/folder2/content", ChangeType.REMOVED);
+        assertChange(changes, "/fs-test/folder2", TOPIC_RESOURCE_CHANGED);
+        assertChange(changes, "/fs-test/folder2/content", TOPIC_RESOURCE_REMOVED);
     }
     
 }
