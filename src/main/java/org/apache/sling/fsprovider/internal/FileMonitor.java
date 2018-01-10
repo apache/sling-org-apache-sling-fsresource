@@ -166,9 +166,9 @@ public final class FileMonitor extends TimerTask {
             // check if the file has been removed
             if ( !monitorable.file.exists() ) {
                 // removed file and update status
-                sendEvents(monitorable, ChangeType.REMOVED, reporter);
-                monitorable.status = NonExistingStatus.SINGLETON;
                 contentFileCache.remove(transformPath(monitorable.path));
+                monitorable.status = NonExistingStatus.SINGLETON;
+                sendEvents(monitorable, ChangeType.REMOVED, reporter);
             } else {
                 // check for changes
                 final FileStatus fs = (FileStatus)monitorable.status;
@@ -176,9 +176,9 @@ public final class FileMonitor extends TimerTask {
                 if ( fs.lastModified < monitorable.file.lastModified() ) {
                     fs.lastModified = monitorable.file.lastModified();
                     // changed
+                    contentFileCache.remove(transformPath(monitorable.path));
                     sendEvents(monitorable, ChangeType.CHANGED, reporter);
                     changed = true;
-                    contentFileCache.remove(transformPath(monitorable.path));
                 }
                 if ( fs instanceof DirStatus ) {
                     // directory
