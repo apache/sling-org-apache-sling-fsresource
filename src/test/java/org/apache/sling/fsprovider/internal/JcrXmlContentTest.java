@@ -167,4 +167,11 @@ public class JcrXmlContentTest {
         assertEquals("nt:folder", child2.getValueMap().get("jcr:primaryType", String.class));
     }
 
+    @Test
+    public void testDeepValueMapAccess() throws Exception {
+        Resource underTest = fsroot.getChild("folder3/content/jcr:content");
+        ValueMap properties = underTest.getValueMap();
+        String headline = properties.get("content/contentheadline/headline", String.class);
+        assertEquals("Extended Call for Papers", headline);
+    }
 }

@@ -20,10 +20,12 @@ package org.apache.sling.fsprovider.internal;
 
 import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
 import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
 import org.apache.sling.hamcrest.ResourceMatchers;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
@@ -78,6 +80,14 @@ public class FilesFolderTest {
         assertThat(fsroot.getChild("folder1"), ResourceMatchers.hasChildren("folder11", "file1a.txt", "sling:file1b.txt"));
         assertThat(fsroot.getChild("folder2"), ResourceMatchers.hasChildren("folder21", "content.json"));
         assertFalse(fsroot.getChild("folder1/file1a.txt").listChildren().hasNext());
+    }
+
+    @Test
+    public void testDeepValueMapAccess() throws Exception {
+        Resource underTest = fsroot.getChild("folder1");
+        ValueMap properties = underTest.getValueMap();
+        String type = properties.get("folder11/jcr:primaryType", String.class);
+        assertEquals("nt:folder", type);
     }
 
 }

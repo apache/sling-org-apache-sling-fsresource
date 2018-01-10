@@ -26,6 +26,7 @@ import org.apache.sling.api.resource.AbstractResource;
 import org.apache.sling.api.resource.ResourceMetadata;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.DeepReadValueMapDecorator;
 import org.apache.sling.fsprovider.internal.mapper.jcr.FsNode;
 
 /**
@@ -104,7 +105,7 @@ public final class ContentFileResource extends AbstractResource {
             return (AdapterType)this.contentFile;
         }
         else if (type == ValueMap.class) {
-            return (AdapterType)contentFile.getValueMap();
+            return (AdapterType)new DeepReadValueMapDecorator(this, contentFile.getValueMap());
         }
         else if (type == Node.class) {
             // support a subset of JCR API for content file resources

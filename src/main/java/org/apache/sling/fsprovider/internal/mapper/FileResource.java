@@ -40,6 +40,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceMetadata;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.DeepReadValueMapDecorator;
 import org.apache.sling.fsprovider.internal.ContentFileExtensions;
 import org.apache.sling.fsprovider.internal.FsResourceProvider;
 import org.apache.sling.fsprovider.internal.mapper.jcr.FsNode;
@@ -248,7 +249,7 @@ public final class FileResource extends AbstractResource {
                     }
                 }
                 
-                valueMap = new ValueMapDecorator(props);
+                valueMap = new DeepReadValueMapDecorator(this, new ValueMapDecorator(props));
             }
         }
         return valueMap;

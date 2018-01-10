@@ -289,4 +289,14 @@ public class JsonContentTest {
         assertEquals("app:Page", content2.getResourceType());
     }
 
+    @Test
+    public void testDeepValueMapAccess() throws Exception {
+        Resource underTest = fsroot.getChild("folder2/content/toolbar");
+        ValueMap properties = underTest.getValueMap();
+        String toolbarTitle = properties.get("jcr:content/jcr:title", String.class);
+        assertEquals("Toolbar", toolbarTitle);
+
+        String profilesTitle = properties.get("profiles/jcr:content/jcr:title", String.class);
+        assertEquals("Profiles", profilesTitle);
+    }
 }
