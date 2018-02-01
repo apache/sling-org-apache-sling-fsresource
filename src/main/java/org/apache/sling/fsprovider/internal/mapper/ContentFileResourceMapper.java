@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
@@ -32,7 +31,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.fsprovider.internal.ContentFileExtensions;
 import org.apache.sling.fsprovider.internal.FsResourceMapper;
-import org.apache.sling.fsprovider.internal.parser.ContentElement;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 
 public final class ContentFileResourceMapper implements FsResourceMapper {
@@ -45,7 +43,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
     
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
-    
+
     public ContentFileResourceMapper(String providerRoot, File providerFile,
             ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache) {
         this.providerRootPrefix = providerRoot.concat("/");
@@ -74,57 +72,52 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         if (contentFileExtensions.isEmpty()) {
             return null;
         }
-        final String parentPath = parent.getPath();
-        ContentFile parentContentFile = parent.adaptTo(ContentFile.class);
 
-        // not a FsResource, try to create one from the resource
-        if (parentContentFile == null) {
-            parentContentFile = getFile(parentPath, null);
-            if (parentContentFile == null) {
-                
-                // check if parent is a file resource that contains a file content resource
-                File parentFile = parent.adaptTo(File.class);
-                if (parentFile != null && parentFile.isDirectory()) {
-                    List<Resource> childResources = new ArrayList<>();
-                    for (File file : parentFile.listFiles()) {
+        final String parentPath = parent.getPath();
+        final ContentFile parentContentFile = getFile(parentPath, null);;
+
+
+        final List<Iterator<Resource>> childIterators = new ArrayList<>(2);
+
+        // add children from parsed content
+        if (parentContentFile != null && parentContentFile.hasContent()) {
+            childIterators.add(IteratorUtils.transformedIterator(parentContentFile.getContent().getChildren().keySet().iterator(), new Transformer() {
+                @Override
+                public Object transform(final Object input) {
+                    String name = (String)input;
+                    return new ContentFileResource(resolver, parentContentFile.navigateToRelative(name));
+                }
+            }));
+        }
+
+        // add children from filesystem folder
+        File parentDir = new File(providerFile, StringUtils.removeStart(parentPath, providerRootPrefix));
+        if (parentDir.isDirectory()) {
+            File[] files = parentDir.listFiles();
+            if (files != null) {
+                childIterators.add(IteratorUtils.transformedIterator(IteratorUtils.arrayIterator(files), new Transformer() {
+                    @Override
+                    public Object transform(final Object input) {
+                        File file = (File)input;
+                        String path = parentPath + "/" + Escape.fileToResourceName(file.getName());
                         String filenameSuffix = contentFileExtensions.getSuffix(file);
-                        if (filenameSuffix != null && !isNodeDescriptor(file)) {
-                            String path = parentPath + "/" + StringUtils.substringBeforeLast(file.getName(), filenameSuffix);
+                        if (filenameSuffix != null) {
+                            path = StringUtils.substringBeforeLast(path, filenameSuffix);
                             ContentFile contentFile = new ContentFile(file, path, null, contentFileCache);
-                            childResources.add(new ContentFileResource(resolver, contentFile));
+                            return new ContentFileResource(resolver, contentFile);
+                        } else {
+                            return new FileResource(resolver, path, file, contentFileExtensions, contentFileCache);
                         }
                     }
-                    if (!childResources.isEmpty()) {
-                        return childResources.iterator();
-                    }
-                }
-                
-                // no children here
-                return null;
+                }));
             }
         }
 
-        // get child resources from content fragments in content file
-        List<ContentFile> children = new ArrayList<>();
-        if (parentContentFile.hasContent()) {
-            Iterator<Map.Entry<String,ContentElement>> childMaps = parentContentFile.getChildren();
-            while (childMaps.hasNext()) {
-                Map.Entry<String,ContentElement> entry = childMaps.next();
-                children.add(parentContentFile.navigateToRelative(entry.getKey()));
-            }
-        }
-        if (children.isEmpty()) {
+        Iterator children = IteratorUtils.chainedIterator(childIterators);
+        if (!children.hasNext()) {
             return null;
         }
-        else {
-            return IteratorUtils.transformedIterator(children.iterator(), new Transformer() {
-                @Override
-                public Object transform(Object input) {
-                    ContentFile contentFile = (ContentFile)input;
-                    return new ContentFileResource(resolver, contentFile);
-                }
-            });
-        }
+        return children;
     }
     
     private ContentFile getFile(String path, String subPath) {

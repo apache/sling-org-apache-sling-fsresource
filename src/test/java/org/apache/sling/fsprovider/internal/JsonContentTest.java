@@ -100,8 +100,10 @@ public class JsonContentTest {
     public void testListChildren() {
         assertThat(root, ResourceMatchers.containsChildren("fs-test"));
         assertThat(fsroot, ResourceMatchers.hasChildren("folder1", "folder2"));
-        assertThat(fsroot.getChild("folder1"), ResourceMatchers.hasChildren("folder11", "file1a.txt", "sling:file1b.txt"));
-        assertThat(fsroot.getChild("folder2"), ResourceMatchers.hasChildren("folder21", "content"));
+        assertThat(fsroot.getChild("folder1"), ResourceMatchers.containsChildrenInAnyOrder("folder11", "file1a.txt", "sling:file1b.txt"));
+        assertThat(fsroot.getChild("folder2"), ResourceMatchers.containsChildrenInAnyOrder("folder21", "content"));
+        assertThat(fsroot.getChild("folder2/content"), ResourceMatchers.containsChildrenInAnyOrder("jcr:content", "toolbar", "child", "file2content.txt", "sling:content2"));
+        assertThat(fsroot.getChild("folder2/content/child"), ResourceMatchers.containsChildrenInAnyOrder("jcr:content", "grandchild"));
     }
 
     @Test
@@ -287,6 +289,9 @@ public class JsonContentTest {
         Resource content2 = fsroot.getChild("folder2/content/sling:content2");
         assertNotNull(content2);
         assertEquals("app:Page", content2.getResourceType());
+
+        Resource content = fsroot.getChild("folder2/content");
+        assertThat(content, ResourceMatchers.hasChildren("sling:content2"));
     }
 
     @Test

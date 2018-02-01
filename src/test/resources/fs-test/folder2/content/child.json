@@ -1,0 +1,7 @@
+{
+  "jcr:primaryType":"app:Page",
+  "jcr:content": {
+    "jcr:title": "Child",
+    "sling:resourceType":"sling/page/base"
+  }
+}
