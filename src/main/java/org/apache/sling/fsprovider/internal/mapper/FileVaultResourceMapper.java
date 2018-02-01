@@ -113,7 +113,18 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         if (parentFile != null && parentFile.isDirectory()) {
             for (File childFile : parentFile.listFiles()) {
                 String childPath = parentPath + "/" + PlatformNameFormat.getRepositoryName(childFile.getName());
-                if (pathMatches(childPath) && !childPaths.contains(childPath)) {
+                File file = getFile(childPath);
+                if (file != null && pathMatches(childPath) && !childPaths.contains(childPath)) {
+                    childPaths.add(childPath);
+                    continue;
+                }
+
+                // strip xml extension unless it's .content.xml - the xml extension is re-added inside getContentFile
+                if (!childPath.endsWith('/' + DOT_CONTENT_XML)) {
+                    childPath = StringUtils.removeEnd(childPath, XML_SUFFIX);
+                }
+                ContentFile contentFile = getContentFile(childPath, null);
+                if (contentFile != null && pathMatches(childPath) && !childPaths.contains(childPath)) {
                     childPaths.add(childPath);
                 }
             }

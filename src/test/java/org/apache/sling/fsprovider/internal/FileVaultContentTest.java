@@ -25,13 +25,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import com.google.common.collect.Iterables;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
@@ -163,5 +168,28 @@ public class FileVaultContentTest {
         assertNotNull(binaryFile);
         assertEquals("nt:file", binaryFile.getResourceType());
     }
-    
+
+    @Test
+    public void testAggregateFilesDirectAccess() throws Exception {
+        Resource aggregate = sampleContent.getChild("aggregates/sling:aggregate");
+        assertNotNull("aggregate is null", aggregate);
+        assertEquals("Aggregate Test", aggregate.getValueMap().get("jcr:title", String.class));
+        assertTrue("sling:aggregate has no children", aggregate.hasChildren());
+        Resource child = aggregate.getChild("child");
+        assertNotNull("sling:aggregate has no child called 'child'", child);
+        assertEquals("Child of Aggregate", child.getValueMap().get("jcr:title", String.class));
+    }
+
+    @Test
+    public void testAggregateFilesAccessByChildIteration() throws Exception {
+        Resource aggregates = sampleContent.getChild("aggregates");
+        assertNotNull("aggregates folder is null", aggregates);
+        Map<String, Resource> childrenByName = new HashMap<>();
+        for (final Resource child : aggregates.getChildren()) {
+            childrenByName.put(child.getName(), child);
+        }
+
+        assertEquals("Wrong child count for 'aggregates'",1, childrenByName.size());
+        assertTrue("Child named 'sling:aggregate' does not exist", childrenByName.containsKey("sling:aggregate"));
+    }
 }
