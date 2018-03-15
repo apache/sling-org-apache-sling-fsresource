@@ -69,6 +69,7 @@
                             geronimo-json_1.0_spec;scope=compile;inline=false,
                             org.apache.sling.jcr.contentparser;scope=compile;inline=false
                         </Embed-Dependency>
+                        <_plugin>java.lang.String</_plugin>
                     </instructions>
                 </configuration>
             </plugin>

@@ -38,6 +38,7 @@ import org.apache.jackrabbit.vault.util.PlatformNameFormat;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.fsprovider.internal.FileStatCache;
 import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentElement;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
@@ -54,14 +55,16 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
     private final File providerFile;
     private final File filterXmlFile;
     private final ContentFileCache contentFileCache;
+    private FileStatCache fileStatCache;
     private final WorkspaceFilter workspaceFilter;
     
     private static final Logger log = LoggerFactory.getLogger(FileVaultResourceMapper.class);
     
-    public FileVaultResourceMapper(File providerFile, File filterXmlFile, ContentFileCache contentFileCache) {
+    public FileVaultResourceMapper(File providerFile, File filterXmlFile, ContentFileCache contentFileCache, FileStatCache fileStatCache) {
         this.providerFile = providerFile;
         this.filterXmlFile = filterXmlFile;
         this.contentFileCache = contentFileCache;
+        this.fileStatCache = fileStatCache;
         this.workspaceFilter = getWorkspaceFilter();
     }
     
@@ -70,8 +73,8 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         
         // direct file
         File file = getFile(resourcePath);
-        if (file != null && file.isFile()) {
-            return new FileResource(resolver, resourcePath, file);
+        if (file != null && fileStatCache.isFile(file)) {
+            return new FileResource(resolver, resourcePath, file, fileStatCache);
         }
         
         // content file
@@ -81,8 +84,8 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         }
         
         // fallback to directory resource if folder was found but nothing else
-        if (file != null && file.isDirectory()) {
-            return new FileResource(resolver, resourcePath, file);
+        if (file != null && fileStatCache.isDirectory(file)) {
+            return new FileResource(resolver, resourcePath, file, fileStatCache);
         }
         
         return null;
@@ -110,7 +113,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         
         // additional check for children in file system
         File parentFile = getFile(parentPath);
-        if (parentFile != null && parentFile.isDirectory()) {
+        if (parentFile != null && fileStatCache.isDirectory(parentFile)) {
             for (File childFile : parentFile.listFiles()) {
                 String childPath = parentPath + "/" + PlatformNameFormat.getRepositoryName(childFile.getName());
                 File file = getFile(childPath);
@@ -186,7 +189,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
             return null;
         }
         File file = new File(providerFile, "." + PlatformNameFormat.getPlatformPath(path));
-        if (file.exists()) {
+        if (fileStatCache.exists(file)) {
             if (StringUtils.endsWith(path, XML_SUFFIX) && !hasDotDirFile(file)) {
                 return null;
             }
@@ -197,7 +200,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
     
     private ContentFile getContentFile(String path, String subPath) {
         File file = new File(providerFile, "." + PlatformNameFormat.getPlatformPath(path) + DOT_CONTENT_XML_SUFFIX);
-        if (file.exists()) {
+        if (fileStatCache.exists(file)) {
             ContentFile contentFile = new ContentFile(file, path, subPath, contentFileCache, ContentType.JCR_XML);
             if (contentFile.hasContent()) {
                 return contentFile;
@@ -205,7 +208,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         }
         
         file = new File(providerFile, "." + PlatformNameFormat.getPlatformPath(path) + XML_SUFFIX);
-        if (file.exists() && !hasDotDirFile(file)) {
+        if (fileStatCache.exists(file) && !hasDotDirFile(file)) {
             ContentFile contentFile = new ContentFile(file, path, subPath, contentFileCache, ContentType.JCR_XML);
             if (contentFile.hasContent()) {
                 return contentFile;
@@ -224,7 +227,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
     
     private boolean hasDotDirFile(File file) {
         File dotDir = new File(file.getPath() + DOT_DIR);
-        if (dotDir.exists() && dotDir.isDirectory()) {
+        if (fileStatCache.isDirectory(dotDir)) {
             return true;
         }
         return false;

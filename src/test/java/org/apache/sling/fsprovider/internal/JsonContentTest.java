@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
@@ -51,6 +52,7 @@ import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -102,7 +104,8 @@ public class JsonContentTest {
         assertThat(fsroot, ResourceMatchers.hasChildren("folder1", "folder2"));
         assertThat(fsroot.getChild("folder1"), ResourceMatchers.containsChildrenInAnyOrder("folder11", "file1a.txt", "sling:file1b.txt"));
         assertThat(fsroot.getChild("folder2"), ResourceMatchers.containsChildrenInAnyOrder("folder21", "content"));
-        assertThat(fsroot.getChild("folder2/content"), ResourceMatchers.containsChildrenInAnyOrder("jcr:content", "toolbar", "child", "file2content.txt", "sling:content2"));
+        assertThat(fsroot.getChild("folder2/content"), ResourceMatchers.containsChildrenInAnyOrder(
+                "jcr:content", "toolbar", "child", "file2content.txt", "sling:content2", "fileWithOverwrittenMimeType.scss"));
         assertThat(fsroot.getChild("folder2/content/child"), ResourceMatchers.containsChildrenInAnyOrder("jcr:content", "grandchild"));
     }
 
@@ -303,5 +306,27 @@ public class JsonContentTest {
 
         String profilesTitle = properties.get("profiles/jcr:content/jcr:title", String.class);
         assertEquals("Profiles", profilesTitle);
+    }
+
+    @Test @Ignore
+    public void testFileHasJcrContentAndData() {
+        Resource underTest = fsroot.getChild("folder2/content/file2content.txt");
+        assertNotNull("failed adapting file2content.txt to InputStream", underTest.adaptTo(InputStream.class));
+        //assertThat(underTest, ResourceMatchers.hasChildren("jcr:content"));
+        Resource content = underTest.getChild("jcr:content");
+        ValueMap props = content.getValueMap();
+        assertNotNull("jcr:data is missing", props.get("jcr:data", InputStream.class));
+    }
+
+    @Test @Ignore
+    public void testFileWithOverwrittenMimeType() {
+        Resource underTest = fsroot.getChild("folder2/content/fileWithOverwrittenMimeType.scss");
+        assertNotNull("failed adapting fileWithOverwrittenMimeType.scss to InputStream",
+                underTest.adaptTo(InputStream.class));
+        Resource content = underTest.getChild("jcr:content");
+        ValueMap props = content.getValueMap();
+        assertEquals("nt:unstructured", props.get("jcr:primaryType", "[missing]"));
+        assertEquals("text/css", props.get("jcr:mimeType", "[missing]"));
+        assertNotNull("jcr:data is missing", props.get("jcr:data", InputStream.class));
     }
 }

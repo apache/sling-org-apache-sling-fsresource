@@ -31,6 +31,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.fsprovider.internal.ContentFileExtensions;
 import org.apache.sling.fsprovider.internal.FsResourceMapper;
+import org.apache.sling.fsprovider.internal.FileStatCache;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 
 public final class ContentFileResourceMapper implements FsResourceMapper {
@@ -43,13 +44,16 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
     
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
+    private FileStatCache fileStatCache;
 
     public ContentFileResourceMapper(String providerRoot, File providerFile,
-            ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache) {
+                                     ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
+                                     FileStatCache fileStatCache) {
         this.providerRootPrefix = providerRoot.concat("/");
         this.providerFile = providerFile;
         this.contentFileExtensions = contentFileExtensions;
         this.contentFileCache = contentFileCache;
+        this.fileStatCache = fileStatCache;
     }
     
     @Override
@@ -92,7 +96,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
 
         // add children from filesystem folder
         File parentDir = new File(providerFile, StringUtils.removeStart(parentPath, providerRootPrefix));
-        if (parentDir.isDirectory()) {
+        if (fileStatCache.isDirectory(parentDir)) {
             File[] files = parentDir.listFiles();
             if (files != null) {
                 childIterators.add(IteratorUtils.transformedIterator(IteratorUtils.arrayIterator(files), new Transformer() {
@@ -106,7 +110,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
                             ContentFile contentFile = new ContentFile(file, path, null, contentFileCache);
                             return new ContentFileResource(resolver, contentFile);
                         } else {
-                            return new FileResource(resolver, path, file, contentFileExtensions, contentFileCache);
+                            return new FileResource(resolver, path, file, contentFileExtensions, contentFileCache, fileStatCache);
                         }
                     }
                 }));
@@ -127,7 +131,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         String relPath = Escape.resourceToFileName(path.substring(providerRootPrefix.length()));
         for (String filenameSuffix : contentFileExtensions.getSuffixes()) {
             File file = new File(providerFile, relPath + filenameSuffix);
-            if (file.exists()) {
+            if (fileStatCache.exists(file)) {
                 return new ContentFile(file, path, subPath, contentFileCache);
             }
         }
@@ -142,7 +146,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         for (String filenameSuffix : contentFileExtensions.getSuffixes()) {
             if (StringUtils.endsWith(file.getPath(), filenameSuffix)) {
                 File fileWithoutSuffix = new File(StringUtils.substringBeforeLast(file.getPath(), filenameSuffix));
-                return fileWithoutSuffix.exists();
+                return fileStatCache.exists(fileWithoutSuffix);
             }
         }
         return false;

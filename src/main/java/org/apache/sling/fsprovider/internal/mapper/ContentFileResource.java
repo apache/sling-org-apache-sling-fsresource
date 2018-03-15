@@ -52,7 +52,6 @@ public final class ContentFileResource extends AbstractResource {
 
     /**
      * @param resolver The owning resource resolver
-     * @param resourcePath The resource path in the resource tree
      * @param contentFile Content file with sub path
      */
     ContentFileResource(ResourceResolver resolver, ContentFile contentFile) {
@@ -68,8 +67,7 @@ public final class ContentFileResource extends AbstractResource {
 
     public ResourceMetadata getResourceMetadata() {
         if (metaData == null) {
-            metaData = new ResourceMetadata();
-            metaData.setModificationTime(contentFile.getFile().lastModified());
+            metaData = new LazyModifiedDateResourceMetadata(contentFile.getFile());
             metaData.setResolutionPath(resourcePath);
         }
         return metaData;

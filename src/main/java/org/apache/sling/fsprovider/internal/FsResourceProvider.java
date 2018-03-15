@@ -80,7 +80,7 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
      * if the underlying file reference is a directory.
      */
     public static final String RESOURCE_METADATA_FILE_DIRECTORY = ":org.apache.sling.fsprovider.file.directory";
-    
+
     @ObjectClassDefinition(name = "Apache Sling File System Resource Provider",
             description = "Configure an instance of the file system " +
                           "resource provider in terms of provider root and file system location")
@@ -154,6 +154,9 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
     
     // cache for parsed content files
     private ContentFileCache contentFileCache;
+
+    // cache for files that were requested but don't exist
+    private FileStatCache fileStatCache;
 
     /**
      * Returns a resource wrapping a file system file or folder for the given
@@ -337,19 +340,21 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
         ContentFileExtensions contentFileExtensions = new ContentFileExtensions(contentFileSuffixes);
         
         this.contentFileCache = new ContentFileCache(config.provider_cache_size());
+        this.fileStatCache = new FileStatCache(this.providerFile);
+
         if (fsMode == FsMode.FILEVAULT_XML) {
-            this.fileVaultMapper = new FileVaultResourceMapper(this.providerFile, filterXmlFile, this.contentFileCache);
+            this.fileVaultMapper = new FileVaultResourceMapper(this.providerFile, filterXmlFile, this.contentFileCache, this.fileStatCache);
         }
         else {
-            this.fileMapper = new FileResourceMapper(this.providerRoot, this.providerFile, contentFileExtensions, this.contentFileCache);
+            this.fileMapper = new FileResourceMapper(this.providerRoot, this.providerFile, contentFileExtensions, this.contentFileCache, this.fileStatCache);
             this.contentFileMapper = new ContentFileResourceMapper(this.providerRoot, this.providerFile,
-                    contentFileExtensions, this.contentFileCache);
+                    contentFileExtensions, this.contentFileCache, this.fileStatCache);
         }
         
         // start background monitor if check interval is higher than 100
         if (config.provider_checkinterval() > 100) {
             this.monitor = new FileMonitor(this, config.provider_checkinterval(), fsMode,
-                    contentFileExtensions, this.contentFileCache);
+                    contentFileExtensions, this.contentFileCache, this.fileStatCache);
         }
     }
 

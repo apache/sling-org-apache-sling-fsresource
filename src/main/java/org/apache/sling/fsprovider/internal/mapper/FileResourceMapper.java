@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.fsprovider.internal.ContentFileExtensions;
+import org.apache.sling.fsprovider.internal.FileStatCache;
 import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 
@@ -44,21 +45,24 @@ public final class FileResourceMapper implements FsResourceMapper {
     
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
-    
+    private FileStatCache fileStatCache;
+
     public FileResourceMapper(String providerRoot, File providerFile,
-            ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache) {
+                              ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
+                              FileStatCache fileStatCache) {
         this.providerRoot = providerRoot;
         this.providerRootPrefix = providerRoot.concat("/");
         this.providerFile = providerFile;
         this.contentFileExtensions = contentFileExtensions;
         this.contentFileCache = contentFileCache;
+        this.fileStatCache = fileStatCache;
     }
     
     @Override
     public Resource getResource(final ResourceResolver resolver, final String resourcePath) {
         File file = getFile(resourcePath);
         if (file != null) {
-            return new FileResource(resolver, resourcePath, file, contentFileExtensions, contentFileCache);
+            return new FileResource(resolver, resourcePath, file, contentFileExtensions, contentFileCache, fileStatCache);
         }
         else {
             return null;
@@ -83,12 +87,12 @@ public final class FileResourceMapper implements FsResourceMapper {
             // a repository item with the same path actually exists
             if (parentFile == null) {
 
-                if (providerFile.exists() && !StringUtils.startsWith(parentPath, providerRoot)) {
+                if (!StringUtils.startsWith(parentPath, providerRoot)) {
                     String parentPathPrefix = parentPath.concat("/");
                     if (providerRoot.startsWith(parentPathPrefix)) {
                         String relPath = providerRoot.substring(parentPathPrefix.length());
                         if (relPath.indexOf('/') < 0) {
-                            Resource res = new FileResource(resolver, providerRoot, providerFile, contentFileExtensions, contentFileCache);
+                            Resource res = new FileResource(resolver, providerRoot, providerFile, contentFileExtensions, contentFileCache, fileStatCache);
                             return IteratorUtils.singletonIterator(res);
                         }
                     }
@@ -100,7 +104,7 @@ public final class FileResourceMapper implements FsResourceMapper {
         }
         
         // ensure parent is a directory
-        if (!parentFile.isDirectory()) {
+        if (!fileStatCache.isDirectory(parentFile)) {
             return null;
         }
 
@@ -119,7 +123,7 @@ public final class FileResourceMapper implements FsResourceMapper {
             public Object transform(Object input) {
                 File file = (File)input;
                 String path = parentPath + "/" + Escape.fileToResourceName(file.getName());
-                return new FileResource(resolver, path, file, contentFileExtensions, contentFileCache);
+                return new FileResource(resolver, path, file, contentFileExtensions, contentFileCache, fileStatCache);
             }
         });
     }
@@ -139,7 +143,7 @@ public final class FileResourceMapper implements FsResourceMapper {
         if (path.startsWith(providerRootPrefix)) {
             String relPath = Escape.resourceToFileName(path.substring(providerRootPrefix.length()));
             File file = new File(providerFile, relPath);
-            if (file.exists() && !contentFileExtensions.matchesSuffix(file)) {
+            if (!contentFileExtensions.matchesSuffix(file) && fileStatCache.exists(file)) {
                 return file;
             }
         }

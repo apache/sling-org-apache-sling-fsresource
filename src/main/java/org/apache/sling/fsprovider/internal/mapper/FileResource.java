@@ -42,6 +42,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.DeepReadValueMapDecorator;
 import org.apache.sling.fsprovider.internal.ContentFileExtensions;
+import org.apache.sling.fsprovider.internal.FileStatCache;
 import org.apache.sling.fsprovider.internal.FsResourceProvider;
 import org.apache.sling.fsprovider.internal.mapper.jcr.FsNode;
 import org.apache.sling.fsprovider.internal.mapper.valuemap.ValueMapDecorator;
@@ -93,6 +94,7 @@ public final class FileResource extends AbstractResource {
 
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
+    private final FileStatCache fileStatCache;
 
     private static final Logger log = LoggerFactory.getLogger(FileResource.class);
     
@@ -103,17 +105,19 @@ public final class FileResource extends AbstractResource {
      * @param resourcePath The resource path in the resource tree
      * @param file The wrapped file
      */
-    FileResource(ResourceResolver resolver, String resourcePath, File file) {
-        this(resolver, resourcePath, file, null, null);
+    FileResource(ResourceResolver resolver, String resourcePath, File file, FileStatCache fileStatCache) {
+        this(resolver, resourcePath, file, null, null, fileStatCache);
     }
     
     FileResource(ResourceResolver resolver, String resourcePath, File file,
-            ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache) {
+                 ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
+                 FileStatCache fileStatCache) {
         this.resolver = resolver;
         this.resourcePath = resourcePath;
         this.file = file;
         this.contentFileExtensions = contentFileExtensions;
         this.contentFileCache = contentFileCache;
+        this.fileStatCache = fileStatCache;
     }
 
     /**
@@ -130,11 +134,10 @@ public final class FileResource extends AbstractResource {
      */
     public ResourceMetadata getResourceMetadata() {
         if (metaData == null) {
-            metaData = new ResourceMetadata();
+            metaData = new LazyModifiedDateResourceMetadata(file);
             metaData.setContentLength(file.length());
-            metaData.setModificationTime(file.lastModified());
             metaData.setResolutionPath(resourcePath);
-            if ( this.file.isDirectory() ) {
+            if (fileStatCache.isDirectory(file)) {
                 metaData.put(FsResourceProvider.RESOURCE_METADATA_FILE_DIRECTORY, Boolean.TRUE);
             }
         }
@@ -180,7 +183,7 @@ public final class FileResource extends AbstractResource {
             return (AdapterType) file;
         }
         else if (type == InputStream.class) {
-            if (!file.isDirectory() && file.canRead()) {
+            if (fileStatCache.isFile(file) && file.canRead()) {
                 try {
                     return (AdapterType) new FileInputStream(file);
                 }
@@ -227,9 +230,9 @@ public final class FileResource extends AbstractResource {
         if (valueMap == null) {
             // this resource simulates nt:file/nt:folder behavior by returning it as resource type
             // we should simulate the corresponding JCR properties in a value map as well
-            if (file.exists() && file.canRead()) {
+            if (fileStatCache.exists(file) && file.canRead()) {
                 Map<String,Object> props = new HashMap<String, Object>();
-                props.put("jcr:primaryType", file.isFile() ? RESOURCE_TYPE_FILE : RESOURCE_TYPE_FOLDER);
+                props.put("jcr:primaryType", fileStatCache.isFile(file) ? RESOURCE_TYPE_FILE : RESOURCE_TYPE_FOLDER);
                 props.put("jcr:createdBy", "system");
                 
                 Calendar lastModifed = Calendar.getInstance();
@@ -261,7 +264,7 @@ public final class FileResource extends AbstractResource {
         }
         for (String fileNameSuffix : contentFileExtensions.getSuffixes()) {
             File fileWithSuffix = new File(file.getPath() + fileNameSuffix);
-            if (fileWithSuffix.exists() && fileWithSuffix.canRead()) {
+            if (fileStatCache.exists(fileWithSuffix) && fileWithSuffix.canRead()) {
                 return new ContentFile(fileWithSuffix, resourcePath, null, contentFileCache);
             }
         }

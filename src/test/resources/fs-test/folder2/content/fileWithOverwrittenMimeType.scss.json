@@ -1,0 +1,7 @@
+{
+  "jcr:primaryType": "nt:file",
+  "jcr:content": {
+    "jcr:primaryType": "nt:unstructured",
+    "jcr:mimeType":"text/css"
+  }
+}

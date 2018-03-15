@@ -55,6 +55,7 @@ public final class FileMonitor extends TimerTask {
     private final FsMode fsMode;
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
+    private final FileStatCache fileStatCache;
 
     /**
      * Creates a new instance of this class.
@@ -63,14 +64,17 @@ public final class FileMonitor extends TimerTask {
      * @param fsMode FS mode
      * @param contentFileExtensions Content file extensions
      * @param contentFileCache Content file cache
+     * @param fileStatCache Cache reducing file-stat lookups (file exists or not, directory vs file).
      */
     public FileMonitor(final FsResourceProvider provider, final long interval, FsMode fsMode,
-            final ContentFileExtensions contentFileExtensions, final ContentFileCache contentFileCache) {
+                       final ContentFileExtensions contentFileExtensions, final ContentFileCache contentFileCache,
+                       final FileStatCache fileStatCache) {
         this.provider = provider;
         this.fsMode = fsMode;
         this.contentFileExtensions = contentFileExtensions;
         this.contentFileCache = contentFileCache;
-        
+        this.fileStatCache = fileStatCache;
+
         File rootFile = this.provider.getRootFile();
         if (fsMode == FsMode.FILEVAULT_XML) {
             rootFile = new File(this.provider.getRootFile(), "." + PlatformNameFormat.getPlatformPath(this.provider.getProviderRoot()));
@@ -153,6 +157,7 @@ public final class FileMonitor extends TimerTask {
             if ( monitorable.file.exists() ) {
                 // new file and reset status
                 createStatus(monitorable, contentFileExtensions, contentFileCache);
+                fileStatCache.clear();
                 sendEvents(monitorable, ChangeType.ADDED, reporter);
                 final FileStatus fs = (FileStatus)monitorable.status;
                 if ( fs instanceof DirStatus ) {
@@ -168,6 +173,7 @@ public final class FileMonitor extends TimerTask {
                 // removed file and update status
                 contentFileCache.remove(transformPath(monitorable.path));
                 monitorable.status = NonExistingStatus.SINGLETON;
+                fileStatCache.clear();
                 sendEvents(monitorable, ChangeType.REMOVED, reporter);
             } else {
                 // check for changes
