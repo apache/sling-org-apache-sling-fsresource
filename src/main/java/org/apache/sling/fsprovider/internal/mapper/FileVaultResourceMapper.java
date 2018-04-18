@@ -23,6 +23,8 @@ import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_S
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -114,7 +116,9 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         // additional check for children in file system
         File parentFile = getFile(parentPath);
         if (parentFile != null && fileStatCache.isDirectory(parentFile)) {
-            for (File childFile : parentFile.listFiles()) {
+            File[] files = parentFile.listFiles();
+            Arrays.sort(files, FileNameComparator.INSTANCE);
+            for (File childFile : files) {
                 String childPath = parentPath + "/" + PlatformNameFormat.getRepositoryName(childFile.getName());
                 File file = getFile(childPath);
                 if (file != null && pathMatches(childPath) && !childPaths.contains(childPath)) {

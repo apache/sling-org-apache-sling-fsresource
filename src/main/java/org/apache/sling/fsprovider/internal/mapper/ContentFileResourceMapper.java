@@ -20,6 +20,7 @@ package org.apache.sling.fsprovider.internal.mapper;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -99,6 +100,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         if (fileStatCache.isDirectory(parentDir)) {
             File[] files = parentDir.listFiles();
             if (files != null) {
+                Arrays.sort(files, FileNameComparator.INSTANCE);
                 childIterators.add(IteratorUtils.transformedIterator(IteratorUtils.arrayIterator(files), new Transformer() {
                     @Override
                     public Object transform(final Object input) {

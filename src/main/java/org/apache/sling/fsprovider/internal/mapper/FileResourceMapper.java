@@ -19,6 +19,7 @@
 package org.apache.sling.fsprovider.internal.mapper;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.apache.commons.collections.IteratorUtils;
@@ -102,13 +103,14 @@ public final class FileResourceMapper implements FsResourceMapper {
                 return null;
             }
         }
-        
-        // ensure parent is a directory
-        if (!fileStatCache.isDirectory(parentFile)) {
+
+        File[] files = parentFile.listFiles();
+        if (files == null) {
             return null;
         }
 
-        Iterator<File> children = IteratorUtils.filteredIterator(IteratorUtils.arrayIterator(parentFile.listFiles()), new Predicate() {
+        Arrays.sort(files, FileNameComparator.INSTANCE);
+        Iterator<File> children = IteratorUtils.filteredIterator(IteratorUtils.arrayIterator(files), new Predicate() {
             @Override
             public boolean evaluate(Object object) {
                 File file = (File)object;

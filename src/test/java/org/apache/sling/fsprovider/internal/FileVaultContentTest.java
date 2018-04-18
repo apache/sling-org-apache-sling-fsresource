@@ -111,20 +111,11 @@ public class FileVaultContentTest {
     @Test
     public void testListChildren() {
         Resource en = sampleContent.getChild("en");
-        List<Resource> children = ImmutableList.copyOf(en.listChildren());
-        assertEquals(3, children.size());
-        
-        Resource child1 = children.get(0);
-        assertEquals("jcr:content", child1.getName());
-        assertEquals("samples/sample-app/components/content/page/homepage", child1.getResourceType());
- 
-        Resource child2 = children.get(1);
-        assertEquals("tools", child2.getName());
-        assertEquals("app:Page", child2.getResourceType());
-        
-        Resource child3 = children.get(2);
-        assertEquals("extra", child3.getName());
-        
+        // about_us and about_them are not defined for ordering in en/.content.xml and thus sorted last
+        assertThat(en, ResourceMatchers.containsChildren("jcr:content", "tools", "extra", "about_them", "about_us"));
+        assertEquals("samples/sample-app/components/content/page/homepage", en.getChild("jcr:content").getResourceType());
+        assertEquals("app:Page", en.getChild("tools").getResourceType());
+
         // another child (conference) is hidden because of filter
     }
 
@@ -151,7 +142,7 @@ public class FileVaultContentTest {
 
         // list children with mixed content
         Resource enResource = sampleContent.getChild("en");
-        assertThat(enResource, ResourceMatchers.containsChildren("jcr:content", "tools", "extra", "conference"));
+        assertThat(enResource, ResourceMatchers.containsChildren("jcr:content", "tools", "extra", "about_them", "about_us", "conference"));
     }
 
     @Test

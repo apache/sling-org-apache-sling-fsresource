@@ -76,8 +76,8 @@ public class FilesFolderTest {
     @Test
     public void testListChildren() {
         assertThat(root, ResourceMatchers.containsChildren("fs-test"));
-        assertThat(fsroot, ResourceMatchers.hasChildren("folder1", "folder2", "folder3"));
-        assertThat(fsroot.getChild("folder1"), ResourceMatchers.hasChildren("folder11", "file1a.txt", "sling:file1b.txt"));
+        assertThat(fsroot, ResourceMatchers.containsChildren("folder1", "folder2", "folder3"));
+        assertThat(fsroot.getChild("folder1"), ResourceMatchers.containsChildren("file1a.txt", "folder11", "sling:file1b.txt"));
         assertThat(fsroot.getChild("folder2"), ResourceMatchers.hasChildren("folder21", "content.json"));
         assertFalse(fsroot.getChild("folder1/file1a.txt").listChildren().hasNext());
     }
