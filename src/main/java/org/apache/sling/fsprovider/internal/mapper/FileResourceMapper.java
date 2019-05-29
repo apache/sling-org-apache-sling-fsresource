@@ -22,9 +22,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;

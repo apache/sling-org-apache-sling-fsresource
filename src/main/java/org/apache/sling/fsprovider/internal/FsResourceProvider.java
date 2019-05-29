@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -229,7 +229,7 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
     public Iterator<Resource> listChildren(final @NotNull ResolveContext<Object> ctx, final @NotNull Resource parent) {
         ResourceResolver resolver = ctx.getResourceResolver();
         
-        List<Iterator<Resource>> allChildren = new ArrayList<>();
+        List<Iterator<? extends Resource>> allChildren = new ArrayList<>();
         Iterator<Resource> children;
         boolean askParentResourceProvider;
         
@@ -282,7 +282,7 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
     	    return null;
     	}
     	else if (allChildren.size() == 1) {
-    	    return allChildren.get(0);
+    	    return (Iterator<Resource>)allChildren.get(0);
     	}
     	else {
     	    // merge all children from the different iterators, but filter out potential duplicates with same resource name

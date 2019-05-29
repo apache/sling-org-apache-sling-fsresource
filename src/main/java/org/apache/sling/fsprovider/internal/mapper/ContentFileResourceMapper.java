@@ -24,15 +24,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.fsprovider.internal.ContentFileExtensions;
-import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.FileStatCache;
+import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 
 public final class ContentFileResourceMapper implements FsResourceMapper {
@@ -82,7 +82,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         final ContentFile parentContentFile = getFile(parentPath, null);;
 
 
-        final List<Iterator<Resource>> childIterators = new ArrayList<>(2);
+        final List<Iterator<? extends Resource>> childIterators = new ArrayList<>(2);
 
         // add children from parsed content
         if (parentContentFile != null && parentContentFile.hasContent()) {
@@ -119,7 +119,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
             }
         }
 
-        Iterator children = IteratorUtils.chainedIterator(childIterators);
+        Iterator<Resource> children = IteratorUtils.chainedIterator(childIterators);
         if (!children.hasNext()) {
             return null;
         }
