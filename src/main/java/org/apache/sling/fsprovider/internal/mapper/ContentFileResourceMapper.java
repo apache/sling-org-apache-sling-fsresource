@@ -139,6 +139,9 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         }
         // try to find in parent path which contains content fragment
         String parentPath = ResourceUtil.getParent(path);
+        if (parentPath == null) {
+            return null;
+        }
         String nextSubPath = path.substring(parentPath.length() + 1)
                 + (subPath != null ? "/" + subPath : "");
         return getFile(parentPath, nextSubPath);

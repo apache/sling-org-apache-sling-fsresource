@@ -206,8 +206,9 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
             if ( rsrc == null || rsrc.getResourceMetadata().containsKey(RESOURCE_METADATA_FILE_DIRECTORY) ) {
             	// get resource from shadowed provider
             	final ResourceProvider rp = ctx.getParentResourceProvider();
-            	if ( rp != null ) {
-            	    Resource resourceFromParentResourceProvider = rp.getResource((ResolveContext)ctx.getParentResolveContext(), 
+            	final ResolveContext resolveContext = (ResolveContext)ctx.getParentResolveContext();
+            	if ( rp != null && resolveContext != null ) {
+            	    Resource resourceFromParentResourceProvider = rp.getResource(resolveContext, 
     	            		path, 
     	            		resourceContext, parent);
             	    if (resourceFromParentResourceProvider != null) {
@@ -256,8 +257,9 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
     	// get children from from shadowed provider
         if (askParentResourceProvider) {
         	final ResourceProvider parentResourceProvider = ctx.getParentResourceProvider();
-        	if (parentResourceProvider != null) {
-        		children = parentResourceProvider.listChildren(ctx.getParentResolveContext(), parent);
+            final ResolveContext resolveContext = (ResolveContext)ctx.getParentResolveContext();
+        	if (parentResourceProvider != null && resolveContext != null) {
+        		children = parentResourceProvider.listChildren(resolveContext, parent);
                 if (children != null) {
                     if (fsMode == FsMode.FILEVAULT_XML) {
                         // filevault: include all children from parent resource provider that do not match the filters

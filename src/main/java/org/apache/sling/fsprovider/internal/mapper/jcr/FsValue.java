@@ -55,7 +55,11 @@ class FsValue implements Value {
     @Override
     public String getString() throws ValueFormatException, IllegalStateException, RepositoryException {
         if (arrayIndex >= 0) {
-            return props.get(propertyName, String[].class)[arrayIndex];
+            String[] array = props.get(propertyName, String[].class);
+            if (array == null) {
+                return null;
+            }
+            return array[arrayIndex];
         }
         else {
             return props.get(propertyName, String.class);
@@ -65,7 +69,11 @@ class FsValue implements Value {
     @Override
     public long getLong() throws ValueFormatException, RepositoryException {
         if (arrayIndex >= 0) {
-            return props.get(propertyName, Long[].class)[arrayIndex];
+            Long[] array = props.get(propertyName, Long[].class);
+            if (array == null) {
+                return 0;
+            }
+            return array[arrayIndex];
         }
         else {
             return props.get(propertyName, 0L);
@@ -75,7 +83,11 @@ class FsValue implements Value {
     @Override
     public double getDouble() throws ValueFormatException, RepositoryException {
         if (arrayIndex >= 0) {
-            return props.get(propertyName, Double[].class)[arrayIndex];
+            Double[] array = props.get(propertyName, Double[].class);
+            if (array == null) {
+                return 0;
+            }
+            return array[arrayIndex];
         }
         else {
             return props.get(propertyName, 0d);
@@ -85,7 +97,11 @@ class FsValue implements Value {
     @Override
     public BigDecimal getDecimal() throws ValueFormatException, RepositoryException {
         if (arrayIndex >= 0) {
-            return props.get(propertyName, BigDecimal[].class)[arrayIndex];
+            BigDecimal[] array = props.get(propertyName, BigDecimal[].class);
+            if (array == null) {
+                return null;
+            }
+            return array[arrayIndex];
         }
         else {
             return props.get(propertyName, BigDecimal.ZERO);
@@ -95,7 +111,11 @@ class FsValue implements Value {
     @Override
     public Calendar getDate() throws ValueFormatException, RepositoryException {
         if (arrayIndex >= 0) {
-            return props.get(propertyName, Calendar[].class)[arrayIndex];
+            Calendar[] array = props.get(propertyName, Calendar[].class);
+            if (array == null) {
+                return null;
+            }
+            return array[arrayIndex];
         }
         else {
             return props.get(propertyName, Calendar.class);
@@ -105,7 +125,11 @@ class FsValue implements Value {
     @Override
     public boolean getBoolean() throws ValueFormatException, RepositoryException {
         if (arrayIndex >= 0) {
-            return props.get(propertyName, Boolean[].class)[arrayIndex];
+            Boolean[] array = props.get(propertyName, Boolean[].class);
+            if (array == null) {
+                return false;
+            }
+            return array[arrayIndex];
         }
         else {
             return props.get(propertyName, false);

@@ -90,6 +90,7 @@ public final class FsNode extends FsItem implements Node {
     }
     
     @Override
+    @SuppressWarnings("null")
     public Node getNode(String relPath) throws PathNotFoundException, RepositoryException {
         if (relPath == null) {
             throw new PathNotFoundException();
