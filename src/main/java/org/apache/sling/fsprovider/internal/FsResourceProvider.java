@@ -43,6 +43,8 @@ import org.apache.sling.spi.resource.provider.ProviderContext;
 import org.apache.sling.spi.resource.provider.ResolveContext;
 import org.apache.sling.spi.resource.provider.ResourceContext;
 import org.apache.sling.spi.resource.provider.ResourceProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -167,12 +169,12 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
      * to access the file or folder. If no such file or folder exists, this
      * method returns <code>null</code>.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings("unchecked")
 	@Override
-    public Resource getResource(final ResolveContext<Object> ctx,
-            final String path,
-            final ResourceContext resourceContext,
-            final Resource parent) {
+    public Resource getResource(final @NotNull ResolveContext<Object> ctx,
+            final @NotNull String path,
+            final @NotNull ResourceContext resourceContext,
+            final @Nullable Resource parent) {
         
         ResourceResolver resolver = ctx.getResourceResolver();
         
@@ -223,7 +225,7 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Iterator<Resource> listChildren(final ResolveContext<Object> ctx, final Resource parent) {
+    public Iterator<Resource> listChildren(final @NotNull ResolveContext<Object> ctx, final @NotNull Resource parent) {
         ResourceResolver resolver = ctx.getResourceResolver();
         
         List<Iterator<Resource>> allChildren = new ArrayList<>();

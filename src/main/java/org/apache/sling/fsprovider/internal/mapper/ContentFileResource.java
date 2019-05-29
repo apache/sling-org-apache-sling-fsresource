@@ -28,6 +28,8 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.DeepReadValueMapDecorator;
 import org.apache.sling.fsprovider.internal.mapper.jcr.FsNode;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a JSON File with resource content.
@@ -61,11 +63,11 @@ public final class ContentFileResource extends AbstractResource {
                 + (contentFile.getSubPath() != null ? "/" + contentFile.getSubPath() : "");
     }
 
-    public String getPath() {
+    public @NotNull String getPath() {
         return resourcePath;
     }
 
-    public ResourceMetadata getResourceMetadata() {
+    public @NotNull ResourceMetadata getResourceMetadata() {
         if (metaData == null) {
             metaData = new LazyModifiedDateResourceMetadata(contentFile.getFile());
             metaData.setResolutionPath(resourcePath);
@@ -73,7 +75,7 @@ public final class ContentFileResource extends AbstractResource {
         return metaData;
     }
 
-    public ResourceResolver getResourceResolver() {
+    public @NotNull ResourceResolver getResourceResolver() {
         return resolver;
     }
 
@@ -84,7 +86,7 @@ public final class ContentFileResource extends AbstractResource {
         return resourceSuperType;
     }
 
-    public String getResourceType() {
+    public @NotNull String getResourceType() {
         if (resourceType == null) {
             ValueMap props = getValueMap();
             resourceType = props.get("sling:resourceType", String.class);
@@ -98,7 +100,7 @@ public final class ContentFileResource extends AbstractResource {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
+    public <AdapterType> AdapterType adaptTo(@Nullable Class<AdapterType> type) {
         if (type == ContentFile.class) {
             return (AdapterType)this.contentFile;
         }

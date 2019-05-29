@@ -82,7 +82,6 @@ public class FileStatCache {
 
     private final String providerFilePath;
 
-    @SuppressWarnings("unchecked")
     FileStatCache(final File providerFile) {
         this.providerFilePath = providerFile.getPath();
     }

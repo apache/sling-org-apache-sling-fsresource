@@ -45,6 +45,7 @@ import org.apache.sling.hamcrest.ResourceMatchers;
 import org.apache.sling.testing.mock.osgi.MapUtil;
 import org.apache.sling.testing.mock.osgi.context.AbstractContextPlugin;
 import org.apache.sling.testing.mock.sling.context.SlingContextImpl;
+import org.jetbrains.annotations.NotNull;
 
 class TestUtils {
 
@@ -114,7 +115,7 @@ class TestUtils {
     public static class ResourceListener implements ResourceChangeListener {
         private final List<ResourceChange> allChanges = new ArrayList<>();
         @Override
-        public void onChange(List<ResourceChange> changes) {
+        public void onChange(@NotNull List<ResourceChange> changes) {
             allChanges.addAll(changes);
         }
         public List<ResourceChange> getChanges() {

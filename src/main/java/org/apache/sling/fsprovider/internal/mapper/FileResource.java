@@ -48,6 +48,8 @@ import org.apache.sling.fsprovider.internal.mapper.jcr.FsNode;
 import org.apache.sling.fsprovider.internal.mapper.valuemap.ValueMapDecorator;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 import org.apache.sling.jcr.contentparser.ParserOptions;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +125,7 @@ public final class FileResource extends AbstractResource {
     /**
      * Returns the path of this resource
      */
-    public String getPath() {
+    public @NotNull String getPath() {
         return resourcePath;
     }
 
@@ -132,7 +134,7 @@ public final class FileResource extends AbstractResource {
      * length, last modification time and the resource path (same as
      * {@link #getPath()}).
      */
-    public ResourceMetadata getResourceMetadata() {
+    public @NotNull ResourceMetadata getResourceMetadata() {
         if (metaData == null) {
             metaData = new LazyModifiedDateResourceMetadata(file);
             metaData.setContentLength(file.length());
@@ -148,7 +150,7 @@ public final class FileResource extends AbstractResource {
      * Returns the resource resolver which cause this resource object to be
      * created.
      */
-    public ResourceResolver getResourceResolver() {
+    public @NotNull ResourceResolver getResourceResolver() {
         return resolver;
     }
 
@@ -159,7 +161,7 @@ public final class FileResource extends AbstractResource {
         return resourceSuperType;
     }
 
-    public String getResourceType() {
+    public @NotNull String getResourceType() {
         if (resourceType == null) {
             ValueMap props = getValueMap();
             resourceType = props.get("sling:resourceType", String.class);
@@ -177,8 +179,8 @@ public final class FileResource extends AbstractResource {
      * plus those supported by the adapter manager.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
+    @SuppressWarnings({ "unchecked", "null" })
+    public @Nullable <AdapterType> AdapterType adaptTo(@NotNull Class<AdapterType> type) {
         if (type == File.class) {
             return (AdapterType) file;
         }

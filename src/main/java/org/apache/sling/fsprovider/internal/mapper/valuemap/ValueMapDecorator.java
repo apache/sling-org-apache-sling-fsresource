@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.sling.api.resource.ValueMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This is copied from org.apache.sling.api.wrappers.ValueMapDectorator
@@ -47,7 +48,7 @@ public final class ValueMapDecorator implements ValueMap {
     /**
      * {@inheritDoc}
      */
-    public <T> T get(String name, Class<T> type) {
+    public <T> T get(@NotNull String name, @NotNull Class<T> type) {
         if (base instanceof ValueMap) {
             // shortcut if decorated map is ValueMap
             return ((ValueMap)base).get(name, type);
@@ -59,7 +60,7 @@ public final class ValueMapDecorator implements ValueMap {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T> T get(String name, T defaultValue) {
+    public <T> T get(@NotNull String name, T defaultValue) {
         if (base instanceof ValueMap) {
             // shortcut if decorated map is ValueMap
             return ((ValueMap)base).get(name, defaultValue);
