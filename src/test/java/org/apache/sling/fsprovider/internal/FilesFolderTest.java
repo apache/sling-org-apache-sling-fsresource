@@ -38,6 +38,7 @@ import org.junit.Test;
 /**
  * Test access to files and folders from file system.
  */
+@SuppressWarnings("null")
 public class FilesFolderTest {
 
     private Resource root;

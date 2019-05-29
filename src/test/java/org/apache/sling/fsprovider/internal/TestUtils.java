@@ -47,6 +47,7 @@ import org.apache.sling.testing.mock.osgi.context.AbstractContextPlugin;
 import org.apache.sling.testing.mock.sling.context.SlingContextImpl;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("null")
 class TestUtils {
 
     public static class RegisterFsResourcePlugin extends AbstractContextPlugin<SlingContextImpl> {

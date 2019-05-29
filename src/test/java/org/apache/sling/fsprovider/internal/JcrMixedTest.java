@@ -38,6 +38,7 @@ import org.junit.Test;
 /**
  * Test access mixed with JCR content on same path.
  */
+@SuppressWarnings("null")
 public class JcrMixedTest {
 
     private Resource root;

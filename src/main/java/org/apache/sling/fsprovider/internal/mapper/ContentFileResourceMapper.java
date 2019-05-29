@@ -144,14 +144,4 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         return getFile(parentPath, nextSubPath);
     }
     
-    private boolean isNodeDescriptor(File file) {
-        for (String filenameSuffix : contentFileExtensions.getSuffixes()) {
-            if (StringUtils.endsWith(file.getPath(), filenameSuffix)) {
-                File fileWithoutSuffix = new File(StringUtils.substringBeforeLast(file.getPath(), filenameSuffix));
-                return fileStatCache.exists(fileWithoutSuffix);
-            }
-        }
-        return false;
-    }
-    
 }

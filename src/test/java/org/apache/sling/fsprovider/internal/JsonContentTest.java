@@ -62,6 +62,7 @@ import com.google.common.collect.Lists;
 /**
  * Test access to files and folders and JSON content from file system.
  */
+@SuppressWarnings("null")
 public class JsonContentTest {
 
     private Resource root;

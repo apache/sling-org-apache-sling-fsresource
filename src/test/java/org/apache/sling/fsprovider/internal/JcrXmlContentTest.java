@@ -49,6 +49,7 @@ import com.google.common.collect.Lists;
 /**
  * Test access to files and folders from file system.
  */
+@SuppressWarnings("null")
 public class JcrXmlContentTest {
 
     private Resource root;

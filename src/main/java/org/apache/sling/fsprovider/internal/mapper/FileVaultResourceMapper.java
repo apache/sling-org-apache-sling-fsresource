@@ -24,7 +24,6 @@ import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_S
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;

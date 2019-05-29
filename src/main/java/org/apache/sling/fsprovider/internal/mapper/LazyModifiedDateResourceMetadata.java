@@ -18,14 +18,13 @@
  */
 package org.apache.sling.fsprovider.internal.mapper;
 
-import org.apache.sling.api.resource.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 
-class LazyModifiedDateResourceMetadata extends ResourceMetadata {
+import org.apache.sling.api.resource.ResourceMetadata;
 
+class LazyModifiedDateResourceMetadata extends ResourceMetadata {
+    private static final long serialVersionUID = 1L;
+    
     private volatile long lastModified = -1;
     private File file;
 

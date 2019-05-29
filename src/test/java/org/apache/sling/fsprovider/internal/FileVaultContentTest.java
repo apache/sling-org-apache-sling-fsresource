@@ -27,16 +27,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import com.google.common.collect.Iterables;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
@@ -48,11 +45,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * Test access FileFault XML files, folders and content.
  */
+@SuppressWarnings("null")
 public class FileVaultContentTest {
 
     private Resource damAsset;
