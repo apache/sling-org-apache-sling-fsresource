@@ -18,14 +18,29 @@
  */
 package org.apache.sling.fsprovider.internal.mapper.jcr;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.jcr.PropertyType;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.PropertyDefinition;
 import javax.jcr.version.OnParentVersionAction;
 
+import org.apache.jackrabbit.JcrConstants;
+
 class FsPropertyDefinition implements PropertyDefinition {
-    
+
+    private static final Set<String> PROTECTED_PROPERTY_NAMES = new HashSet<>();
+    static {
+        // from nt:base
+        PROTECTED_PROPERTY_NAMES.add(JcrConstants.JCR_PRIMARYTYPE);
+        PROTECTED_PROPERTY_NAMES.add(JcrConstants.JCR_MIXINTYPES);
+        // from mix:created
+        PROTECTED_PROPERTY_NAMES.add(JcrConstants.JCR_CREATED);
+        PROTECTED_PROPERTY_NAMES.add("jcr:createdBy");
+    }
+
     private final String name;
     
     public FsPropertyDefinition(String name) {
@@ -59,7 +74,7 @@ class FsPropertyDefinition implements PropertyDefinition {
 
     @Override
     public boolean isProtected() {
-        return false;
+        return PROTECTED_PROPERTY_NAMES.contains(name);
     }
 
     @Override

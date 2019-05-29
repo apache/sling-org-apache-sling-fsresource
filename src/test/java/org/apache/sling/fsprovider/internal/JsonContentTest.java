@@ -43,6 +43,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
@@ -161,10 +162,14 @@ public class JsonContentTest {
         assertEquals("/fs-test/folder2/content/toolbar/profiles/jcr:content", node.getPath());
         assertEquals(6, node.getDepth());
         
+        assertTrue(node.hasProperty(JcrConstants.JCR_PRIMARYTYPE));
+        assertTrue(node.getProperty(JcrConstants.JCR_PRIMARYTYPE).getDefinition().isProtected());
+        
         assertTrue(node.hasProperty("jcr:title"));
         assertEquals(PropertyType.STRING, node.getProperty("jcr:title").getType());
         assertFalse(node.getProperty("jcr:title").isMultiple());
         assertEquals("jcr:title", node.getProperty("jcr:title").getDefinition().getName());
+        assertFalse(node.getProperty("jcr:title").getDefinition().isProtected());
         assertEquals("/fs-test/folder2/content/toolbar/profiles/jcr:content/jcr:title", node.getProperty("jcr:title").getPath());
         assertEquals("Profiles", node.getProperty("jcr:title").getString());
         assertEquals(PropertyType.BOOLEAN, node.getProperty("booleanProp").getType());
