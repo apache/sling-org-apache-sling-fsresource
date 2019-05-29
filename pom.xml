@@ -63,13 +63,10 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!-- Embed Apache Johnzon and fscontentparser -->
+                        <!-- Embed fscontentparser -->
                         <Embed-Dependency>
-                            johnzon-core;scope=compile;inline=false,
-                            geronimo-json_1.0_spec;scope=compile;inline=false,
                             org.apache.sling.jcr.contentparser;scope=compile;inline=false
                         </Embed-Dependency>
-                        <_plugin>java.lang.String</_plugin>
                     </instructions>
                 </configuration>
             </plugin>
@@ -122,16 +119,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.johnzon</groupId>
-            <artifactId>johnzon-core</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-json_1.0_spec</artifactId>
             <version>1.0-alpha-1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
@@ -178,6 +169,12 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.testing.hamcrest</artifactId>
             <version>1.0.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.johnzon</groupId>
+            <artifactId>johnzon-core</artifactId>
+            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
