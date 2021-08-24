@@ -27,14 +27,15 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.EnumSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.jcr.contentparser.ContentParser;
-import org.apache.sling.jcr.contentparser.ContentParserFactory;
-import org.apache.sling.jcr.contentparser.ContentType;
-import org.apache.sling.jcr.contentparser.JsonParserFeature;
-import org.apache.sling.jcr.contentparser.ParserOptions;
+import org.apache.sling.contentparser.api.ContentParser;
+import org.apache.sling.contentparser.api.ParserOptions;
+import org.apache.sling.contentparser.json.JSONParserFeature;
+import org.apache.sling.contentparser.json.JSONParserOptions;
+import org.apache.sling.contentparser.json.internal.JSONContentParser;
+import org.apache.sling.contentparser.xml.internal.XMLContentParser;
+import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,22 +46,12 @@ class ContentFileParserUtil {
 
     private static final Logger log = LoggerFactory.getLogger(ContentFileParserUtil.class);
 
-    private static final ContentParser JSON_PARSER;
-    static {
-        // workaround for JsonProvider classloader issue until https://issues.apache.org/jira/browse/GERONIMO-6560 is fixed
-        ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(ContentFileParserUtil.class.getClassLoader());
-            // support comments and tick quotes for JSON parsing - same as in JCR content loader
-            JSON_PARSER = ContentParserFactory.create(ContentType.JSON, new ParserOptions()
-                    .jsonParserFeatures(EnumSet.of(JsonParserFeature.COMMENTS, JsonParserFeature.QUOTE_TICK)));
-        }
-        finally {
-            Thread.currentThread().setContextClassLoader(oldClassLoader);
-        }
-    }
-    private static final ContentParser JCR_XML_PARSER = ContentParserFactory.create(ContentType.JCR_XML);
-    private static final ContentParser XML_PARSER = ContentParserFactory.create(ContentType.XML);
+    private static final ParserOptions DEFAULT_PARSER_OPTIONS = new ParserOptions();
+    private static final ParserOptions JSON_PARSER_OPTIONS = new JSONParserOptions()
+            .withFeatures(JSONParserFeature.COMMENTS, JSONParserFeature.QUOTE_TICK);
+    private static final ContentParser JSON_PARSER = new JSONContentParser();
+    private static final ContentParser JCR_XML_PARSER = new JCRXMLContentParser();
+    private static final ContentParser XML_PARSER = new XMLContentParser();
 
     private ContentFileParserUtil() {
         // static methods only
@@ -100,11 +91,11 @@ class ContentFileParserUtil {
         try {
             switch (contentType) {
             case JSON:
-                return parse(JSON_PARSER, file);
+                return parse(JSON_PARSER, file, JSON_PARSER_OPTIONS);
             case XML:
-                return parse(XML_PARSER, file);
+                return parse(XML_PARSER, file, DEFAULT_PARSER_OPTIONS);
             case JCR_XML:
-                return parse(JCR_XML_PARSER, file);
+                return parse(JCR_XML_PARSER, file, DEFAULT_PARSER_OPTIONS);
                default:
                     throw new IllegalArgumentException("Unexpected content type: " + contentType);
             }
@@ -115,11 +106,11 @@ class ContentFileParserUtil {
         return null;
     }
 
-    private static ContentElement parse(ContentParser contentParser, File file) throws IOException {
+    private static ContentElement parse(ContentParser contentParser, File file, ParserOptions parserOptions) throws IOException {
         try (FileInputStream fis = new FileInputStream(file);
                 BufferedInputStream bis = new BufferedInputStream(fis)) {
             ContentElementHandler handler = new ContentElementHandler();
-            contentParser.parse(handler, bis);
+            contentParser.parse(handler, bis, parserOptions);
             return handler.getRoot();
         }
     }

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -107,7 +108,7 @@ public class FileMonitorTest {
         assertTrue(changes.isEmpty());
 
         File file1c = new File(tempDir, "folder1/file1c.txt");
-        FileUtils.write(file1c, "newcontent");
+        FileUtils.write(file1c, "newcontent", StandardCharsets.UTF_8);
 
         Thread.sleep(WAIT_INTERVAL);
 
@@ -182,7 +183,7 @@ public class FileMonitorTest {
         assertTrue(changes.isEmpty());
 
         File file1c = new File(tempDir, "folder1/file1c.json");
-        FileUtils.write(file1c, "{\"prop1\":\"value1\",\"child1\":{\"prop2\":\"value1\"}}");
+        FileUtils.write(file1c, "{\"prop1\":\"value1\",\"child1\":{\"prop2\":\"value1\"}}", StandardCharsets.UTF_8);
 
         Thread.sleep(WAIT_INTERVAL);
 

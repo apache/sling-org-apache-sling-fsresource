@@ -37,7 +37,7 @@ import org.apache.sling.fsprovider.internal.mapper.FileResourceMapper;
 import org.apache.sling.fsprovider.internal.mapper.FileVaultResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 import org.apache.sling.fsprovider.internal.parser.ContentFileTypes;
-import org.apache.sling.jcr.contentparser.ContentType;
+import org.apache.sling.fsprovider.internal.parser.ContentType;
 import org.apache.sling.spi.resource.provider.ObservationReporter;
 import org.apache.sling.spi.resource.provider.ProviderContext;
 import org.apache.sling.spi.resource.provider.ResolveContext;

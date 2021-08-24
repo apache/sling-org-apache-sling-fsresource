@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.LRUMap;
-import org.apache.sling.jcr.contentparser.ContentType;
 
 /**
  * Cache for parsed content from content files (e.g. JSON, JCR XML).

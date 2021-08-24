@@ -26,7 +26,7 @@ import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.mapper.valuemap.ValueMapUtil;
 import org.apache.sling.fsprovider.internal.parser.ContentElement;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
-import org.apache.sling.jcr.contentparser.ContentType;
+import org.apache.sling.fsprovider.internal.parser.ContentType;
 
 /**
  * Reference to a file that contains a content fragment (e.g. JSON, JCR XML).

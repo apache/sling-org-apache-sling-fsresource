@@ -43,7 +43,7 @@ import org.apache.sling.fsprovider.internal.FileStatCache;
 import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentElement;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
-import org.apache.sling.jcr.contentparser.ContentType;
+import org.apache.sling.fsprovider.internal.parser.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

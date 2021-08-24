@@ -19,27 +19,39 @@
 package org.apache.sling.fsprovider.internal.parser;
 
 /**
- * Content file types.
+ * Content types.
  */
-public final class ContentFileTypes {
+public enum ContentType {
 
     /**
-     * JSON content files.
+     * JSON content descriptor file.
      */
-    public static final String JSON_SUFFIX = "." + ContentType.JSON.getExtension();
+    JSON("json"),
 
     /**
-     * XML content files.
+     * XML content descriptor file.
      */
-    public static final String XML_SUFFIX = "." + ContentType.XML.getExtension();
+    XML("xml"),
 
     /**
-     * JCR XML content files.
+     * JCR XML content (FileVault XML). Also known as extended document view XML.
+     * Extends the regular document view as specified by JCR 2.0 by specifics like
+     * multivalue and typing information. Is used by Jackrabbit FileVault.
      */
-    public static final String JCR_XML_SUFFIX = "." + ContentType.JCR_XML.getExtension();
+    JCR_XML("jcr.xml");
 
-    private ContentFileTypes() {
-        // static methods only
+
+    private final String extension;
+
+    private ContentType(String extension) {
+        this.extension = extension;
+    }
+
+    /**
+     * @return Extension
+     */
+    public String getExtension() {
+        return extension;
     }
 
 }

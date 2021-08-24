@@ -1,2 +1,3 @@
-Export-Packages: !org.apache.sling.jcr.contentparser,*
--includeresource: @org.apache.sling.jcr.contentparser-[0-9.]*.jar
+-includeresource: @org.apache.sling.contentparser.(api|json|xml|xml-jcr)-[0-9.]*.jar
+-exportcontents: !org.apache.sling.contentparser.*
+-noimportjava: true

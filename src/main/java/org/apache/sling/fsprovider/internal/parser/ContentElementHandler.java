@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.jcr.contentparser.ContentHandler;
+import org.apache.sling.contentparser.api.ContentHandler;
 
 /**
  * {@link ContentHandler} implementation that produces a tree of {@link ContentElement} items.

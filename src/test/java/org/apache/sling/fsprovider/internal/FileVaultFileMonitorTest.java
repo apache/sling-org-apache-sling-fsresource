@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -113,7 +114,7 @@ public class FileVaultFileMonitorTest {
         assertTrue(changes.isEmpty());
 
         File file = new File(tempDir, "jcr_root/content/dam/talk.png/_jcr_content/renditions/text.txt");
-        FileUtils.write(file, "newcontent");
+        FileUtils.write(file, "newcontent", StandardCharsets.UTF_8);
 
         Thread.sleep(WAIT_INTERVAL);
 
@@ -193,7 +194,7 @@ public class FileVaultFileMonitorTest {
                 + "<jcr:root xmlns:jcr=\"http://www.jcp.org/jcr/1.0\" xmlns:app=\"http://sample.com/jcr/app/1.0\" "
                 + "xmlns:sling=\"http://sling.apache.org/jcr/sling/1.0\" jcr:primaryType=\"app:Page\">\n"
                 + "<jcr:content jcr:primaryType=\"app:PageContent\"/>\n"
-                + "</jcr:root>");
+                + "</jcr:root>", StandardCharsets.UTF_8);
 
         Thread.sleep(WAIT_INTERVAL);
 
