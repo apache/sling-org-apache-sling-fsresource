@@ -29,6 +29,7 @@ import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.apache.sling.testing.mock.sling.junit.SlingContextCallback;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class InvalidRootFolderTest {
         .plugin(new RegisterFsResourcePlugin("provider.file", "target/temp/invalid-folder"))
         .afterTearDown(new SlingContextCallback() {
             @Override
-            public void execute(SlingContext context) throws Exception {
+            public void execute(@NotNull SlingContext context) throws Exception {
                 File file = new File("target/temp/invalid-folder");
                 file.delete();
             }

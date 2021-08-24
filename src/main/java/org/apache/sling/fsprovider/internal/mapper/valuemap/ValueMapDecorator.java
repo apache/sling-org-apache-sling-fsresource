@@ -48,6 +48,7 @@ public final class ValueMapDecorator implements ValueMap {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("null")
     public <T> T get(@NotNull String name, @NotNull Class<T> type) {
         if (base instanceof ValueMap) {
             // shortcut if decorated map is ValueMap
@@ -59,8 +60,8 @@ public final class ValueMapDecorator implements ValueMap {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public <T> T get(@NotNull String name, T defaultValue) {
+    @SuppressWarnings({ "unchecked", "unused" })
+    public <T> @NotNull T get(@NotNull String name, @NotNull T defaultValue) {
         if (base instanceof ValueMap) {
             // shortcut if decorated map is ValueMap
             return ((ValueMap)base).get(name, defaultValue);

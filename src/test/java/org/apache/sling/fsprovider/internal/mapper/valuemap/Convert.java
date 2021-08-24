@@ -31,6 +31,7 @@ import org.apache.commons.lang3.ClassUtils;
 /**
  * This is copied from org.apache.sling.api.wrappers.impl.Convert
  */
+@SuppressWarnings("null")
 final class Convert {
 
     private Convert() {

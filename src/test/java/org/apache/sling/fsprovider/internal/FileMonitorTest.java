@@ -35,6 +35,7 @@ import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.apache.sling.testing.mock.sling.junit.SlingContextCallback;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -57,7 +58,7 @@ public class FileMonitorTest {
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
         .beforeSetUp(new SlingContextCallback() {
             @Override
-            public void execute(SlingContext context) throws Exception {
+            public void execute(@NotNull SlingContext context) throws Exception {
                 // copy test content to temp. directory
                 tempDir.mkdirs();
                 File sourceDir = new File("src/test/resources/fs-test");
@@ -73,12 +74,13 @@ public class FileMonitorTest {
 
                 // register resource change listener
                 context.registerService(ResourceChangeListener.class, resourceListener,
-                        ResourceChangeListener.PATHS, new String[] { "/fs-test" });
+                        ResourceChangeListener.PATHS, new String[] { "/fs-test" },
+                        ResourceChangeListener.CHANGES, new String[] { ChangeType.CHANGED.toString(), ChangeType.ADDED.toString(), ChangeType.REMOVED.toString() });
             }
         })
         .afterTearDown(new SlingContextCallback() {
             @Override
-            public void execute(SlingContext context) throws Exception {
+            public void execute(@NotNull SlingContext context) throws Exception {
                 // remove temp directory
                 tempDir.delete();
             }

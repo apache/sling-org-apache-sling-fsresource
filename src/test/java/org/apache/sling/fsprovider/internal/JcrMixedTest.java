@@ -19,8 +19,8 @@
 package org.apache.sling.fsprovider.internal;
 
 import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;

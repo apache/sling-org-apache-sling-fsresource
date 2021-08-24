@@ -18,23 +18,23 @@
  */
 package org.apache.sling.fsprovider.internal;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.observation.ResourceChange;
@@ -92,7 +92,7 @@ class TestUtils {
         if (content != null) {
             try {
                 try (InputStream is = file.adaptTo(InputStream.class)) {
-                    String data = IOUtils.toString(is, CharEncoding.UTF_8);
+                    String data = IOUtils.toString(is, StandardCharsets.UTF_8);
                     assertEquals(content, data);
                 }
             }

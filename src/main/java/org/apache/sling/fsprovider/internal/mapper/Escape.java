@@ -21,9 +21,8 @@ package org.apache.sling.fsprovider.internal.mapper;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
-
-import org.apache.commons.lang3.CharEncoding;
 
 /**
  * Manages deescaping for platform file names to resource names.
@@ -88,7 +87,7 @@ public final class Escape {
             for (int i=0; i<path.length(); i++) {
                 char c = path.charAt(i);
                 if (RESERVED_CHARS_SET.get(c)) {
-                    result.append(URLEncoder.encode(String.valueOf(c), CharEncoding.UTF_8));
+                    result.append(URLEncoder.encode(String.valueOf(c), StandardCharsets.UTF_8.name()));
                 }
                 else {
                     result.append(c);

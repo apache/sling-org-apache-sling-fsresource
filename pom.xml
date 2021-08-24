@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.sling</groupId>
         <artifactId>sling-bundle-parent</artifactId>
-        <version>39</version>
+        <version>44</version>
         <relativePath />
     </parent>
 
@@ -38,8 +38,12 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-fsresource.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-fsresource.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-fsresource.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <project.build.outputTimestamp>2021-08-24T00:00:00Z</project.build.outputTimestamp>
+    </properties>
 
     <build>
         <plugins>
@@ -73,29 +77,29 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.api</artifactId>
-            <version>2.11.0</version>
+            <version>2.16.4</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.adapter</artifactId>
-            <version>2.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
+            <version>2.1.10</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.3.2</version>
+            <version>3.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -106,8 +110,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-json_1.0_spec</artifactId>
-            <version>1.0-alpha-1</version>
+            <artifactId>geronimo-json_1.1_spec</artifactId>
+            <version>1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -119,7 +123,7 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.commons.osgi</artifactId>
-            <version>2.2.0</version>
+            <version>2.4.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -131,7 +135,6 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>16.0.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -141,8 +144,15 @@
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.testing.sling-mock</artifactId>
-            <version>2.2.6</version>
+            <artifactId>org.apache.sling.testing.sling-mock.junit4</artifactId>
+            <version>3.0.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-api</artifactId>
+            <!-- Overwrite old version from org.apache.sling.jcr.contentparser -->
+            <version>2.16.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -160,7 +170,7 @@
         <dependency>
             <groupId>org.apache.johnzon</groupId>
             <artifactId>johnzon-core</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

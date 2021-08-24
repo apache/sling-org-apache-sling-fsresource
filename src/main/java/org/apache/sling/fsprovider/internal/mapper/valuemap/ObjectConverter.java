@@ -42,7 +42,7 @@ final class ObjectConverter {
      * @param type type
      * @return the converted object
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "null" })
     public static <T> T convert(Object obj, Class<T> type) {
         if (obj == null) {
             return null;

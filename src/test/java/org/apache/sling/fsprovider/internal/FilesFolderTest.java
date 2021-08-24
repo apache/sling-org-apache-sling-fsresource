@@ -20,9 +20,9 @@ package org.apache.sling.fsprovider.internal;
 
 import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
 import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;

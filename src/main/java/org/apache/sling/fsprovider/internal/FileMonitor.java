@@ -299,7 +299,7 @@ public final class FileMonitor extends TimerTask {
         }
     }
     private ResourceChange buildContentResourceChange(final ChangeType changeType, final String path) {
-        return new ResourceChange(changeType, path, false, null, null, null);
+        return new ResourceChange(changeType, path, false);
     }
 
     /**
