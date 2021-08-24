@@ -20,8 +20,8 @@ package org.apache.sling.fsprovider.internal.parser;
 
 import static org.apache.jackrabbit.vault.util.Constants.DOT_CONTENT_XML;
 import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.JCR_XML_SUFFIX;
-import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_SUFFIX;
 import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.JSON_SUFFIX;
+import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_SUFFIX;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -42,16 +42,16 @@ import org.slf4j.LoggerFactory;
  * Parses files that contains content fragments (e.g. JSON, JCR XML).
  */
 class ContentFileParserUtil {
-    
+
     private static final Logger log = LoggerFactory.getLogger(ContentFileParserUtil.class);
-    
+
     private static final ContentParser JSON_PARSER;
     static {
         // workaround for JsonProvider classloader issue until https://issues.apache.org/jira/browse/GERONIMO-6560 is fixed
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(ContentFileParserUtil.class.getClassLoader());
-            // support comments and tick quotes for JSON parsing - same as in JCR content loader 
+            // support comments and tick quotes for JSON parsing - same as in JCR content loader
             JSON_PARSER = ContentParserFactory.create(ContentType.JSON, new ParserOptions()
                     .jsonParserFeatures(EnumSet.of(JsonParserFeature.COMMENTS, JsonParserFeature.QUOTE_TICK)));
         }
@@ -61,11 +61,11 @@ class ContentFileParserUtil {
     }
     private static final ContentParser JCR_XML_PARSER = ContentParserFactory.create(ContentType.JCR_XML);
     private static final ContentParser XML_PARSER = ContentParserFactory.create(ContentType.XML);
-    
+
     private ContentFileParserUtil() {
         // static methods only
     }
-    
+
     /**
      * Parse content from file.
      * @param file File. Type is detected automatically.
@@ -86,7 +86,7 @@ class ContentFileParserUtil {
         }
         return null;
     }
-    
+
     /**
      * Parse content from file.
      * @param file File. Type is detected automatically.
@@ -114,7 +114,7 @@ class ContentFileParserUtil {
         }
         return null;
     }
-    
+
     private static ContentElement parse(ContentParser contentParser, File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file);
                 BufferedInputStream bis = new BufferedInputStream(fis)) {

@@ -31,13 +31,13 @@ import org.apache.commons.lang3.StringUtils;
  * Matches file names for content file extensions.
  */
 public final class ContentFileExtensions {
-    
+
     private final List<String> contentFileSuffixes;
 
     public ContentFileExtensions(List<String> contentFileSuffixes) {
         this.contentFileSuffixes = contentFileSuffixes;
     }
-    
+
     /**
      * Get suffix from file name.
      * @param file File
@@ -68,19 +68,19 @@ public final class ContentFileExtensions {
     public boolean matchesSuffix(File file) {
         return getSuffix(file) != null;
     }
-    
+
     /**
      * @return Content file suffixes.
      */
     public Collection<String> getSuffixes() {
         return contentFileSuffixes;
     }
-    
+
     /**
      * @return true if not suffixes are defined.
      */
     public boolean isEmpty() {
         return contentFileSuffixes.isEmpty();
     }
-    
+
 }

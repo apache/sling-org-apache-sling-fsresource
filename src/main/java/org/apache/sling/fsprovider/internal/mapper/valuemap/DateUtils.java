@@ -29,7 +29,7 @@ import org.apache.jackrabbit.util.ISO8601;
  * This can be removed when Sling API 2.17.0 or higher is referenced.
  */
 final class DateUtils {
-    
+
     private DateUtils() {
         // static methods only
     }
@@ -57,7 +57,7 @@ final class DateUtils {
         }
         return input.getTime();
     }
-    
+
     /**
      * @param input Date value
      * @return ISO8601 string representation or null

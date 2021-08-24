@@ -90,7 +90,7 @@ public final class FileResource extends AbstractResource {
     // the resource type, assigned on demand
     private String resourceType;
     private String resourceSuperType;
-    
+
     // valuemap is build on demand
     private ValueMap valueMap;
 
@@ -99,7 +99,7 @@ public final class FileResource extends AbstractResource {
     private final FileStatCache fileStatCache;
 
     private static final Logger log = LoggerFactory.getLogger(FileResource.class);
-    
+
     /**
      * Creates an instance of this File system resource.
      *
@@ -110,7 +110,7 @@ public final class FileResource extends AbstractResource {
     FileResource(ResourceResolver resolver, String resourcePath, File file, FileStatCache fileStatCache) {
         this(resolver, resourcePath, file, null, null, fileStatCache);
     }
-    
+
     FileResource(ResourceResolver resolver, String resourcePath, File file,
                  ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
                  FileStatCache fileStatCache) {
@@ -236,11 +236,11 @@ public final class FileResource extends AbstractResource {
                 Map<String,Object> props = new HashMap<String, Object>();
                 props.put("jcr:primaryType", fileStatCache.isFile(file) ? RESOURCE_TYPE_FILE : RESOURCE_TYPE_FOLDER);
                 props.put("jcr:createdBy", "system");
-                
+
                 Calendar lastModifed = Calendar.getInstance();
                 lastModifed.setTimeInMillis(file.lastModified());
                 props.put("jcr:created", lastModifed);
-                
+
                 // overlay properties with those from node descriptor content file, if it exists
                 ContentFile contentFile = getNodeDescriptorContentFile();
                 if (contentFile != null) {
@@ -253,13 +253,13 @@ public final class FileResource extends AbstractResource {
                         props.put(entry.getKey(), entry.getValue());
                     }
                 }
-                
+
                 valueMap = new DeepReadValueMapDecorator(this, new ValueMapDecorator(props));
             }
         }
         return valueMap;
     }
-    
+
     private ContentFile getNodeDescriptorContentFile() {
         if (contentFileExtensions == null || contentFileCache == null) {
             return null;
@@ -272,5 +272,5 @@ public final class FileResource extends AbstractResource {
         }
         return null;
     }
-    
+
 }

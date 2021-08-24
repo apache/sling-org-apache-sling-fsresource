@@ -32,11 +32,11 @@ import org.apache.commons.lang3.ClassUtils;
  * This is copied from org.apache.sling.api.wrappers.impl.Convert
  */
 final class Convert {
-    
+
     private Convert() {
         // static methods only
     }
-    
+
     @SuppressWarnings("unchecked")
     public static class ConversionAssert<T,U> {
         private final T input1;
@@ -46,7 +46,7 @@ final class Convert {
         private U expected2;
         private U nullValue;
         private Class<U> expectedType;
-        
+
         private ConversionAssert(T input1, T input2, boolean inputTypePrimitive) {
             this.input1 = input1;
             this.input2 = input2;
@@ -55,7 +55,7 @@ final class Convert {
                 this.inputType = (Class<T>)ClassUtils.wrapperToPrimitive(this.inputType);
             }
         }
-        
+
         private void expected(U expected1, U expected2, boolean expectedTypePrimitive) {
             this.expected1 = expected1;
             this.expected2 = expected2;
@@ -64,7 +64,7 @@ final class Convert {
                 expectedType = (Class<U>)ClassUtils.wrapperToPrimitive(this.expectedType);
             }
         }
-        
+
         /**
          * @param expected1 Singleton or first array expected result value
          * @param expected2 Second array expected result value
@@ -84,7 +84,7 @@ final class Convert {
             expected(expected1, expected2, true);
             return this;
         }
-        
+
         /**
          * @param expected1 Singleton or first array expected result value
          * @param expected2 Second array expected result value
@@ -96,7 +96,7 @@ final class Convert {
             this.expectedType = expectedType;
             return this;
         }
-        
+
         /**
          * @param nullValue Result value in case of null
          */
@@ -104,7 +104,7 @@ final class Convert {
             this.nullValue = nullValue;
             return this;
         }
-        
+
         /**
          * Do assertion
          */
@@ -132,10 +132,10 @@ final class Convert {
 
     private static <T,U> void assertPermuations(T input1, T input2, Class<T> inputType,
             U expected1, U expected2, U nullValue, Class<U> expectedType, Class<U[]> expectedArrayType) {
-        
+
         // single value to single value
         assertConversion(expected1, input1, expectedType);
-        
+
         // single value to array
         Object expectedSingletonArray;
         if (expected1 == null && expected2 == null) {
@@ -146,7 +146,7 @@ final class Convert {
             Array.set(expectedSingletonArray, 0, expected1);
         }
         assertConversion(expectedSingletonArray, input1, expectedArrayType);
-        
+
         // array to array
         Object inputDoubleArray = Array.newInstance(inputType, 2);
         Array.set(inputDoubleArray, 0, input1);
@@ -161,16 +161,16 @@ final class Convert {
             Array.set(expectedDoubleArray, 1,  expected2);
         }
         assertConversion(expectedDoubleArray, inputDoubleArray, expectedArrayType);
-        
+
         // array to single (first) value
         assertConversion(expected1, inputDoubleArray, expectedType);
-        
+
         // null to single value
         assertConversion(nullValue, null, expectedType);
-        
+
         // null to array
         assertConversion(null, null, expectedArrayType);
-        
+
         // empty array to single value
         Object inputEmptyArray = Array.newInstance(inputType, 0);
         assertConversion(nullValue, inputEmptyArray, expectedType);
@@ -179,7 +179,7 @@ final class Convert {
         Object expectedEmptyArray = Array.newInstance(expectedType, 0);
         assertConversion(expectedEmptyArray, inputEmptyArray, expectedArrayType);
     }
-    
+
     @SuppressWarnings("unchecked")
     private static <T,U> void assertConversion(Object expected, Object input, Class<U> type) {
         U result = ObjectConverter.convert(input, type);
@@ -194,7 +194,7 @@ final class Convert {
             assertEquals(msg, toStringIfDate(expected), toStringIfDate(result));
         }
     }
-    
+
     private static String toString(Object input) {
         if (input == null) {
             return "null";
@@ -215,7 +215,7 @@ final class Convert {
             return toStringIfDate(input).toString();
         }
     }
-    
+
     private static Object toStringIfDate(Object input) {
         if (input == null) {
             return null;
@@ -238,5 +238,5 @@ final class Convert {
         }
         return input;
     }
-        
+
 }

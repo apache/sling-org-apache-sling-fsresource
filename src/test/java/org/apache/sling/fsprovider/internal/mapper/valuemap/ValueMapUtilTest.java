@@ -39,7 +39,7 @@ public class ValueMapUtilTest {
         content.put("stringArray", new String[] { "a", "b", "c" });
         content.put("stringList", ImmutableList.of("ab", "cd"));
         content.put("intList", ImmutableList.of(12, 34));
-        
+
         ValueMap props = ValueMapUtil.toValueMap(content);
         assertEquals("abc", props.get("stringProp", String.class));
         assertEquals((Integer)123, props.get("intProp", 0));

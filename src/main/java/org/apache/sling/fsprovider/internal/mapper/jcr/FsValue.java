@@ -35,11 +35,11 @@ import org.apache.sling.api.resource.ValueMap;
  * Simplified implementation of read-only content access via the JCR API.
  */
 class FsValue implements Value {
-    
+
     private final ValueMap props;
     private final String propertyName;
     private final int arrayIndex;
-    
+
     public FsValue(ValueMap props, String propertyName) {
         this.props = props;
         this.propertyName = propertyName;
@@ -172,7 +172,7 @@ class FsValue implements Value {
 
 
     // --- unsupported methods ---
-    
+
     @Override
     public InputStream getStream() throws RepositoryException {
         throw new UnsupportedOperationException();

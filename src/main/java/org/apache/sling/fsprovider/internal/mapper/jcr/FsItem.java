@@ -45,11 +45,11 @@ import org.apache.sling.fsprovider.internal.mapper.ContentFile;
  * Simplified implementation of read-only content access via the JCR API.
  */
 abstract class FsItem implements Item {
-    
+
     protected final ContentFile contentFile;
     protected final ResourceResolver resolver;
     protected final ValueMap props;
-    
+
     public FsItem(ContentFile contentFile, ResourceResolver resolver) {
         this.contentFile = contentFile;
         this.resolver = resolver;
@@ -124,7 +124,7 @@ abstract class FsItem implements Item {
     public void accept(ItemVisitor visitor) throws RepositoryException {
         // do nothing
     }
-    
+
     @Override
     public String toString() {
         try {
@@ -136,8 +136,8 @@ abstract class FsItem implements Item {
             throw new RuntimeException(ex);
         }
     }
-    
-    
+
+
     // --- unsupported methods ---
 
     @Override

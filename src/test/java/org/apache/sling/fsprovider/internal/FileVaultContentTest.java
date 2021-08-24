@@ -80,16 +80,16 @@ public class FileVaultContentTest {
     public void testDamAsset() {
         assertNotNull(damAsset);
         assertEquals("app:Asset", damAsset.getResourceType());
-        
+
         Resource content = damAsset.getChild("jcr:content");
         assertNotNull(content);
         assertEquals("app:AssetContent", content.getResourceType());
-        
+
         Resource metadata = content.getChild("metadata");
         assertNotNull(metadata);
         ValueMap props = metadata.getValueMap();
         assertEquals((Integer)4, props.get("app:Bitsperpixel", Integer.class));
-        
+
         assertFolder(content, "renditions");
         assertFile(content, "renditions/original", null);
         assertFile(content, "renditions/web.1280.1280.png", null);
@@ -125,13 +125,13 @@ public class FileVaultContentTest {
         Node conference = en.addNode("conference", "nt:folder");
         conference.addNode("page2", "nt:folder");
         samples.addNode("it", "nt:folder");
-        
+
         // pass-through because of filter
         assertNotNull(context.resourceResolver().getResource("/content/samples/en/conference"));
         assertNotNull(sampleContent.getChild("en/conference"));
         assertNotNull(context.resourceResolver().getResource("/content/samples/en/conference/page2"));
         assertNotNull(sampleContent.getChild("en/conference/page2"));
-        
+
         // hidden because overlayed by resource provider
         assertNull(context.resourceResolver().getResource("/content/samples/it"));
         assertNull(sampleContent.getChild("it"));
@@ -146,7 +146,7 @@ public class FileVaultContentTest {
         Resource extraContent = sampleContent.getChild("en/extra/extracontent");
         assertNotNull(extraContent);
         assertEquals("apps/app1/components/comp1", extraContent.getResourceType());
-        
+
         Resource layout = extraContent.getChild("layout");
         assertNotNull(layout);
         assertEquals("apps/app1/components/comp2", layout.getResourceType());

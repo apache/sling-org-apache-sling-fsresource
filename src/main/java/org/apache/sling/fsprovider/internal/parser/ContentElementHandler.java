@@ -29,9 +29,9 @@ import org.apache.sling.jcr.contentparser.ContentHandler;
  * {@link ContentHandler} implementation that produces a tree of {@link ContentElement} items.
  */
 final class ContentElementHandler implements ContentHandler {
-    
+
     private ContentElement root;
-    private Pattern PATH_PATTERN = Pattern.compile("^((/[^/]+)*)(/([^/]+))$"); 
+    private Pattern PATH_PATTERN = Pattern.compile("^((/[^/]+)*)(/([^/]+))$");
 
     @Override
     public void resource(String path, Map<String, Object> properties) {
@@ -61,7 +61,7 @@ final class ContentElementHandler implements ContentHandler {
             parent.getChildren().put(name, new ContentElementImpl(name, properties));
         }
     }
-    
+
     public ContentElement getRoot() {
         return root;
     }

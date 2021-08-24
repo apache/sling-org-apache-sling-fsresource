@@ -43,7 +43,7 @@ public final class FileResourceMapper implements FsResourceMapper {
 
     // The "root" file or folder in the file system
     private final File providerFile;
-    
+
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
     private FileStatCache fileStatCache;
@@ -58,7 +58,7 @@ public final class FileResourceMapper implements FsResourceMapper {
         this.contentFileCache = contentFileCache;
         this.fileStatCache = fileStatCache;
     }
-    
+
     @Override
     public Resource getResource(final ResourceResolver resolver, final String resourcePath) {
         File file = getFile(resourcePath);
@@ -69,7 +69,7 @@ public final class FileResourceMapper implements FsResourceMapper {
             return null;
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public Iterator<Resource> getChildren(final ResourceResolver resolver, final Resource parent) {
@@ -151,5 +151,5 @@ public final class FileResourceMapper implements FsResourceMapper {
         }
         return null;
     }
-    
+
 }

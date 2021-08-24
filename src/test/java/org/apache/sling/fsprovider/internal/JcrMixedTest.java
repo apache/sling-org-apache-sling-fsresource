@@ -53,7 +53,7 @@ public class JcrMixedTest {
     public void setUp() throws RepositoryException {
         root = context.resourceResolver().getResource("/");
         fsroot = context.resourceResolver().getResource("/fs-test");
-        
+
         // prepare mixed JCR content
         Node node = root.adaptTo(Node.class);
         Node fstest = node.addNode("fs-test", "nt:folder");

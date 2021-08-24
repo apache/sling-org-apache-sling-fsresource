@@ -76,7 +76,7 @@ import org.osgi.service.metatype.annotations.Option;
            })
 @Designate(ocd=FsResourceProvider.Config.class, factory=true)
 public final class FsResourceProvider extends ResourceProvider<Object> {
-    
+
     /**
      * Resource metadata property set by {@link org.apache.sling.fsprovider.internal.mapper.FileResource}
      * if the underlying file reference is a directory.
@@ -100,7 +100,7 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
                 description = "Location in the virtual resource tree where the " +
                 "file system resources are mapped in. This property must not be an empty string.")
         String provider_root();
-        
+
         @AttributeDefinition(name = "File system layout",
                 description = "File system layout mode for files, folders and content.",
                 options={
@@ -112,15 +112,15 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
                                 + "FileVault XML format (expanded content package)"),
                 })
         FsMode provider_fs_mode() default FsMode.FILES_FOLDERS;
-        
+
         @AttributeDefinition(name = "Init. Content Options",
                 description = "Import options for Sling-Initial-Content file system layout. Supported options: overwrite, ignoreImportProviders.")
         String provider_initial_content_import_options();
-        
+
         @AttributeDefinition(name = "FileVault Filter",
                 description = "Path to META-INF/vault/filter.xml when using FileVault XML file system layout.")
         String provider_filevault_filterxml_path();
-        
+
 
         @AttributeDefinition(name = "Check Interval",
                              description = "If the interval has a value higher than 100, the provider will " +
@@ -144,16 +144,16 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
 
     // The monitor to detect file changes.
     private FileMonitor monitor;
-    
+
     // maps file system to resources
     private FsMode fsMode;
     private FsResourceMapper fileMapper;
     private FsResourceMapper contentFileMapper;
     private FileVaultResourceMapper fileVaultMapper;
-    
+
     // if true resources from file system are only "overlayed" to JCR resources, serving JCR as fallback within the same path
     private boolean overlayParentResourceProvider;
-    
+
     // cache for parsed content files
     private ContentFileCache contentFileCache;
 
@@ -175,9 +175,9 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
             final @NotNull String path,
             final @NotNull ResourceContext resourceContext,
             final @Nullable Resource parent) {
-        
+
         ResourceResolver resolver = ctx.getResourceResolver();
-        
+
         boolean askParentResourceProvider;
         Resource rsrc = null;
 
@@ -199,25 +199,25 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
                 rsrc = contentFileMapper.getResource(resolver, path);
             }
         }
-        
+
         if (askParentResourceProvider) {
             // make sure directory resources from parent resource provider have higher precedence than from this provider
             // this allows properties like sling:resourceSuperType to take effect
             if ( rsrc == null || rsrc.getResourceMetadata().containsKey(RESOURCE_METADATA_FILE_DIRECTORY) ) {
             	// get resource from shadowed provider
             	final ResourceProvider rp = ctx.getParentResourceProvider();
-            	final ResolveContext resolveContext = (ResolveContext)ctx.getParentResolveContext();
+            	final ResolveContext resolveContext = ctx.getParentResolveContext();
             	if ( rp != null && resolveContext != null ) {
-            	    Resource resourceFromParentResourceProvider = rp.getResource(resolveContext, 
-    	            		path, 
+            	    Resource resourceFromParentResourceProvider = rp.getResource(resolveContext,
+    	            		path,
     	            		resourceContext, parent);
             	    if (resourceFromParentResourceProvider != null) {
             	        rsrc = resourceFromParentResourceProvider;
             	    }
-            	}        	
+            	}
             }
         }
-        
+
         return rsrc;
     }
 
@@ -228,11 +228,11 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
     @Override
     public Iterator<Resource> listChildren(final @NotNull ResolveContext<Object> ctx, final @NotNull Resource parent) {
         ResourceResolver resolver = ctx.getResourceResolver();
-        
+
         List<Iterator<? extends Resource>> allChildren = new ArrayList<>();
         Iterator<Resource> children;
         boolean askParentResourceProvider;
-        
+
         if (fsMode == FsMode.FILEVAULT_XML) {
             // filevault: always ask provider, it checks itself if children matches the filters
             askParentResourceProvider = true;
@@ -253,11 +253,11 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
                 allChildren.add(children);
             }
         }
-        
+
     	// get children from from shadowed provider
         if (askParentResourceProvider) {
         	final ResourceProvider parentResourceProvider = ctx.getParentResourceProvider();
-            final ResolveContext resolveContext = (ResolveContext)ctx.getParentResolveContext();
+            final ResolveContext resolveContext = ctx.getParentResolveContext();
         	if (parentResourceProvider != null && resolveContext != null) {
         		children = parentResourceProvider.listChildren(resolveContext, parent);
                 if (children != null) {
@@ -314,10 +314,10 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
         this.providerRoot = providerRoot;
         this.providerFile = getProviderFile(providerFileName, bundleContext);
         this.overlayParentResourceProvider = false;
-        
+
         InitialContentImportOptions options = new InitialContentImportOptions(config.provider_initial_content_import_options());
         File filterXmlFile = null;
-                
+
         List<String> contentFileSuffixes = new ArrayList<>();
         if (fsMode == FsMode.FILEVAULT_XML) {
             contentFileSuffixes.add("/" + DOT_CONTENT_XML);
@@ -342,7 +342,7 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
             }
         }
         ContentFileExtensions contentFileExtensions = new ContentFileExtensions(contentFileSuffixes);
-        
+
         this.contentFileCache = new ContentFileCache(config.provider_cache_size());
         this.fileStatCache = new FileStatCache(this.providerFile);
 
@@ -354,7 +354,7 @@ public final class FsResourceProvider extends ResourceProvider<Object> {
             this.contentFileMapper = new ContentFileResourceMapper(this.providerRoot, this.providerFile,
                     contentFileExtensions, this.contentFileCache, this.fileStatCache);
         }
-        
+
         // start background monitor if check interval is higher than 100
         if (config.provider_checkinterval() > 100) {
             this.monitor = new FileMonitor(this, config.provider_checkinterval(), fsMode,

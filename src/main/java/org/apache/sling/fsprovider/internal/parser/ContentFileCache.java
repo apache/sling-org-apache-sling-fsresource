@@ -32,7 +32,7 @@ public final class ContentFileCache {
 
     private final Map<String,ContentElement> contentCache;
     private final ContentElement NULL_ELEMENT = new ContentElementImpl(null, Collections.<String,Object>emptyMap());
-    
+
     /**
      * @param maxSize Cache size. 0 = caching disabled.
      */
@@ -45,7 +45,7 @@ public final class ContentFileCache {
             this.contentCache = null;
         }
     }
-    
+
     /**
      * Get content.
      * @param path Path (used as cache key).
@@ -55,7 +55,7 @@ public final class ContentFileCache {
     public ContentElement get(String path, File file) {
         return get(path, file, null);
     }
-    
+
     /**
      * Get content.
      * @param path Path (used as cache key).
@@ -89,7 +89,7 @@ public final class ContentFileCache {
             return content;
         }
     }
-    
+
     /**
      * Remove content from cache.
      * @param path Path (used as cache key)
@@ -108,7 +108,7 @@ public final class ContentFileCache {
             contentCache.clear();
         }
     }
-    
+
     /**
      * @return Current cache size
      */

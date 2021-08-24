@@ -25,11 +25,11 @@ import java.util.Map;
 import org.apache.sling.api.resource.ValueMap;
 
 public final class ValueMapUtil {
-    
+
     private ValueMapUtil() {
         // static methods only
     }
-    
+
     /**
      * Convert map to value map.
      * @param content Content map.
@@ -37,7 +37,7 @@ public final class ValueMapUtil {
      */
     public static ValueMap toValueMap(Map<String,Object> content) {
         Map<String,Object> props = new HashMap<>();
-        
+
         for (Map.Entry<String, Object> entry : content.entrySet()) {
             if (entry.getValue() instanceof Collection) {
                 // convert lists to arrays
@@ -47,7 +47,7 @@ public final class ValueMapUtil {
                 props.put(entry.getKey(), entry.getValue());
             }
         }
-        
+
         return new ValueMapDecorator(props);
     }
 

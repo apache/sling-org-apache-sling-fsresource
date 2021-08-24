@@ -61,19 +61,19 @@ import org.apache.sling.fsprovider.internal.mapper.ContentFile;
  * Simplified implementation of read-only content access via the JCR API.
  */
 public final class FsNode extends FsItem implements Node {
-    
+
     public FsNode(ContentFile contentFile, ResourceResolver resolver) {
         super(contentFile, resolver);
     }
-    
+
     private String getPrimaryTypeName() {
         return props.get("jcr:primaryType", String.class);
     }
-    
+
     private String[] getMixinTypeNames() {
         return props.get("jcr:mixinTypes", new String[0]);
     }
-    
+
     @Override
     public String getName() throws RepositoryException {
         if (contentFile.getSubPath() == null) {
@@ -88,14 +88,14 @@ public final class FsNode extends FsItem implements Node {
     public Node getParent() throws ItemNotFoundException, AccessDeniedException, RepositoryException {
         return getNode(ResourceUtil.getParent(getPath()));
     }
-    
+
     @Override
     @SuppressWarnings("null")
     public Node getNode(String relPath) throws PathNotFoundException, RepositoryException {
         if (relPath == null) {
             throw new PathNotFoundException();
         }
-        
+
         // get absolute node path
         String path = relPath;
         if (!StringUtils.startsWith(path,  "/")) {
@@ -116,7 +116,7 @@ public final class FsNode extends FsItem implements Node {
                 return new FsNode(referencedFile, resolver);
             }
         }
-        
+
         // check if node is outside content file
         Node refNode = null;
         Resource resource = resolver.getResource(path);
@@ -224,10 +224,10 @@ public final class FsNode extends FsItem implements Node {
         }
         return mixinTypes;
     }
-    
+
 
     // --- unsupported methods ---
-    
+
     @Override
     public Node addNode(String relPath) throws ItemExistsException, PathNotFoundException, VersionException,
             ConstraintViolationException, LockException, RepositoryException {

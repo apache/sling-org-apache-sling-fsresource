@@ -80,7 +80,7 @@ public final class FileMonitor extends TimerTask {
             rootFile = new File(this.provider.getRootFile(), "." + PlatformNameFormat.getPlatformPath(this.provider.getProviderRoot()));
         }
         this.root = new Monitorable(this.provider.getProviderRoot(), rootFile, null);
-        
+
         createStatus(this.root, contentFileExtensions, contentFileCache);
         log.debug("Starting file monitor for {} with an interval of {}ms", this.root.file, interval);
         timer.schedule(this, 0, interval);
@@ -201,7 +201,7 @@ public final class FileMonitor extends TimerTask {
             }
         }
     }
-    
+
     private void checkDirStatusChildren(final Monitorable dirMonitorable, final ObservationReporter reporter) {
         final DirStatus ds = (DirStatus)dirMonitorable.status;
         final File[] files = dirMonitorable.file.listFiles();
@@ -253,7 +253,7 @@ public final class FileMonitor extends TimerTask {
             reporter.reportChanges(changes, false);
         }
     }
-    
+
     /**
      * Transform path for resource event.
      * @param path Path
@@ -267,7 +267,7 @@ public final class FileMonitor extends TimerTask {
             return path;
         }
     }
-    
+
     private List<ResourceChange> collectResourceChanges(final Monitorable monitorable, final ChangeType changeType) {
         List<ResourceChange> changes = new ArrayList<>();
         if (monitorable.status instanceof ContentFileStatus) {
@@ -344,7 +344,7 @@ public final class FileMonitor extends TimerTask {
             this.lastModified = file.lastModified();
         }
     }
-    
+
     /** Status for content files */
     private static class ContentFileStatus extends FileStatus {
         public final ContentFile contentFile;
@@ -353,7 +353,7 @@ public final class FileMonitor extends TimerTask {
             this.contentFile = contentFile;
         }
     }
-    
+
     /** Status for directories. */
     private static final class DirStatus extends FileStatus {
         public Monitorable[] children;

@@ -42,7 +42,7 @@ class FsPropertyDefinition implements PropertyDefinition {
     }
 
     private final String name;
-    
+
     public FsPropertyDefinition(String name) {
         this.name = name;
     }
@@ -110,6 +110,6 @@ class FsPropertyDefinition implements PropertyDefinition {
     @Override
     public boolean isQueryOrderable() {
         return false;
-    }    
+    }
 
 }

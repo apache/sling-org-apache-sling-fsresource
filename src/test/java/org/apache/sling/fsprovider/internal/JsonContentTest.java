@@ -142,13 +142,13 @@ public class JsonContentTest {
     public void testContent_Datatypes() {
         Resource underTest = fsroot.getChild("folder2/content/toolbar/profiles/jcr:content");
         ValueMap props = underTest.getValueMap();
-        
+
         assertEquals("Profiles", props.get("jcr:title", String.class));
         assertEquals(true, props.get("booleanProp", false));
         assertEquals((Long)1234567890123L, props.get("longProp", Long.class));
-        assertEquals((Double)1.2345d, props.get("decimalProp", Double.class), 0.00001d);
+        assertEquals(1.2345d, props.get("decimalProp", Double.class), 0.00001d);
         assertEquals(new BigDecimal("1.2345"), props.get("decimalProp", BigDecimal.class));
-        
+
         assertArrayEquals(new String[] { "aa", "bb", "cc" }, props.get("stringPropMulti", String[].class));
         assertArrayEquals(new Long[] { 1234567890123L, 55L }, props.get("longPropMulti", Long[].class));
     }
@@ -158,13 +158,13 @@ public class JsonContentTest {
         Resource underTest = fsroot.getChild("folder2/content/toolbar/profiles/jcr:content");
         ValueMap props = underTest.getValueMap();
         Node node = underTest.adaptTo(Node.class);
-        
+
         assertEquals("/fs-test/folder2/content/toolbar/profiles/jcr:content", node.getPath());
         assertEquals(6, node.getDepth());
-        
+
         assertTrue(node.hasProperty(JcrConstants.JCR_PRIMARYTYPE));
         assertTrue(node.getProperty(JcrConstants.JCR_PRIMARYTYPE).getDefinition().isProtected());
-        
+
         assertTrue(node.hasProperty("jcr:title"));
         assertEquals(PropertyType.STRING, node.getProperty("jcr:title").getType());
         assertFalse(node.getProperty("jcr:title").isMultiple());
@@ -179,7 +179,7 @@ public class JsonContentTest {
         assertEquals(PropertyType.DECIMAL, node.getProperty("decimalProp").getType());
         assertEquals(1.2345d, node.getProperty("decimalProp").getDouble(), 0.00001d);
         assertEquals(new BigDecimal("1.2345"), node.getProperty("decimalProp").getDecimal());
-        
+
         assertEquals(PropertyType.STRING, node.getProperty("stringPropMulti").getType());
         assertTrue(node.getProperty("stringPropMulti").isMultiple());
         Value[] stringPropMultiValues = node.getProperty("stringPropMulti").getValues();
@@ -194,7 +194,7 @@ public class JsonContentTest {
         assertEquals(2, longPropMultiValues.length);
         assertEquals(1234567890123L, longPropMultiValues[0].getLong());
         assertEquals(55L, longPropMultiValues[1].getLong());
-        
+
         // assert property iterator
         Set<String> propertyNames = new HashSet<>();
         PropertyIterator propertyIterator = node.getProperties();
@@ -210,7 +210,7 @@ public class JsonContentTest {
             nodeNames.add(nodeIterator.nextNode().getName());
         }
         assertEquals(ImmutableSet.of("par", "rightpar"), nodeNames);
-        
+
         // node hierarchy
         assertTrue(node.hasNode("rightpar"));
         Node rightpar = node.getNode("rightpar");
@@ -221,7 +221,7 @@ public class JsonContentTest {
         assertEquals(underTest.getParent().getPath(), ancestor.getPath());
         Node root = (Node)rightpar.getAncestor(0);
         assertEquals("/", root.getPath());
-        
+
         // node types
         assertTrue(node.isNodeType("app:PageContent"));
         assertEquals("app:PageContent", node.getPrimaryNodeType().getName());
@@ -239,7 +239,7 @@ public class JsonContentTest {
         Resource underTest = fsroot.getChild("folder2/content/jcr:content/par/title_2");
         assertEquals(ParserOptions.DEFAULT_PRIMARY_TYPE, underTest.adaptTo(Node.class).getPrimaryNodeType().getName());
     }
-    
+
     @Test
     public void testContent_InvalidPath() {
         Resource underTest = fsroot.getChild("folder2/content/jcr:content/xyz");
@@ -261,7 +261,7 @@ public class JsonContentTest {
         Resource folder2 = fsroot.getChild("folder2");
         List<Resource> children = Lists.newArrayList(folder2.listChildren());
         Collections.sort(children, new ResourcePathComparator());
-        
+
         assertEquals(2, children.size());
         Resource child1 = children.get(0);
         assertEquals("content", child1.getName());
@@ -278,7 +278,7 @@ public class JsonContentTest {
         Resource file21a = fsroot.getChild("folder2/folder21/file21a.txt");
         assertEquals("nt:file", file21a.getResourceType());
         assertEquals("/my/super/type", file21a.getResourceSuperType());
-        
+
         ValueMap props = file21a.getValueMap();
         assertEquals("nt:file", props.get("jcr:primaryType", String.class));
         assertEquals("/my/super/type", props.get("sling:resourceSuperType", String.class));
@@ -286,7 +286,7 @@ public class JsonContentTest {
         assertArrayEquals(new String[] { "mix:language" }, props.get("jcr:mixinTypes", String[].class));
 
         assertNull(fsroot.getChild("folder2/folder21/file21a.txt.xml"));
-        
+
         Node node = file21a.adaptTo(Node.class);
         assertNotNull(node);
         assertEquals("/my/super/type", node.getProperty("sling:resourceSuperType").getString());

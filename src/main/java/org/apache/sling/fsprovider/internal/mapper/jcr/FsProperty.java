@@ -43,16 +43,16 @@ import org.apache.sling.fsprovider.internal.mapper.ContentFile;
  * Simplified implementation of read-only content access via the JCR API.
  */
 class FsProperty extends FsItem implements Property {
-    
+
     private final String propertyName;
     private final Node node;
-    
+
     public FsProperty(ContentFile contentFile, ResourceResolver resolver, String propertyName, Node node) {
         super(contentFile, resolver);
         this.propertyName = propertyName;
         this.node = node;
     }
-    
+
     @Override
     public String getName() throws RepositoryException {
         return propertyName;
@@ -67,7 +67,7 @@ class FsProperty extends FsItem implements Property {
     public Node getNode() throws ItemNotFoundException, ValueFormatException, RepositoryException {
         return node;
     }
-    
+
     @Override
     public String getPath() throws RepositoryException {
         return super.getPath() + "/" + propertyName;
@@ -143,15 +143,15 @@ class FsProperty extends FsItem implements Property {
     public int getType() throws RepositoryException {
         return getValue().getType();
     }
-    
+
     @Override
     public PropertyDefinition getDefinition() throws RepositoryException {
         return new FsPropertyDefinition(propertyName);
     }
 
-    
+
     // --- unsupported methods ---
-    
+
     @Override
     public void setValue(Value value) throws ValueFormatException, VersionException, LockException,
             ConstraintViolationException, RepositoryException {

@@ -24,7 +24,7 @@ import org.apache.sling.api.resource.ResourceMetadata;
 
 class LazyModifiedDateResourceMetadata extends ResourceMetadata {
     private static final long serialVersionUID = 1L;
-    
+
     private volatile long lastModified = -1;
     private File file;
 

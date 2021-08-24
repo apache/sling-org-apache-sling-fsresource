@@ -153,5 +153,5 @@ public class ValueMapDecoratorTest {
         Assert.assertFalse("Two ValueMapDecorators based on maps with different entries should not be equal",
                 valueMap.equals(valueMap2));
     }
-    
+
 }

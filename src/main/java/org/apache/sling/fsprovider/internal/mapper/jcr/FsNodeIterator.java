@@ -32,7 +32,7 @@ import org.apache.sling.fsprovider.internal.parser.ContentElement;
  * Simplified implementation of read-only content access via the JCR API.
  */
 class FsNodeIterator implements NodeIterator {
-    
+
     private final ContentFile contentFile;
     private final ResourceResolver resolver;
     private final Iterator<Map.Entry<String,ContentElement>> children;
@@ -58,9 +58,9 @@ class FsNodeIterator implements NodeIterator {
         return new FsNode(contentFile.navigateToRelative(nextEntry.getKey()), resolver);
     }
 
-    
+
     // --- unsupported methods ---
-        
+
     public void remove() {
         throw new UnsupportedOperationException();
     }

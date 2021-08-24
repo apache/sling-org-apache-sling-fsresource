@@ -29,10 +29,10 @@ import org.apache.commons.lang3.CharEncoding;
  * Manages deescaping for platform file names to resource names.
  */
 public final class Escape {
-    
+
     /**
      * List of characters typically prohibited on unix and windows file systems.
-     * "/" is not included because it is neither allowed in resource nor in file names on any system. 
+     * "/" is not included because it is neither allowed in resource nor in file names on any system.
      */
     private static final char[] RESERVED_CHARS = {
             '<',
@@ -51,14 +51,14 @@ public final class Escape {
             RESERVED_CHARS_SET.set(RESERVED_CHARS[i]);
         }
     }
-    
+
     private Escape() {
         // static methods only
     }
-    
+
     /**
      * Convert file name to resource name.
-     * Applies same rules as Apache Sling JCR ContentLoader. 
+     * Applies same rules as Apache Sling JCR ContentLoader.
      * @param path File name or path
      * @return Resource name or path
      */
@@ -75,7 +75,7 @@ public final class Escape {
         }
         return path;
     }
-    
+
     /**
      * Converts resource name to file name.
      * Allows all characters, but URL-encodes characters that are in the list of {@link #RESERVED_CHARS}.

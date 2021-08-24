@@ -24,7 +24,7 @@ import org.apache.sling.jcr.contentparser.ContentType;
  * Content file types.
  */
 public final class ContentFileTypes {
-    
+
     /**
      * JSON content files.
      */
@@ -34,14 +34,14 @@ public final class ContentFileTypes {
      * XML content files.
      */
     public static final String XML_SUFFIX = "." + ContentType.XML.getExtension();
-        
+
     /**
      * JCR XML content files.
      */
     public static final String JCR_XML_SUFFIX = "." + ContentType.JCR_XML.getExtension();
-        
+
     private ContentFileTypes() {
         // static methods only
     }
-    
+
 }

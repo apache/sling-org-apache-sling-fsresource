@@ -32,7 +32,7 @@ import org.apache.sling.jcr.contentparser.ContentType;
  * Reference to a file that contains a content fragment (e.g. JSON, JCR XML).
  */
 public final class ContentFile {
-    
+
     private final File file;
     private final String path;
     private final String subPath;
@@ -41,7 +41,7 @@ public final class ContentFile {
     private boolean contentInitialized;
     private ContentElement content;
     private ValueMap valueMap;
-    
+
     /**
      * @param file File with content fragment
      * @param path Root path of the content file
@@ -73,7 +73,7 @@ public final class ContentFile {
     public File getFile() {
         return file;
     }
-    
+
     /**
      * @return Root path of content file
      */
@@ -87,7 +87,7 @@ public final class ContentFile {
     public String getSubPath() {
         return subPath;
     }
-    
+
     /**
      * Content object referenced by sub path.
      * @return Map if resource, property value if property.
@@ -105,14 +105,14 @@ public final class ContentFile {
         }
         return content;
     }
-    
+
     /**
      * @return true if any content was found.
      */
     public boolean hasContent() {
         return getContent() != null;
     }
-    
+
     /**
      * @return ValueMap for resource. Never null.
      */
@@ -128,14 +128,14 @@ public final class ContentFile {
         }
         return valueMap;
     }
-    
+
     /**
      * @return Child maps.
      */
     public Iterator<Map.Entry<String,ContentElement>> getChildren() {
         return getContent().getChildren().entrySet().iterator();
     }
-    
+
     /**
      * Navigate to another sub path position in content file.
      * @param newSubPath New sub path related to root path of content file
@@ -144,7 +144,7 @@ public final class ContentFile {
     public ContentFile navigateToAbsolute(String newSubPath) {
         return new ContentFile(file, path, newSubPath, contentFileCache);
     }
-        
+
     /**
      * Navigate to another sub path position in content file.
      * @param newSubPath New sub path relative to current sub path in content file
@@ -160,5 +160,5 @@ public final class ContentFile {
         }
         return new ContentFile(file, path, absoluteSubPath, contentFileCache);
     }
-        
+
 }

@@ -27,10 +27,10 @@ import javax.jcr.nodetype.PropertyDefinition;
 import org.apache.commons.lang3.StringUtils;
 
 class FsNodeType implements NodeType {
-    
+
     private final String name;
     private final boolean mixin;
-    
+
     public FsNodeType(String name, boolean mixin) {
         this.name = name;
         this.mixin = mixin;
@@ -87,8 +87,8 @@ class FsNodeType implements NodeType {
     }
 
 
-    // --- unsupported methods ---    
-    
+    // --- unsupported methods ---
+
     @Override
     public PropertyDefinition[] getDeclaredPropertyDefinitions() {
         throw new UnsupportedOperationException();

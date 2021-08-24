@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
 public class ContentFileCacheTest {
-    
+
     @DataPoint
     public static final int NO_CACHE = 0;
     @DataPoint
@@ -42,10 +42,10 @@ public class ContentFileCacheTest {
     @Theory
     public void testCache(int cacheSize) {
         ContentFileCache underTest = new ContentFileCache(cacheSize);
-        
+
         ContentElement content1 = underTest.get("/fs-test/folder2/content", new File("src/test/resources/fs-test/folder2/content.json"));
         assertNotNull(content1);
-        
+
         switch (cacheSize) {
         case NO_CACHE:
             assertEquals(0, underTest.size());
@@ -82,10 +82,10 @@ public class ContentFileCacheTest {
             assertEquals(1, underTest.size());
             break;
         }
-        
+
         underTest.clear();
 
-        assertEquals(0, underTest.size());        
+        assertEquals(0, underTest.size());
     }
 
 }

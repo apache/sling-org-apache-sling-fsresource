@@ -31,12 +31,12 @@ import org.apache.sling.fsprovider.internal.mapper.ContentFile;
  * Simplified implementation of read-only content access via the JCR API.
  */
 class FsPropertyIterator implements PropertyIterator {
-    
+
     private final Iterator<String> propertyNames;
     private final ContentFile contentFile;
     private final ResourceResolver resolver;
     private final Node node;
-    
+
     public FsPropertyIterator(Iterator<String> propertyNames, ContentFile contentFile, ResourceResolver resolver, Node node) {
         this.propertyNames = propertyNames;
         this.contentFile = contentFile;
@@ -57,9 +57,9 @@ class FsPropertyIterator implements PropertyIterator {
         return new FsProperty(contentFile, resolver, propertyNames.next(), node);
     }
 
-    
+
     // --- unsupported methods ---
-        
+
     public void remove() {
         throw new UnsupportedOperationException();
     }

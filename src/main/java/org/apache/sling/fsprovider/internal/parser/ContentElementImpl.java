@@ -24,11 +24,11 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 final class ContentElementImpl implements ContentElement {
-    
+
     private final String name;
     private final Map<String, Object> properties;
     private final Map<String, ContentElement> children = new LinkedHashMap<>();
-    
+
     public ContentElementImpl(String name, Map<String, Object> properties) {
         this.name = name;
         this.properties = properties;

@@ -18,15 +18,15 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A cache that caches whether files exist or don't exist.

@@ -53,7 +53,7 @@ class TestUtils {
     public static class RegisterFsResourcePlugin extends AbstractContextPlugin<SlingContextImpl> {
         private final Map<String,Object> props;
         public RegisterFsResourcePlugin(Object... props) {
-            this.props = MapUtil.toMap(props); 
+            this.props = MapUtil.toMap(props);
         }
         @Override
         public void beforeSetUp(SlingContextImpl context) throws Exception {
@@ -70,10 +70,10 @@ class TestUtils {
     public static void assertFolder(Resource resource, String path) {
         Resource folder = resource.getChild(path);
         assertNotNull(path, folder);
-        
+
         assertThat(folder, ResourceMatchers.props("jcr:primaryType", "nt:folder"));
         assertEquals("nt:folder", folder.getResourceType());
-        
+
         assertNull(folder.getResourceSuperType());
         assertEquals(folder.getName(), folder.adaptTo(File.class).getName());
         assertTrue(StringUtils.contains(folder.adaptTo(URL.class).toString(), folder.getName()));
@@ -82,13 +82,13 @@ class TestUtils {
     public static void assertFile(Resource resource, String path, String content) {
         Resource file = resource.getChild(path);
         assertNotNull(path, file);
-        
+
         assertThat(file, ResourceMatchers.props("jcr:primaryType", "nt:file"));
         assertEquals("nt:file", file.getResourceType());
-        
+
         assertNull(file.getResourceSuperType());
         assertEquals(file.getName(), Escape.fileToResourceName(file.adaptTo(File.class).getName()));
-        
+
         if (content != null) {
             try {
                 try (InputStream is = file.adaptTo(InputStream.class)) {
@@ -100,7 +100,7 @@ class TestUtils {
                 throw new RuntimeException(ex);
             }
         }
-    }    
+    }
 
     public static void assertChange(List<ResourceChange> changes, String path, ChangeType changeType) {
         boolean found = false;
@@ -112,7 +112,7 @@ class TestUtils {
         }
         assertTrue("Change with path=" + path + ", changeType=" + changeType + " expected", found);
     }
-    
+
     public static class ResourceListener implements ResourceChangeListener {
         private final List<ResourceChange> allChanges = new ArrayList<>();
         @Override

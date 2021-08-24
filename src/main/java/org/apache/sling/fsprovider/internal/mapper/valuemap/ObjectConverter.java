@@ -31,7 +31,7 @@ import java.util.List;
  * This can be removed when Sling API 2.17.0 or higher is referenced.
  */
 final class ObjectConverter {
-    
+
     private ObjectConverter() {
         // static methods only
     }
@@ -47,17 +47,17 @@ final class ObjectConverter {
         if (obj == null) {
             return null;
         }
-        
+
         // check if direct assignment is possible
         if (type.isAssignableFrom(obj.getClass())) {
             return (T)obj;
         }
-        
+
         // convert array elements individually
         if (type.isArray()) {
             return (T)convertToArray(obj, type.getComponentType());
         }
-        
+
         // convert Calendar in Date and vice versa
         if (Calendar.class.isAssignableFrom(type) && obj instanceof Date) {
             return (T)DateUtils.toCalendar((Date)obj);
@@ -66,7 +66,7 @@ final class ObjectConverter {
             return (T)DateUtils.toDate((Calendar)obj);
         }
 
-        // no direct conversion - format to string and try to parse to target type 
+        // no direct conversion - format to string and try to parse to target type
         String result = getSingleValue(obj);
         if (result == null) {
             return null;
@@ -181,5 +181,5 @@ final class ObjectConverter {
             return arrayResult;
         }
     }
-    
+
 }

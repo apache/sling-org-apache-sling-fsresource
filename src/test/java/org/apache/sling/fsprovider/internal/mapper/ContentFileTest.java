@@ -31,17 +31,17 @@ import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 import org.junit.Test;
 
 public class ContentFileTest {
-    
+
     private ContentFileCache contentFileCache = new ContentFileCache(0);
 
     @Test
     public void testRootContent() {
         File file = new File("src/test/resources/fs-test/folder2/content.json");
-        
+
         ContentFile underTest = new ContentFile(file, "/fs-test/folder2/content", null, contentFileCache);
         assertEquals(file, underTest.getFile());
         assertNull(underTest.getSubPath());
-        
+
         assertTrue(underTest.hasContent());
 
         ContentElement content = underTest.getContent();
@@ -56,11 +56,11 @@ public class ContentFileTest {
     @Test
     public void testContentLevel1() {
         File file = new File("src/test/resources/fs-test/folder2/content.json");
-        
+
         ContentFile underTest = new ContentFile(file, "/fs-test/folder2/content", "jcr:content", contentFileCache);
         assertEquals(file, underTest.getFile());
         assertEquals("jcr:content", underTest.getSubPath());
-        
+
         assertTrue(underTest.hasContent());
 
         ContentElement content = underTest.getContent();
@@ -73,11 +73,11 @@ public class ContentFileTest {
     @Test
     public void testContentLevel5() {
         File file = new File("src/test/resources/fs-test/folder2/content.json");
-        
+
         ContentFile underTest = new ContentFile(file, "/fs-test/folder2/content", "jcr:content/par/image/file/jcr:content", contentFileCache);
         assertEquals(file, underTest.getFile());
         assertEquals("jcr:content/par/image/file/jcr:content", underTest.getSubPath());
-        
+
         assertTrue(underTest.hasContent());
 
         ContentElement content = underTest.getContent();
@@ -90,11 +90,11 @@ public class ContentFileTest {
     @Test
     public void testContentProperty() {
         File file = new File("src/test/resources/fs-test/folder2/content.json");
-        
+
         ContentFile underTest = new ContentFile(file, "/fs-test/folder2/content", "jcr:content/jcr:title", contentFileCache);
         assertEquals(file, underTest.getFile());
         assertEquals("jcr:content/jcr:title", underTest.getSubPath());
-        
+
         assertFalse(underTest.hasContent());
     }
 

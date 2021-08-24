@@ -42,10 +42,10 @@ class InitialContentImportOptions {
      */
     private static final String IGNORE_CONTENT_READERS_DIRECTIVE = "ignoreImportProviders";
 
-    
+
     private final boolean overwrite;
     private final Set<String> ignoreImportProviders;
-    
+
     public InitialContentImportOptions(String optionsString) {
         ManifestHeader header = ManifestHeader.parse("/dummy/path;" + optionsString);
         Entry[] entries = header.getEntries();
@@ -59,7 +59,7 @@ class InitialContentImportOptions {
             ignoreImportProviders = Collections.emptySet();
         }
     }
-    
+
     public boolean isOverwrite() {
         return overwrite;
     }
@@ -67,5 +67,5 @@ class InitialContentImportOptions {
     public Set<String> getIgnoreImportProviders() {
         return ignoreImportProviders;
     }
-    
+
 }

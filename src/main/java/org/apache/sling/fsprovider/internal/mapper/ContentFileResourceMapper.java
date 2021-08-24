@@ -36,13 +36,13 @@ import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 
 public final class ContentFileResourceMapper implements FsResourceMapper {
-    
+
     // providerRoot + "/" to be used for prefix matching of paths
     private final String providerRootPrefix;
 
     // The "root" file or folder in the file system
     private final File providerFile;
-    
+
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
     private FileStatCache fileStatCache;
@@ -56,7 +56,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         this.contentFileCache = contentFileCache;
         this.fileStatCache = fileStatCache;
     }
-    
+
     @Override
     public Resource getResource(final ResourceResolver resolver, final String resourcePath) {
         if (contentFileExtensions.isEmpty()) {
@@ -70,7 +70,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
             return null;
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public Iterator<Resource> getChildren(final ResourceResolver resolver, final Resource parent) {
@@ -125,7 +125,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         }
         return children;
     }
-    
+
     private ContentFile getFile(String path, String subPath) {
         if (!StringUtils.startsWith(path, providerRootPrefix)) {
             return null;
@@ -146,5 +146,5 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
                 + (subPath != null ? "/" + subPath : "");
         return getFile(parentPath, nextSubPath);
     }
-    
+
 }

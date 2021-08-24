@@ -35,7 +35,7 @@ public interface FsResourceMapper {
      * @return Resource or null if not exists
      */
     Resource getResource(ResourceResolver resolver, String resourcePath);
-    
+
     /**
      * Get children of resource.
      * @param resolver Resource resolver.
@@ -43,5 +43,5 @@ public interface FsResourceMapper {
      * @return Child resources or null if no children exist
      */
     Iterator<Resource> getChildren(ResourceResolver resolver, Resource parent);
-    
+
 }

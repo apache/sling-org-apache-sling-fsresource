@@ -36,7 +36,7 @@ import org.junit.Test;
  * This is copied from org.apache.sling.api.wrappers.impl.ObjectConverterTest
  */
 public class ObjectConverterTest {
-    
+
     private static final String STRING_1 = "item1";
     private static final String STRING_2 = "item2";
     private static final boolean BOOLEAN_1 = true;
@@ -85,24 +85,24 @@ public class ObjectConverterTest {
         Convert.from(CALENDAR_1, CALENDAR_2).to(calendarToString(CALENDAR_1), calendarToString(CALENDAR_2)).test();
         Convert.from(DATE_1, DATE_2).to(calendarToString(toCalendar(DATE_1)), calendarToString(toCalendar(DATE_2))).test();
     }
-    
+
     @Test
     public void testToBoolean() {
         Convert.fromPrimitive(BOOLEAN_1, BOOLEAN_2).to(BOOLEAN_1, BOOLEAN_2).test();
         Convert.from(BOOLEAN_1, BOOLEAN_2).to(BOOLEAN_1, BOOLEAN_2).test();
         Convert.from(Boolean.toString(BOOLEAN_1), Boolean.toString(BOOLEAN_2)).to(BOOLEAN_1, BOOLEAN_2).test();
-        
+
         // test other types that should not be converted
         Convert.<Integer,Boolean>from(INT_1, INT_2).toNull(Boolean.class).test();
         Convert.<Date,Boolean>from(DATE_1, DATE_2).toNull(Boolean.class).test();
     }
-    
+
     @Test
     public void testToByte() {
         Convert.fromPrimitive(BYTE_1, BYTE_2).to(BYTE_1, BYTE_2).test();
         Convert.from(BYTE_1, BYTE_2).to(BYTE_1, BYTE_2).test();
         Convert.from(Byte.toString(BYTE_1), Byte.toString(BYTE_2)).to(BYTE_1, BYTE_2).test();
-        
+
         // test conversion from other number types
         Convert.from(INT_1, INT_2).to((byte)INT_1, (byte)INT_2).test();
         Convert.fromPrimitive(INT_1, INT_2).to((byte)INT_1, (byte)INT_2).test();
@@ -110,13 +110,13 @@ public class ObjectConverterTest {
         // test other types that should not be converted
         Convert.<Date,Byte>from(DATE_1, DATE_2).toNull(Byte.class).test();
     }
-    
+
     @Test
     public void testToShort() {
         Convert.fromPrimitive(SHORT_1, SHORT_2).to(SHORT_1, SHORT_2).test();
         Convert.from(SHORT_1, SHORT_2).to(SHORT_1, SHORT_2).test();
         Convert.from(Short.toString(SHORT_1), Short.toString(SHORT_2)).to(SHORT_1, SHORT_2).test();
-        
+
         // test conversion from other number types
         Convert.from(INT_1, INT_2).to((short)INT_1, (short)INT_2).test();
         Convert.fromPrimitive(INT_1, INT_2).to((short)INT_1, (short)INT_2).test();
@@ -124,13 +124,13 @@ public class ObjectConverterTest {
         // test other types that should not be converted
         Convert.<Date,Short>from(DATE_1, DATE_2).toNull(Short.class).test();
     }
-    
+
     @Test
     public void testToInteger() {
         Convert.fromPrimitive(INT_1, INT_2).to(INT_1, INT_2).test();
         Convert.from(INT_1, INT_2).to(INT_1, INT_2).test();
         Convert.from(Integer.toString(INT_1), Integer.toString(INT_2)).to(INT_1, INT_2).test();
-        
+
         // test conversion from other number types
         Convert.from(SHORT_1, SHORT_2).to((int)SHORT_1, (int)SHORT_2).test();
         Convert.fromPrimitive(SHORT_1, SHORT_2).to((int)SHORT_1, (int)SHORT_2).test();
@@ -138,13 +138,13 @@ public class ObjectConverterTest {
         // test other types that should not be converted
         Convert.<Date,Integer>from(DATE_1, DATE_2).toNull(Integer.class).test();
     }
-    
+
     @Test
     public void testToLong() {
         Convert.fromPrimitive(LONG_1, LONG_2).to(LONG_1, LONG_2).test();
         Convert.from(LONG_1, LONG_2).to(LONG_1, LONG_2).test();
         Convert.from(Long.toString(LONG_1), Long.toString(LONG_2)).to(LONG_1, LONG_2).test();
-        
+
         // test conversion from other number types
         Convert.from(SHORT_1, SHORT_2).to((long)SHORT_1, (long)SHORT_2).test();
         Convert.fromPrimitive(SHORT_1, SHORT_2).to((long)SHORT_1, (long)SHORT_2).test();
@@ -152,13 +152,13 @@ public class ObjectConverterTest {
         // test other types that should not be converted
         Convert.<Date,Long>from(DATE_1, DATE_2).toNull(Long.class).test();
     }
-    
+
     @Test
     public void testToFloat() {
         Convert.fromPrimitive(FLOAT_1, FLOAT_2).to(FLOAT_1, FLOAT_2).test();
         Convert.from(FLOAT_1, FLOAT_2).to(FLOAT_1, FLOAT_2).test();
         Convert.from(Float.toString(FLOAT_1), Float.toString(FLOAT_2)).to(FLOAT_1, FLOAT_2).test();
-        
+
         // test conversion from other number types
         Convert.from(SHORT_1, SHORT_2).to((float)SHORT_1, (float)SHORT_2).test();
         Convert.fromPrimitive(SHORT_1, SHORT_2).to((float)SHORT_1, (float)SHORT_2).test();
@@ -166,13 +166,13 @@ public class ObjectConverterTest {
         // test other types that should not be converted
         Convert.<Date,Float>from(DATE_1, DATE_2).toNull(Float.class).test();
     }
-    
+
     @Test
     public void testToDouble() {
         Convert.fromPrimitive(DOUBLE_1, DOUBLE_2).to(DOUBLE_1, DOUBLE_2).test();
         Convert.from(DOUBLE_1, DOUBLE_2).to(DOUBLE_1, DOUBLE_2).test();
         Convert.from(Double.toString(DOUBLE_1), Double.toString(DOUBLE_2)).to(DOUBLE_1, DOUBLE_2).test();
-        
+
         // test conversion from other number types
         Convert.from(SHORT_1, SHORT_2).to((double)SHORT_1, (double)SHORT_2).test();
         Convert.fromPrimitive(SHORT_1, SHORT_2).to((double)SHORT_1, (double)SHORT_2).test();
@@ -180,12 +180,12 @@ public class ObjectConverterTest {
         // test other types that should not be converted
         Convert.<Date,Double>from(DATE_1, DATE_2).toNull(Double.class).test();
     }
-    
+
     @Test
     public void testToBigDecimal() {
         Convert.from(BIGDECIMAL_1, BIGDECIMAL_2).to(BIGDECIMAL_1, BIGDECIMAL_2).test();
         Convert.from(BIGDECIMAL_1.toString(), BIGDECIMAL_2.toString()).to(BIGDECIMAL_1, BIGDECIMAL_2).test();
-        
+
         // test conversion from other number types
         Convert.from(LONG_1, LONG_2).to(BigDecimal.valueOf(LONG_1), BigDecimal.valueOf(LONG_2)).test();
         Convert.fromPrimitive(LONG_1, LONG_2).to(BigDecimal.valueOf(LONG_1), BigDecimal.valueOf(LONG_2)).test();
@@ -195,12 +195,12 @@ public class ObjectConverterTest {
         // test other types that should not be converted
         Convert.<Date,BigDecimal>from(DATE_1, DATE_2).toNull(BigDecimal.class).test();
     }
-    
+
     @Test
     public void testToCalendar() {
         Convert.from(CALENDAR_1, CALENDAR_2).to(CALENDAR_1, CALENDAR_2).test();
         Convert.from(DateUtils.calendarToString(CALENDAR_1), DateUtils.calendarToString(CALENDAR_2)).to(CALENDAR_1, CALENDAR_2).test();
-        
+
         // test conversion from other date types
         Convert.from(DATE_1, DATE_2).to(toCalendar(DATE_1), toCalendar(DATE_2)).test();
 
@@ -208,12 +208,12 @@ public class ObjectConverterTest {
         Convert.<String,Calendar>from(STRING_1, STRING_2).toNull(Calendar.class).test();
         Convert.<Boolean,Calendar>from(BOOLEAN_1, BOOLEAN_2).toNull(Calendar.class).test();
     }
-    
+
     @Test
     public void testToDate() {
         Convert.from(DATE_1, DATE_2).to(DATE_1, DATE_2).test();
         Convert.from(DateUtils.dateToString(DATE_1), DateUtils.dateToString(DATE_2)).to(DATE_1, DATE_2).test();
-        
+
         // test conversion from other date types
         Convert.from(CALENDAR_1, CALENDAR_2).to(toDate(CALENDAR_1), toDate(CALENDAR_2)).test();
 
@@ -221,7 +221,7 @@ public class ObjectConverterTest {
         Convert.<String,Date>from(STRING_1, STRING_2).toNull(Date.class).test();
         Convert.<Boolean,Date>from(BOOLEAN_1, BOOLEAN_2).toNull(Date.class).test();
     }
-    
+
     @Test
     public void testPrimitiveByteArray() {
         byte[] array = new byte[] { 0x01, 0x02, 0x03 };
@@ -229,5 +229,5 @@ public class ObjectConverterTest {
         assertArrayEquals(new byte[0], ObjectConverter.convert(new byte[0], byte[].class));
         assertNull(ObjectConverter.convert(null, byte[].class));
     }
-    
+
 }

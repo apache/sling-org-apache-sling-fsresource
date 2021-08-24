@@ -125,12 +125,12 @@ public class JcrXmlContentTest {
     public void testContent_Datatypes() {
         Resource underTest = fsroot.getChild("folder3/content/jcr:content");
         ValueMap props = underTest.getValueMap();
-        
+
         assertEquals("en", props.get("jcr:title", String.class));
         assertEquals(true, props.get("includeAside", false));
         assertEquals((Long)1234567890123L, props.get("longProp", Long.class));
-        assertEquals((Double)1.2345d, props.get("decimalProp", Double.class), 0.00001d);
-        
+        assertEquals(1.2345d, props.get("decimalProp", Double.class), 0.00001d);
+
         assertArrayEquals(new String[] { "aa", "bb", "cc" }, props.get("stringPropMulti", String[].class));
         assertArrayEquals(new Long[] { 1234567890123L, 55L }, props.get("longPropMulti", Long[].class));
     }
@@ -156,7 +156,7 @@ public class JcrXmlContentTest {
         Resource folder3 = fsroot.getChild("folder3");
         List<Resource> children = Lists.newArrayList(folder3.listChildren());
         Collections.sort(children, new ResourcePathComparator());
-        
+
         assertEquals(2, children.size());
         Resource child1 = children.get(0);
         assertEquals("content", child1.getName());
