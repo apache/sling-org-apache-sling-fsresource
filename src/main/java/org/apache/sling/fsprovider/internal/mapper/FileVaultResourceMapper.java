@@ -154,17 +154,19 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
      * @return Workspace filter or null if none found.
      */
     private WorkspaceFilter getWorkspaceFilter() {
-        if (filterXmlFile != null && filterXmlFile.exists()) {
-            try {
-                DefaultWorkspaceFilter workspaceFilter = new DefaultWorkspaceFilter();
-                workspaceFilter.load(filterXmlFile);
-                return workspaceFilter;
-            } catch (IOException | ConfigurationException ex) {
-                log.error("Unable to parse workspace filter: " + filterXmlFile.getPath(), ex);
+        if (filterXmlFile != null) {
+            if (filterXmlFile.exists()) {
+                try {
+                    DefaultWorkspaceFilter workspaceFilter = new DefaultWorkspaceFilter();
+                    workspaceFilter.load(filterXmlFile);
+                    return workspaceFilter;
+                } catch (IOException | ConfigurationException ex) {
+                    log.error("Unable to parse workspace filter: " + filterXmlFile.getPath(), ex);
+                }
             }
-        }
-        else {
-            log.debug("Workspace filter not found: " + filterXmlFile.getPath());
+            else {
+                log.debug("Workspace filter not found: {}", filterXmlFile.getPath());
+            }
         }
         return null;
     }
