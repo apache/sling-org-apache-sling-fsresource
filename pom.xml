@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>org.apache.sling.fsresource</artifactId>
-    <version>2.2.1-SNAPSHOT</version>
+    <version>2.2.0</version>
 
     <name>Apache Sling File System Resource Provider</name>
     <description>
@@ -38,11 +38,11 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-fsresource.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-fsresource.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-fsresource.git</url>
-        <tag>HEAD</tag>
+        <tag>org.apache.sling.fsresource-2.2.0</tag>
     </scm>
 
     <properties>
-        <project.build.outputTimestamp>2021-08-27T14:54:28Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2021-08-27T14:53:53Z</project.build.outputTimestamp>
     </properties>
 
     <build>
