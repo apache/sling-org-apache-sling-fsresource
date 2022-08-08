@@ -58,8 +58,9 @@ import org.slf4j.LoggerFactory;
  * a Sling Resource.
  */
 @Adaptable(adaptableClass=Resource.class, adapters={
-    @Adapter({File.class, URL.class}),
-    @Adapter(condition="If the resource is an FsResource and is a readable file.", value=InputStream.class)
+    @Adapter({File.class, URL.class, ValueMap.class}),
+    @Adapter(value=InputStream.class, condition="If the resource is an FsResource and is a readable file."),
+    @Adapter(value=Node.class, condition="If the resource is an FsResource and is providing content in JSON or FileVault XML format.")
 })
 public final class FileResource extends AbstractResource {
 
