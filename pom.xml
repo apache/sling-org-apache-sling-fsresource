@@ -50,17 +50,13 @@
             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>sling-maven-plugin</artifactId>
+                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <id>generate-adapter-metadata</id>
-                        <phase>process-classes</phase>
                         <goals>
                             <goal>generate-adapter-metadata</goal>
                         </goals>
-                        <configuration>
-                            <!-- relying on https://issues.apache.org/jira/browse/MNG-5001 until https://issues.apache.org/jira/browse/SLING-10022 is released -->
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
