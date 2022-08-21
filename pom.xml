@@ -50,10 +50,10 @@
             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>sling-maven-plugin</artifactId>
+                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <id>generate-adapter-metadata</id>
-                        <phase>process-classes</phase>
                         <goals>
                             <goal>generate-adapter-metadata</goal>
                         </goals>
