@@ -43,10 +43,12 @@ import org.slf4j.LoggerFactory;
  * The <code>FsResource</code> represents a file system file or folder as
  * a Sling Resource.
  */
-@Adaptable(adaptableClass=Resource.class, adapters={
-    @Adapter({File.class, URL.class}),
-    @Adapter(condition="If the resource is an FsResource and is a readable file.", value=InputStream.class)
-})
+@Adaptable(
+        adaptableClass = Resource.class,
+        adapters = {
+            @Adapter({File.class, URL.class}),
+            @Adapter(condition = "If the resource is an FsResource and is a readable file.", value = InputStream.class)
+        })
 public class FsResource extends AbstractResource {
 
     /**
@@ -110,7 +112,7 @@ public class FsResource extends AbstractResource {
             metaData.setContentLength(file.length());
             metaData.setModificationTime(file.lastModified());
             metaData.setResolutionPath(resourcePath);
-            if ( this.file.isDirectory() ) {
+            if (this.file.isDirectory()) {
                 metaData.put(FsResourceProvider.RESOURCE_METADATA_FILE_DIRECTORY, Boolean.TRUE);
             }
         }
@@ -139,9 +141,7 @@ public class FsResource extends AbstractResource {
      */
     public String getResourceType() {
         if (resourceType == null) {
-            resourceType = file.isFile()
-                    ? RESOURCE_TYPE_FILE
-                            : RESOURCE_TYPE_FOLDER;
+            resourceType = file.isFile() ? RESOURCE_TYPE_FILE : RESOURCE_TYPE_FOLDER;
         }
 
         return resourceType;
@@ -166,15 +166,12 @@ public class FsResource extends AbstractResource {
                 try {
                     return (AdapterType) new FileInputStream(file);
                 } catch (IOException ioe) {
-                    getLog().info(
-                            "adaptTo: Cannot open a stream on the file " + file,
-                            ioe);
+                    getLog().info("adaptTo: Cannot open a stream on the file " + file, ioe);
                 }
 
             } else {
 
                 getLog().debug("adaptTo: File {} is not a readable file", file);
-
             }
 
         } else if (type == URL.class) {
@@ -182,9 +179,7 @@ public class FsResource extends AbstractResource {
             try {
                 return (AdapterType) file.toURI().toURL();
             } catch (MalformedURLException mue) {
-                getLog().info(
-                        "adaptTo: Cannot convert the file path " + file
-                        + " to an URL", mue);
+                getLog().info("adaptTo: Cannot convert the file path " + file + " to an URL", mue);
             }
 
         } else if (type == ValueMap.class) {
@@ -192,7 +187,7 @@ public class FsResource extends AbstractResource {
             // this resource simulates nt:file/nt:folder behavior by returning it as resource type
             // we should simulate the corresponding JCR properties in a value map as well
             if (file.exists() && file.canRead()) {
-                Map<String,Object> props = new HashMap<String, Object>();
+                Map<String, Object> props = new HashMap<String, Object>();
                 props.put("jcr:primaryType", getResourceType());
                 props.put("jcr:createdBy", "system");
                 Calendar lastModifed = Calendar.getInstance();
@@ -200,7 +195,6 @@ public class FsResource extends AbstractResource {
                 props.put("jcr:created", lastModifed);
                 return (AdapterType) new ValueMapDecorator(props);
             }
-
         }
 
         return super.adaptTo(type);
