@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.fsprovider.internal;
+package org.apache.sling.simplefsprovider.internal;
 
 import java.io.File;
 import java.util.Collections;
@@ -40,8 +40,8 @@ public class FileMonitor extends TimerTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Timer timer = new Timer();
-    private boolean stop = false;
-    private boolean stopped = true;
+    private volatile boolean stop = false;
+    private volatile boolean stopped = true;
 
     private final Monitorable root;
 
@@ -50,11 +50,14 @@ public class FileMonitor extends TimerTask {
     /**
      * Creates a new instance of this class.
      * @param provider The resource provider.
+     * @param resourcePath The resource path.
+     * @param homeDir The home directory to monitor.
      * @param interval The interval between executions of the task, in milliseconds.
      */
-    public FileMonitor(final FsResourceProvider provider, final long interval) {
+    public FileMonitor(
+            final FsResourceProvider provider, final String resourcePath, final File homeDir, final long interval) {
         this.provider = provider;
-        this.root = new Monitorable(this.provider.getProviderRoot(), this.provider.getRootFile());
+        this.root = new Monitorable(resourcePath, homeDir);
         createStatus(this.root);
         logger.debug("Starting file monitor for {} with an interval of {}ms", this.root.file, interval);
         timer.schedule(this, 0, interval);
@@ -169,8 +172,8 @@ public class FileMonitor extends TimerTask {
                                     }
                                 }
                                 if (children[i] == null) {
-                                    children[i] =
-                                            new Monitorable(monitorable.path + '/' + files[i].getName(), files[i]);
+                                    children[i] = new Monitorable(
+                                            monitorable.resourcePath + '/' + files[i].getName(), files[i]);
                                     children[i].status = NonExistingStatus.SINGLETON;
                                     check(children[i], reporter);
                                 }
@@ -190,13 +193,11 @@ public class FileMonitor extends TimerTask {
      */
     private void sendEvents(
             final Monitorable monitorable, final ChangeType changeType, final ObservationReporter reporter) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Detected change for resource {} : {}", monitorable.path, changeType);
-        }
+        logger.debug("Detected change for resource {} : {}", monitorable.resourcePath, changeType);
 
         for (final ObserverConfiguration config : reporter.getObserverConfigurations()) {
-            if (config.matches(monitorable.path)) {
-                final ResourceChange change = new ResourceChange(changeType, monitorable.path, false);
+            if (config.matches(monitorable.resourcePath)) {
+                final ResourceChange change = new ResourceChange(changeType, monitorable.resourcePath, false);
                 reporter.reportChanges(config, Collections.singleton(change), false);
             }
         }
@@ -211,18 +212,18 @@ public class FileMonitor extends TimerTask {
         } else if (monitorable.file.isFile()) {
             monitorable.status = new FileStatus(monitorable.file);
         } else {
-            monitorable.status = new DirStatus(monitorable.file, monitorable.path);
+            monitorable.status = new DirStatus(monitorable.file, monitorable.resourcePath);
         }
     }
 
     /** The monitorable to hold the resource path, the file and the status. */
     private static final class Monitorable {
-        public final String path;
+        public final String resourcePath;
         public final File file;
         public Object status;
 
-        public Monitorable(final String path, final File file) {
-            this.path = path;
+        public Monitorable(final String resourcePath, final File file) {
+            this.resourcePath = resourcePath;
             this.file = file;
         }
     }

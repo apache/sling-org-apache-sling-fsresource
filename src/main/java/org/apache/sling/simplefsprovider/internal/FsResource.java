@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.sling.fsprovider.internal;
+package org.apache.sling.simplefsprovider.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +50,8 @@ import org.slf4j.LoggerFactory;
         })
 public class FsResource extends AbstractResource {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FsResource.class);
+
     /**
      * The resource type for file system files mapped into the resource tree by
      * the {@link FsResourceProvider} (value is "nt:file").
@@ -63,9 +64,6 @@ public class FsResource extends AbstractResource {
      */
     static final String RESOURCE_TYPE_FOLDER = "nt:folder";
 
-    // default log, assigned on demand
-    private Logger log;
-
     // the owning resource resolver
     private final ResourceResolver resolver;
 
@@ -75,11 +73,10 @@ public class FsResource extends AbstractResource {
     // the file wrapped by this instance
     private final File file;
 
-    // the resource type, assigned on demand
-    private String resourceType;
-
     // the resource metadata, assigned on demand
-    private ResourceMetadata metaData;
+    private final ResourceMetadata metadata;
+
+    private ValueMap valueMap;
 
     /**
      * Creates an instance of this Filesystem resource.
@@ -88,124 +85,91 @@ public class FsResource extends AbstractResource {
      * @param resourcePath The resource path in the resource tree
      * @param file The wrapped file
      */
-    FsResource(ResourceResolver resolver, String resourcePath, File file) {
+    FsResource(final ResourceResolver resolver, final String resourcePath, final File file) {
         this.resolver = resolver;
         this.resourcePath = resourcePath;
         this.file = file;
+        this.metadata = new ResourceMetadata();
+        this.metadata.setModificationTime(file.lastModified());
+        this.metadata.setResolutionPath(resourcePath);
+        if (file.isFile()) {
+            this.metadata.setContentLength(file.length());
+        }
     }
 
-    /**
-     * Returns the path of this resource
-     */
+    @Override
     public String getPath() {
         return resourcePath;
     }
 
-    /**
-     * Returns the resource meta data for this resource containing the file
-     * length, last modification time and the resource path (same as
-     * {@link #getPath()}).
-     */
-    public ResourceMetadata getResourceMetadata() {
-        if (metaData == null) {
-            metaData = new ResourceMetadata();
-            metaData.setContentLength(file.length());
-            metaData.setModificationTime(file.lastModified());
-            metaData.setResolutionPath(resourcePath);
-            if (this.file.isDirectory()) {
-                metaData.put(FsResourceProvider.RESOURCE_METADATA_FILE_DIRECTORY, Boolean.TRUE);
-            }
-        }
-        return metaData;
+    @Override
+    public String getResourceType() {
+        return this.file.isDirectory() ? RESOURCE_TYPE_FOLDER : RESOURCE_TYPE_FILE;
     }
 
-    /**
-     * Returns the resource resolver which cause this resource object to be
-     * created.
-     */
+    @Override
+    public String getResourceSuperType() {
+        return null;
+    }
+
+    @Override
+    public ResourceMetadata getResourceMetadata() {
+        return metadata;
+    }
+
+    @Override
     public ResourceResolver getResourceResolver() {
         return resolver;
     }
 
     /**
-     * Returns <code>null</code>}
-     */
-    public String getResourceSuperType() {
-        return null;
-    }
-
-    /**
-     * Returns {@link #RESOURCE_TYPE_FILE} if this resource
-     * wraps a file. Otherwise {@link #RESOURCE_TYPE_FOLDER}
-     * is returned.
-     */
-    public String getResourceType() {
-        if (resourceType == null) {
-            resourceType = file.isFile() ? RESOURCE_TYPE_FILE : RESOURCE_TYPE_FOLDER;
-        }
-
-        return resourceType;
-    }
-
-    /**
      * Returns an adapter for this resource. This implementation supports
-     * <code>File</code>, <code>InputStream</code> and <code>URL</code>
-     * plus those supported by the adapter manager.
+     * <code>File</code>, <code>InputStream</code> and <code>URL</code> plus those
+     * supported by the adapter manager.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
+    public <AdapterType> AdapterType adaptTo(final Class<AdapterType> type) {
         if (type == File.class) {
-
-            return (AdapterType) file;
-
+            return type.cast(this.file);
         } else if (type == InputStream.class) {
-
-            if (!file.isDirectory() && file.canRead()) {
-
+            if (file.isFile() && file.canRead()) {
                 try {
-                    return (AdapterType) new FileInputStream(file);
-                } catch (IOException ioe) {
-                    getLog().info("adaptTo: Cannot open a stream on the file " + file, ioe);
+                    return type.cast(new FileInputStream(file));
+                } catch (final IOException ioe) {
+                    LOGGER.info("adaptTo: Cannot open a stream on the file " + file, ioe);
                 }
-
             } else {
-
-                getLog().debug("adaptTo: File {} is not a readable file", file);
+                LOGGER.debug("adaptTo: File {} is not a readable file", file);
             }
-
         } else if (type == URL.class) {
-
             try {
-                return (AdapterType) file.toURI().toURL();
+                return type.cast(file.toURI().toURL());
             } catch (MalformedURLException mue) {
-                getLog().info("adaptTo: Cannot convert the file path " + file + " to an URL", mue);
+                LOGGER.info("adaptTo: Cannot convert the file path " + file + " to an URL", mue);
             }
-
         } else if (type == ValueMap.class) {
-
-            // this resource simulates nt:file/nt:folder behavior by returning it as resource type
-            // we should simulate the corresponding JCR properties in a value map as well
-            if (file.exists() && file.canRead()) {
-                Map<String, Object> props = new HashMap<String, Object>();
-                props.put("jcr:primaryType", getResourceType());
-                props.put("jcr:createdBy", "system");
-                Calendar lastModifed = Calendar.getInstance();
-                lastModifed.setTimeInMillis(file.lastModified());
-                props.put("jcr:created", lastModifed);
-                return (AdapterType) new ValueMapDecorator(props);
-            }
+            return type.cast(getValueMap());
         }
 
         return super.adaptTo(type);
     }
 
-    // ---------- internal
-
-    private Logger getLog() {
-        if (log == null) {
-            log = LoggerFactory.getLogger(getClass());
+    @Override
+    public ValueMap getValueMap() {
+        if (this.valueMap == null) {
+            final Map<String, Object> props = new HashMap<>();
+            props.put("sling:resourceType", getResourceType());
+            props.put(ResourceMetadata.MODIFICATION_TIME, this.file.lastModified());
+            if (this.metadata.getContentLength() > 0) {
+                props.put(ResourceMetadata.CONTENT_LENGTH, this.metadata.getContentLength());
+            }
+            this.valueMap = new ValueMapDecorator(props);
         }
-        return log;
+        return this.valueMap;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + ", path: " + resourcePath + ", file: " + file;
     }
 }
