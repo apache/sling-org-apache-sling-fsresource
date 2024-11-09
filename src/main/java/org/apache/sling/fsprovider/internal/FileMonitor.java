@@ -26,7 +26,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jackrabbit.vault.util.PlatformNameFormat;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
 import org.apache.sling.fsprovider.internal.mapper.ContentFile;
@@ -52,7 +51,6 @@ public final class FileMonitor extends TimerTask {
     private final Monitorable root;
 
     private final FsResourceProvider provider;
-    private final FsMode fsMode;
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
     private final FileStatCache fileStatCache;
@@ -61,24 +59,21 @@ public final class FileMonitor extends TimerTask {
      * Creates a new instance of this class.
      * @param provider The resource provider.
      * @param interval The interval between executions of the task, in milliseconds.
-     * @param fsMode FS mode
      * @param contentFileExtensions Content file extensions
      * @param contentFileCache Content file cache
      * @param fileStatCache Cache reducing file-stat lookups (file exists or not, directory vs file).
      */
-    public FileMonitor(final FsResourceProvider provider, final long interval, FsMode fsMode,
-                       final ContentFileExtensions contentFileExtensions, final ContentFileCache contentFileCache,
+    public FileMonitor(final FsResourceProvider provider, 
+                       final File rootFile,
+                       final long interval,
+                       final ContentFileExtensions contentFileExtensions,
+                       final ContentFileCache contentFileCache,
                        final FileStatCache fileStatCache) {
         this.provider = provider;
-        this.fsMode = fsMode;
         this.contentFileExtensions = contentFileExtensions;
         this.contentFileCache = contentFileCache;
         this.fileStatCache = fileStatCache;
 
-        File rootFile = this.provider.getRootFile();
-        if (fsMode == FsMode.FILEVAULT_XML) {
-            rootFile = new File(this.provider.getRootFile(), "." + PlatformNameFormat.getPlatformPath(this.provider.getProviderRoot()));
-        }
         this.root = new Monitorable(this.provider.getProviderRoot(), rootFile, null);
 
         createStatus(this.root, contentFileExtensions, contentFileCache);
@@ -171,7 +166,9 @@ public final class FileMonitor extends TimerTask {
             // check if the file has been removed
             if ( !monitorable.file.exists() ) {
                 // removed file and update status
-                contentFileCache.remove(transformPath(monitorable.path));
+                if (contentFileCache != null) {
+                    contentFileCache.remove(this.provider.transformPath(monitorable.path));
+                }
                 monitorable.status = NonExistingStatus.SINGLETON;
                 fileStatCache.clear();
                 sendEvents(monitorable, ChangeType.REMOVED, reporter);
@@ -182,7 +179,9 @@ public final class FileMonitor extends TimerTask {
                 if ( fs.lastModified < monitorable.file.lastModified() ) {
                     fs.lastModified = monitorable.file.lastModified();
                     // changed
-                    contentFileCache.remove(transformPath(monitorable.path));
+                    if (contentFileCache != null) {
+                        contentFileCache.remove(this.provider.transformPath(monitorable.path));
+                    }
                     sendEvents(monitorable, ChangeType.CHANGED, reporter);
                     changed = true;
                 }
@@ -232,17 +231,16 @@ public final class FileMonitor extends TimerTask {
      * Send the event async via the event admin.
      */
     private void sendEvents(final Monitorable monitorable, final ChangeType changeType, final ObservationReporter reporter) {
-        if (log.isDebugEnabled()) {
-            log.debug("Detected change for resource {} : {}", transformPath(monitorable.path), changeType);
-        }
+        final String path = this.provider.transformPath(monitorable.path);
+        log.debug("Detected change for resource {} : {}", path, changeType);
 
         List<ResourceChange> changes = null;
         for (final ObserverConfiguration config : reporter.getObserverConfigurations()) {
-            if (config.matches(transformPath(monitorable.path))) {
+            if (config.matches(path)) {
                 if (changes == null) {
                     changes = collectResourceChanges(monitorable, changeType);
                 }
-                if (log.isTraceEnabled()) {
+                if (log.isDebugEnabled()) {
                     for (ResourceChange change : changes) {
                         log.debug("Send change for resource {}: {} to {}", change.getPath(), change.getType(), config);
                     }
@@ -254,20 +252,6 @@ public final class FileMonitor extends TimerTask {
         }
     }
 
-    /**
-     * Transform path for resource event.
-     * @param path Path
-     * @return Transformed path
-     */
-    private String transformPath(String path) {
-        if (fsMode == FsMode.FILEVAULT_XML) {
-            return PlatformNameFormat.getRepositoryPath(path);
-        }
-        else {
-            return path;
-        }
-    }
-
     private List<ResourceChange> collectResourceChanges(final Monitorable monitorable, final ChangeType changeType) {
         List<ResourceChange> changes = new ArrayList<>();
         if (monitorable.status instanceof ContentFileStatus) {
@@ -276,18 +260,19 @@ public final class FileMonitor extends TimerTask {
                 ContentElement content = contentFile.getContent();
                 // we cannot easily report the diff of resource changes between two content files
                 // so we simulate a removal of the toplevel node and then add all nodes contained in the current content file again.
-                changes.add(buildContentResourceChange(ChangeType.REMOVED,  transformPath(monitorable.path)));
-                addContentResourceChanges(changes, ChangeType.ADDED, content, transformPath(monitorable.path));
+                changes.add(buildContentResourceChange(ChangeType.REMOVED,  this.provider.transformPath(monitorable.path)));
+                addContentResourceChanges(changes, ChangeType.ADDED, content, this.provider.transformPath(monitorable.path));
             }
             else {
-                addContentResourceChanges(changes, changeType, contentFile.getContent(), transformPath(monitorable.path));
+                addContentResourceChanges(changes, changeType, contentFile.getContent(), this.provider.transformPath(monitorable.path));
             }
         }
         else {
-            changes.add(buildContentResourceChange(changeType, transformPath(monitorable.path)));
+            changes.add(buildContentResourceChange(changeType, this.provider.transformPath(monitorable.path)));
         }
         return changes;
     }
+
     private void addContentResourceChanges(final List<ResourceChange> changes, final ChangeType changeType,
             final ContentElement content, final String path) {
         changes.add(buildContentResourceChange(changeType,  path));
@@ -298,6 +283,7 @@ public final class FileMonitor extends TimerTask {
             }
         }
     }
+
     private ResourceChange buildContentResourceChange(final ChangeType changeType, final String path) {
         return new ResourceChange(changeType, path, false);
     }
@@ -309,11 +295,10 @@ public final class FileMonitor extends TimerTask {
         if ( !monitorable.file.exists() ) {
             monitorable.status = NonExistingStatus.SINGLETON;
         } else if ( monitorable.file.isFile() ) {
-            if (contentFileExtensions.matchesSuffix(monitorable.file)) {
+            if (contentFileExtensions != null && contentFileExtensions.matchesSuffix(monitorable.file)) {
                 monitorable.status = new ContentFileStatus(monitorable.file,
                         new ContentFile(monitorable.file, monitorable.path, null, contentFileCache));
-            }
-            else {
+            } else {
                 monitorable.status = new FileStatus(monitorable.file);
             }
         } else {
@@ -326,12 +311,11 @@ public final class FileMonitor extends TimerTask {
         public final String path;
         public final File file;
         public Object status;
-        public Monitorable(final String path, final File file, String contentFileSuffix) {
+        public Monitorable(final String path, final File file, final String contentFileSuffix) {
             this.file = file;
             if (contentFileSuffix != null) {
                 this.path = StringUtils.substringBeforeLast(path, contentFileSuffix);
-            }
-            else {
+            } else {
                 this.path = path;
             }
         }
@@ -366,7 +350,7 @@ public final class FileMonitor extends TimerTask {
                 this.children = new Monitorable[files.length];
                 for (int i = 0; i < files.length; i++) {
                     this.children[i] = new Monitorable(path + '/' + files[i].getName(), files[i],
-                            contentFileExtensions.getSuffix(files[i]));
+                            contentFileExtensions == null ? null : contentFileExtensions.getSuffix(files[i]));
                     FileMonitor.createStatus(this.children[i], contentFileExtensions, contentFileCache);
                 }
             } else {

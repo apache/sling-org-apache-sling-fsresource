@@ -25,8 +25,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Matches file names for content file extensions.
  */
@@ -34,7 +32,7 @@ public final class ContentFileExtensions {
 
     private final List<String> contentFileSuffixes;
 
-    public ContentFileExtensions(List<String> contentFileSuffixes) {
+    public ContentFileExtensions(final List<String> contentFileSuffixes) {
         this.contentFileSuffixes = contentFileSuffixes;
     }
 
@@ -43,16 +41,15 @@ public final class ContentFileExtensions {
      * @param file File
      * @return Content file name suffix or null if not a context file.
      */
-    public String getSuffix(File file) {
+    public String getSuffix(final File file) {
         String fileName = "/" + file.getName();
         for (String suffix : contentFileSuffixes) {
-            if (StringUtils.equals(suffix, XML_SUFFIX)) {
-                if (StringUtils.endsWith(fileName, XML_SUFFIX) && !StringUtils.endsWith(fileName, JCR_XML_SUFFIX)) {
+            if (XML_SUFFIX.equals(suffix)) {
+                if (fileName.endsWith(XML_SUFFIX) && !fileName.endsWith(JCR_XML_SUFFIX)) {
                     return suffix;
                 }
-            }
-            else {
-                if (StringUtils.endsWith(fileName, suffix)) {
+            } else {
+                if (fileName.endsWith(suffix)) {
                     return suffix;
                 }
             }
@@ -65,7 +62,7 @@ public final class ContentFileExtensions {
      * @param file File
      * @return true if content file
      */
-    public boolean matchesSuffix(File file) {
+    public boolean matchesSuffix(final File file) {
         return getSuffix(file) != null;
     }
 
@@ -75,12 +72,4 @@ public final class ContentFileExtensions {
     public Collection<String> getSuffixes() {
         return contentFileSuffixes;
     }
-
-    /**
-     * @return true if not suffixes are defined.
-     */
-    public boolean isEmpty() {
-        return contentFileSuffixes.isEmpty();
-    }
-
 }

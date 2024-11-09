@@ -1,3 +1,16 @@
 -includeresource: @org.apache.sling.contentparser.(api|json|xml|xml-jcr)-[0-9.]*.jar
 -exportcontents: !org.apache.sling.contentparser.*
 -noimportjava: true
+Import-Package: javax.jcr;resolution:=dynamic,\
+  javax.jcr.lock;resolution:=dynamic,\
+  javax.jcr.nodetype;resolution:=dynamic,\
+  javax.jcr.version;resolution:=dynamic,\
+  javax.json;resolution:=dynamic,\
+  javax.json.stream;resolution:=dynamic,\
+  javax.xml.parsers;resolution:=dynamic,\
+  org.apache.jackrabbit.util;resolution:=dynamic,\
+  org.apache.jackrabbit.vault.fs.api;resolution:=dynamic,\
+  org.apache.jackrabbit.vault.fs.config;resolution:=dynamic,\
+  org.apache.jackrabbit.vault.util;resolution:=dynamic,\
+  org.apache.sling.commons.osgi;resolution:=dynamic,\
+  *

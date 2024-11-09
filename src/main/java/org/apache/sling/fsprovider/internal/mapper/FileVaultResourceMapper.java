@@ -23,13 +23,16 @@ import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_S
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
@@ -39,38 +42,77 @@ import org.apache.jackrabbit.vault.util.PlatformNameFormat;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.fsprovider.internal.ContentFileExtensions;
 import org.apache.sling.fsprovider.internal.FileStatCache;
-import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentElement;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 import org.apache.sling.fsprovider.internal.parser.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class FileVaultResourceMapper implements FsResourceMapper {
+public final class FileVaultResourceMapper extends FileResourceMapper {
 
     private static final String DOT_CONTENT_XML_SUFFIX = "/" + DOT_CONTENT_XML;
     private static final String DOT_DIR = ".dir";
     private static final String DOT_DIR_SUFFIX = "/" + DOT_DIR;
 
-    private final File providerFile;
     private final File filterXmlFile;
-    private final ContentFileCache contentFileCache;
-    private FileStatCache fileStatCache;
     private final WorkspaceFilter workspaceFilter;
 
     private static final Logger log = LoggerFactory.getLogger(FileVaultResourceMapper.class);
 
-    public FileVaultResourceMapper(File providerFile, File filterXmlFile, ContentFileCache contentFileCache, FileStatCache fileStatCache) {
-        this.providerFile = providerFile;
+    public FileVaultResourceMapper(String providerRoot, File providerFile,
+                              ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
+                              FileStatCache fileStatCache,
+                              final boolean overlayParentResourceProvider, 
+                              final File filterXmlFile) {
+        super(providerRoot, providerFile, contentFileExtensions, contentFileCache, fileStatCache, overlayParentResourceProvider, false);
         this.filterXmlFile = filterXmlFile;
-        this.contentFileCache = contentFileCache;
-        this.fileStatCache = fileStatCache;
         this.workspaceFilter = getWorkspaceFilter();
     }
 
     @Override
-    public Resource getResource(final ResourceResolver resolver, final String resourcePath) {
+    public String transformPath(final String path) {
+        return PlatformNameFormat.getRepositoryPath(path);
+    }
+
+    @Override
+    protected Map.Entry<Resource, Boolean> resolveResource(final ResourceResolver resolver, final String path) {
+        final boolean askParentResourceProvider;
+        Resource rsrc = null;
+        // filevault: check if path matches, if not fallback to parent resource provider
+        if (this.pathMatches(path)) {
+            askParentResourceProvider = false;
+            rsrc = this.getResource(resolver, path);
+        } else {
+            askParentResourceProvider = true;
+        }
+        return new SimpleEntry<>(rsrc, askParentResourceProvider);
+    }
+
+    @Override
+    protected boolean resolveChildren(final ResourceResolver resolver, final Resource parent, final List<Iterator<? extends Resource>> allChildren) {
+        // filevault: always ask provider, it checks itself if children matches the filters
+        final boolean askParentResourceProvider = true;
+        final Iterator<Resource> children = this.getChildren(resolver, parent);
+        if (children != null) {
+            allChildren.add(children);
+        }
+        return askParentResourceProvider;
+    }
+
+    @Override
+    protected void addChildren(final List<Iterator<? extends Resource>> allChildren, final Iterator<Resource> children) {
+        // filevault: include all children from parent resource provider that do not match the filters
+        allChildren.add(IteratorUtils.filteredIterator(children, new Predicate<Resource>() {
+            @Override
+            public boolean evaluate(final Resource child) {
+                return !pathMatches(child.getPath());
+            }
+        }));
+    }
+
+    private Resource getResource(final ResourceResolver resolver, final String resourcePath) {
 
         // direct file
         File file = getFile(resourcePath);
@@ -92,9 +134,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterator<Resource> getChildren(final ResourceResolver resolver, final Resource parent) {
+    private Iterator<Resource> getChildren(final ResourceResolver resolver, final Resource parent) {
         String parentPath = parent.getPath();
 
         Set<String> childPaths = new LinkedHashSet<>();
@@ -140,10 +180,9 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
             return null;
         }
         else {
-            return IteratorUtils.transformedIterator(childPaths.iterator(), new Transformer() {
+            return IteratorUtils.transformedIterator(childPaths.iterator(), new Transformer<String, Resource>() {
                 @Override
-                public Object transform(Object input) {
-                    String path = (String)input;
+                public Resource transform(final String path) {
                     return getResource(resolver, path);
                 }
             });
@@ -176,7 +215,7 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
      * @param path Path
      * @return true if path matches
      */
-    public boolean pathMatches(String path) {
+    private boolean pathMatches(String path) {
         // ignore .dir folder
         if (StringUtils.endsWith(path, DOT_DIR_SUFFIX) || StringUtils.endsWith(path, DOT_CONTENT_XML_SUFFIX)) {
             return false;
@@ -237,5 +276,4 @@ public final class FileVaultResourceMapper implements FsResourceMapper {
         }
         return false;
     }
-
 }
