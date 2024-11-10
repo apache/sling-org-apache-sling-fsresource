@@ -68,7 +68,7 @@ import org.osgi.service.metatype.annotations.Option;
                    Constants.SERVICE_VENDOR + "=The Apache Software Foundation"
            })
 @Designate(ocd=FsResourceProvider.Config.class, factory=true)
-public final class FsResourceProvider extends ResourceProvider<Object> {
+public class FsResourceProvider extends ResourceProvider<Object> {
 
     /**
      * Resource metadata property set by {@link org.apache.sling.fsprovider.internal.mapper.FileResource}

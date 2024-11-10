@@ -47,7 +47,11 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.contentparser.api.ParserOptions;
+import org.apache.sling.contentparser.json.internal.JSONContentParser;
+import org.apache.sling.contentparser.xml.internal.XMLContentParser;
+import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
+import org.apache.sling.fsprovider.internal.parser.ContentFileParserUtil;
 import org.apache.sling.hamcrest.ResourceMatchers;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
@@ -79,6 +83,9 @@ public class JsonContentTest {
 
     @Before
     public void setUp() {
+        ContentFileParserUtil.JSON_PARSER = new JSONContentParser();
+        ContentFileParserUtil.XML_PARSER = new XMLContentParser();
+        ContentFileParserUtil.JCR_XML_PARSER = new JCRXMLContentParser();
         root = context.resourceResolver().getResource("/");
         fsroot = context.resourceResolver().getResource("/fs-test");
     }

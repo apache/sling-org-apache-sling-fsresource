@@ -31,12 +31,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.apache.sling.contentparser.json.internal.JSONContentParser;
+import org.apache.sling.contentparser.xml.internal.XMLContentParser;
+import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.apache.sling.fsprovider.internal.TestUtils.ResourceListener;
+import org.apache.sling.fsprovider.internal.parser.ContentFileParserUtil;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.apache.sling.testing.mock.sling.junit.SlingContextCallback;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -93,6 +98,13 @@ public class FileVaultFileMonitorTest {
             }
         })
         .build();
+
+    @Before
+    public void setUp() {
+        ContentFileParserUtil.JSON_PARSER = new JSONContentParser();
+        ContentFileParserUtil.XML_PARSER = new XMLContentParser();
+        ContentFileParserUtil.JCR_XML_PARSER = new JCRXMLContentParser();
+    }
 
     @Test
     public void testUpdateFile() throws Exception {

@@ -24,9 +24,20 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 
+import org.apache.sling.contentparser.json.internal.JSONContentParser;
+import org.apache.sling.contentparser.xml.internal.XMLContentParser;
+import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ContentFileParserUtilTest {
+
+    @Before
+    public void setUp() {
+        ContentFileParserUtil.JSON_PARSER = new JSONContentParser();
+        ContentFileParserUtil.XML_PARSER = new XMLContentParser();
+        ContentFileParserUtil.JCR_XML_PARSER = new JCRXMLContentParser();
+    }
 
     @Test
     public void testParseJson() {

@@ -33,25 +33,22 @@ import org.apache.sling.contentparser.api.ContentParser;
 import org.apache.sling.contentparser.api.ParserOptions;
 import org.apache.sling.contentparser.json.JSONParserFeature;
 import org.apache.sling.contentparser.json.JSONParserOptions;
-import org.apache.sling.contentparser.json.internal.JSONContentParser;
-import org.apache.sling.contentparser.xml.internal.XMLContentParser;
-import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Parses files that contains content fragments (e.g. JSON, JCR XML).
  */
-class ContentFileParserUtil {
+public class ContentFileParserUtil {
 
     private static final Logger log = LoggerFactory.getLogger(ContentFileParserUtil.class);
 
     private static final ParserOptions DEFAULT_PARSER_OPTIONS = new ParserOptions();
     private static final ParserOptions JSON_PARSER_OPTIONS = new JSONParserOptions()
             .withFeatures(JSONParserFeature.COMMENTS, JSONParserFeature.QUOTE_TICK);
-    private static final ContentParser JSON_PARSER = new JSONContentParser();
-    private static final ContentParser JCR_XML_PARSER = new JCRXMLContentParser();
-    private static final ContentParser XML_PARSER = new XMLContentParser();
+    public static volatile ContentParser JSON_PARSER;
+    public static volatile ContentParser JCR_XML_PARSER;
+    public static volatile ContentParser XML_PARSER;
 
     private ContentFileParserUtil() {
         // static methods only
