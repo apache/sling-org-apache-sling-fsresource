@@ -10,7 +10,4 @@ Import-Package: javax.jcr;resolution:=dynamic,\
   org.apache.sling.commons.osgi;resolution:=dynamic,\
   org.apache.sling.contentparser.api;resolution:=dynamic,\
   org.apache.sling.contentparser.json;resolution:=dynamic,\
-  org.apache.sling.contentparser.json.internal;resolution:=dynamic,\
-  org.apache.sling.contentparser.xml.internal;resolution:=dynamic,\
-  org.apache.sling.contentparser.xml.jcr.internal;resolution:=dynamic,\
   *
