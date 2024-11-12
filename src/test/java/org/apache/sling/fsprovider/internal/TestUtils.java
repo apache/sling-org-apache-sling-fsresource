@@ -40,14 +40,18 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.apache.sling.contentparser.api.ContentParser;
+import org.apache.sling.contentparser.json.internal.JSONContentParser;
+import org.apache.sling.contentparser.xml.internal.XMLContentParser;
+import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.apache.sling.fsprovider.internal.mapper.Escape;
+import org.apache.sling.fsprovider.internal.parser.ContentParserHolder;
 import org.apache.sling.hamcrest.ResourceMatchers;
 import org.apache.sling.testing.mock.osgi.MapUtil;
 import org.apache.sling.testing.mock.osgi.context.AbstractContextPlugin;
 import org.apache.sling.testing.mock.sling.context.SlingContextImpl;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("null")
 class TestUtils {
 
     public static class RegisterFsResourcePlugin extends AbstractContextPlugin<SlingContextImpl> {
@@ -57,13 +61,24 @@ class TestUtils {
         }
         @Override
         public void beforeSetUp(SlingContextImpl context) throws Exception {
+            context.registerInjectActivateService(new JSONContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "json");
+            context.registerInjectActivateService(new XMLContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "xml");
+            context.registerInjectActivateService(new JCRXMLContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "jcr-xml");
+            context.registerInjectActivateService(new ContentParserHolder());
+    
             Map<String,Object> config = new HashMap<>();
             config.put("provider.file", "src/test/resources/fs-test");
             config.put("provider.root", "/fs-test");
             config.put("provider.checkinterval", 0);
-            config.put("provider.fs.mode", FsMode.FILES_FOLDERS.name());
             config.putAll(props);
-            context.registerInjectActivateService(new FsResourceProvider(), config);
+            String mode = (String)config.get("provider.fs.mode");
+            if (mode == null || FsMode.FILES_FOLDERS.name().equals(mode)) {
+                context.registerInjectActivateService(new FsResourceProvider(), config);
+            } else if (FsMode.FILEVAULT_XML.name().equals(mode)) {
+                context.registerInjectActivateService(new FileVaultResourceProvider(), config);
+            } else {
+                context.registerInjectActivateService(new InitialContentResourceProvider(), config);
+            }
         }
     };
 

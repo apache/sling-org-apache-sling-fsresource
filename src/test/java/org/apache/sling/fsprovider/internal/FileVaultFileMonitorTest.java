@@ -31,11 +31,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.apache.sling.contentparser.api.ContentParser;
 import org.apache.sling.contentparser.json.internal.JSONContentParser;
 import org.apache.sling.contentparser.xml.internal.XMLContentParser;
 import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.apache.sling.fsprovider.internal.TestUtils.ResourceListener;
 import org.apache.sling.fsprovider.internal.parser.ContentFileParserUtil;
+import org.apache.sling.fsprovider.internal.parser.ContentParserHolder;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
@@ -70,19 +72,22 @@ public class FileVaultFileMonitorTest {
                 File sourceDir = new File("src/test/resources/vaultfs-test");
                 FileUtils.copyDirectory(sourceDir, tempDir);
 
+                context.registerInjectActivateService(new JSONContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "json");
+                context.registerInjectActivateService(new XMLContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "xml");
+                context.registerInjectActivateService(new JCRXMLContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "jcr-xml");
+                context.registerInjectActivateService(new ContentParserHolder());
+    
                 // mount temp. directory
-                context.registerInjectActivateService(new FsResourceProvider(),
+                context.registerInjectActivateService(new FileVaultResourceProvider(),
                         "provider.file", tempDir.getPath() + "/jcr_root",
                         "provider.filevault.filterxml.path", tempDir.getPath() + "/META-INF/vault/filter.xml",
                         "provider.root", "/content/dam/talk.png",
-                        "provider.checkinterval", CHECK_INTERVAL,
-                        "provider.fs.mode", FsMode.FILEVAULT_XML.name());
-                context.registerInjectActivateService(new FsResourceProvider(),
+                        "provider.checkinterval", CHECK_INTERVAL);
+                context.registerInjectActivateService(new FileVaultResourceProvider(),
                         "provider.file", tempDir.getPath() + "/jcr_root",
                         "provider.filevault.filterxml.path", tempDir.getPath() + "/META-INF/vault/filter.xml",
                         "provider.root", "/content/samples",
-                        "provider.checkinterval", CHECK_INTERVAL,
-                        "provider.fs.mode", FsMode.FILEVAULT_XML.name());
+                        "provider.checkinterval", CHECK_INTERVAL);
 
                 // register resource change listener
                 context.registerService(ResourceChangeListener.class, resourceListener,

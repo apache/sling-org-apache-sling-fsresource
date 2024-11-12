@@ -24,6 +24,10 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 
+import org.apache.sling.contentparser.json.internal.JSONContentParser;
+import org.apache.sling.contentparser.xml.internal.XMLContentParser;
+import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
+import org.junit.Before;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -38,6 +42,13 @@ public class ContentFileCacheTest {
     public static final int SMALL_CACHE = 1;
     @DataPoint
     public static final int HUGE_CACHE = 1000;
+
+    @Before
+    public void setUp() {
+        ContentFileParserUtil.JSON_PARSER = new JSONContentParser();
+        ContentFileParserUtil.XML_PARSER = new XMLContentParser();
+        ContentFileParserUtil.JCR_XML_PARSER = new JCRXMLContentParser();
+    }
 
     @Theory
     public void testCache(int cacheSize) {

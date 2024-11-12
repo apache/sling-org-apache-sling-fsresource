@@ -26,13 +26,25 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.contentparser.json.internal.JSONContentParser;
+import org.apache.sling.contentparser.xml.internal.XMLContentParser;
+import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.apache.sling.fsprovider.internal.parser.ContentElement;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
+import org.apache.sling.fsprovider.internal.parser.ContentFileParserUtil;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ContentFileTest {
 
     private ContentFileCache contentFileCache = new ContentFileCache(0);
+
+    @Before
+    public void setUp() {
+        ContentFileParserUtil.JSON_PARSER = new JSONContentParser();
+        ContentFileParserUtil.XML_PARSER = new XMLContentParser();
+        ContentFileParserUtil.JCR_XML_PARSER = new JCRXMLContentParser();
+    }
 
     @Test
     public void testRootContent() {

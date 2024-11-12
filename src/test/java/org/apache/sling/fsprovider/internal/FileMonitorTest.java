@@ -31,14 +31,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChange.ChangeType;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.apache.sling.contentparser.api.ContentParser;
+import org.apache.sling.contentparser.json.internal.JSONContentParser;
+import org.apache.sling.contentparser.xml.internal.XMLContentParser;
+import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.apache.sling.fsprovider.internal.TestUtils.ResourceListener;
+import org.apache.sling.fsprovider.internal.parser.ContentFileParserUtil;
+import org.apache.sling.fsprovider.internal.parser.ContentParserHolder;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.apache.sling.testing.mock.sling.junit.SlingContextCallback;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Test events when changing file system content (Sling-Initial-Content).
@@ -65,12 +73,16 @@ public class FileMonitorTest {
                 File sourceDir = new File("src/test/resources/fs-test");
                 FileUtils.copyDirectory(sourceDir, tempDir);
 
+                context.registerInjectActivateService(new JSONContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "json");
+                context.registerInjectActivateService(new XMLContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "xml");
+                context.registerInjectActivateService(new JCRXMLContentParser(), ContentParser.SERVICE_PROPERTY_CONTENT_TYPE, "jcr-xml");
+                context.registerInjectActivateService(new ContentParserHolder());
+
                 // mount temp. directory
-                context.registerInjectActivateService(new FsResourceProvider(),
+                context.registerInjectActivateService(new InitialContentResourceProvider(),
                         "provider.file", tempDir.getPath(),
                         "provider.root", "/fs-test",
                         "provider.checkinterval", CHECK_INTERVAL,
-                        "provider.fs.mode", FsMode.INITIAL_CONTENT.name(),
                         "provider.initial.content.import.options", "overwrite:=true;ignoreImportProviders:=jcr.xml");
 
                 // register resource change listener
