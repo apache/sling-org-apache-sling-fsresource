@@ -1,0 +1,9 @@
+-noimportjava: true
+Import-Package: !javax.jcr.*,\
+  !javax.json.*,\
+  !javax.xml.parsers,\
+  !org.apache.jackrabbit.util,\
+  !org.apache.jackrabbit.vault.*,\
+  !org.apache.sling.commons.osgi,\
+  !org.apache.sling.contentparser.*,\
+  *
