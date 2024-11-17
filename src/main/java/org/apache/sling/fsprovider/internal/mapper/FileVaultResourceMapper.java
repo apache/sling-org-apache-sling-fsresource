@@ -115,7 +115,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
     private Resource findResource(final ResourceResolver resolver, final String resourcePath) {
 
         // direct file
-        File file = getFile(resourcePath);
+        File file = resolveFile(resourcePath);
         if (file != null && fileStatCache.isFile(file)) {
             return new FileResource(resolver, resourcePath, file, fileStatCache);
         }
@@ -153,13 +153,13 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
         }
 
         // additional check for children in file system
-        File parentFile = getFile(parentPath);
+        File parentFile = resolveFile(parentPath);
         if (parentFile != null && fileStatCache.isDirectory(parentFile)) {
             File[] files = parentFile.listFiles();
             Arrays.sort(files, FileNameComparator.INSTANCE);
             for (File childFile : files) {
                 String childPath = parentPath + "/" + PlatformNameFormat.getRepositoryName(childFile.getName());
-                File file = getFile(childPath);
+                File file = resolveFile(childPath);
                 if (file != null && pathMatches(childPath) && !childPaths.contains(childPath)) {
                     childPaths.add(childPath);
                     continue;
@@ -227,7 +227,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
         }
     }
 
-    private File getFile(String path) {
+    private File resolveFile(String path) {
         if (StringUtils.endsWith(path, DOT_CONTENT_XML_SUFFIX)) {
             return null;
         }
