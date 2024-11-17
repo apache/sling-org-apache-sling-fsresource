@@ -64,7 +64,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
     public FileVaultResourceMapper(String providerRoot, File providerFile,
                               ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
                               FileStatCache fileStatCache,
-                              final boolean overlayParentResourceProvider, 
+                              final boolean overlayParentResourceProvider,
                               final File filterXmlFile) {
         super(providerRoot, providerFile, contentFileExtensions, contentFileCache, fileStatCache, overlayParentResourceProvider, false);
         this.filterXmlFile = filterXmlFile;
@@ -83,7 +83,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
         // filevault: check if path matches, if not fallback to parent resource provider
         if (this.pathMatches(path)) {
             askParentResourceProvider = false;
-            rsrc = this.getResource(resolver, path);
+            rsrc = this.findResource(resolver, path);
         } else {
             askParentResourceProvider = true;
         }
@@ -94,7 +94,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
     protected boolean resolveChildren(final ResourceResolver resolver, final Resource parent, final List<Iterator<? extends Resource>> allChildren) {
         // filevault: always ask provider, it checks itself if children matches the filters
         final boolean askParentResourceProvider = true;
-        final Iterator<Resource> children = this.getChildren(resolver, parent);
+        final Iterator<Resource> children = this.findChildren(resolver, parent);
         if (children != null) {
             allChildren.add(children);
         }
@@ -112,7 +112,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
         }));
     }
 
-    private Resource getResource(final ResourceResolver resolver, final String resourcePath) {
+    private Resource findResource(final ResourceResolver resolver, final String resourcePath) {
 
         // direct file
         File file = getFile(resourcePath);
@@ -134,7 +134,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
         return null;
     }
 
-    private Iterator<Resource> getChildren(final ResourceResolver resolver, final Resource parent) {
+    private Iterator<Resource> findChildren(final ResourceResolver resolver, final Resource parent) {
         String parentPath = parent.getPath();
 
         Set<String> childPaths = new LinkedHashSet<>();
@@ -178,12 +178,11 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
 
         if (childPaths.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return IteratorUtils.transformedIterator(childPaths.iterator(), new Transformer<String, Resource>() {
                 @Override
                 public Resource transform(final String path) {
-                    return getResource(resolver, path);
+                    return findResource(resolver, path);
                 }
             });
         }
