@@ -32,10 +32,9 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.fsprovider.internal.ContentFileExtensions;
 import org.apache.sling.fsprovider.internal.FileStatCache;
-import org.apache.sling.fsprovider.internal.FsResourceMapper;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 
-public final class ContentFileResourceMapper implements FsResourceMapper {
+public final class ContentFileResourceMapper {
 
     // providerRoot + "/" to be used for prefix matching of paths
     private final String providerRootPrefix;
@@ -45,7 +44,7 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
 
     private final ContentFileExtensions contentFileExtensions;
     private final ContentFileCache contentFileCache;
-    private FileStatCache fileStatCache;
+    private final FileStatCache fileStatCache;
 
     public ContentFileResourceMapper(String providerRoot, File providerFile,
                                      ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
@@ -57,39 +56,25 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
         this.fileStatCache = fileStatCache;
     }
 
-    @Override
     public Resource getResource(final ResourceResolver resolver, final String resourcePath) {
-        if (contentFileExtensions.isEmpty()) {
-            return null;
-        }
         ContentFile contentFile = getFile(resourcePath, null);
         if (contentFile != null && contentFile.hasContent()) {
             return new ContentFileResource(resolver, contentFile);
         }
-        else {
-            return null;
-        }
+        return null;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
     public Iterator<Resource> getChildren(final ResourceResolver resolver, final Resource parent) {
-        if (contentFileExtensions.isEmpty()) {
-            return null;
-        }
-
         final String parentPath = parent.getPath();
         final ContentFile parentContentFile = getFile(parentPath, null);;
-
 
         final List<Iterator<? extends Resource>> childIterators = new ArrayList<>(2);
 
         // add children from parsed content
         if (parentContentFile != null && parentContentFile.hasContent()) {
-            childIterators.add(IteratorUtils.transformedIterator(parentContentFile.getContent().getChildren().keySet().iterator(), new Transformer() {
+            childIterators.add(IteratorUtils.transformedIterator(parentContentFile.getContent().getChildren().keySet().iterator(), new Transformer<String, Resource>() {
                 @Override
-                public Object transform(final Object input) {
-                    String name = (String)input;
+                public Resource transform(final String name) {
                     return new ContentFileResource(resolver, parentContentFile.navigateToRelative(name));
                 }
             }));
@@ -101,10 +86,9 @@ public final class ContentFileResourceMapper implements FsResourceMapper {
             File[] files = parentDir.listFiles();
             if (files != null) {
                 Arrays.sort(files, FileNameComparator.INSTANCE);
-                childIterators.add(IteratorUtils.transformedIterator(IteratorUtils.arrayIterator(files), new Transformer() {
+                childIterators.add(IteratorUtils.transformedIterator(IteratorUtils.arrayIterator(files), new Transformer<File, Resource>() {
                     @Override
-                    public Object transform(final Object input) {
-                        File file = (File)input;
+                    public Resource transform(final File file) {
                         String path = parentPath + "/" + Escape.fileToResourceName(file.getName());
                         String filenameSuffix = contentFileExtensions.getSuffix(file);
                         if (filenameSuffix != null) {

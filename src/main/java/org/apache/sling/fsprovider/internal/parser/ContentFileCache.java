@@ -35,12 +35,10 @@ public final class ContentFileCache {
     /**
      * @param maxSize Cache size. 0 = caching disabled.
      */
-    @SuppressWarnings("unchecked")
     public ContentFileCache(int maxSize) {
         if (maxSize > 0) {
-            this.contentCache = Collections.synchronizedMap(new LRUMap(maxSize));
-        }
-        else {
+            this.contentCache = Collections.synchronizedMap(new LRUMap<String, ContentElement>(maxSize));
+        } else {
             this.contentCache = null;
         }
     }
@@ -70,8 +68,7 @@ public final class ContentFileCache {
         if (content == null) {
             if (contentType != null) {
                 content = ContentFileParserUtil.parse(file, contentType);
-            }
-            else {
+            } else {
                 content = ContentFileParserUtil.parse(file);
             }
             if (content == null) {
@@ -83,8 +80,7 @@ public final class ContentFileCache {
         }
         if (content == NULL_ELEMENT) {
             return null;
-        }
-        else {
+        } else {
             return content;
         }
     }
@@ -114,8 +110,7 @@ public final class ContentFileCache {
     public int size() {
         if (contentCache != null) {
             return contentCache.size();
-        }
-        else {
+        } else {
             return 0;
         }
     }
