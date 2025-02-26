@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.sling</groupId>
         <artifactId>sling-bundle-parent</artifactId>
-        <version>52</version>
+        <version>62</version>
         <relativePath />
     </parent>
 
@@ -42,6 +42,7 @@
     </scm>
 
     <properties>
+        <sling.java.version>8</sling.java.version>
         <project.build.outputTimestamp>2021-08-30T16:40:10Z</project.build.outputTimestamp>
     </properties>
 
@@ -50,7 +51,6 @@
             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>sling-maven-plugin</artifactId>
-                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <id>generate-adapter-metadata</id>
