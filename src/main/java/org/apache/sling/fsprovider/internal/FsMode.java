@@ -37,5 +37,4 @@ public enum FsMode {
      * FileVault XML format (expanded content package).
      */
     FILEVAULT_XML
-
 }

@@ -73,7 +73,6 @@ public class FileStatCache {
             return exists && !isDirectory;
         }
 
-
         @Override
         public String toString() {
             return exists() ? (isDirectory() ? "existing directory" : "existing file") : "non existing file";
@@ -168,7 +167,6 @@ public class FileStatCache {
             return parentFile == null || exists(parentFile);
         }
     }
-
 
     private enum CacheStatistics {
         EXISTS_ACCESS("Does exist (cached: {}/{}): {}", "Does exist (added to cache: {}/{}): {}"),

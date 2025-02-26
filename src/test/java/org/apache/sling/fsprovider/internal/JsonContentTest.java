@@ -18,23 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PropertyIterator;
@@ -43,6 +26,15 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
@@ -57,8 +49,15 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test access to files and folders and JSON content from file system.
@@ -71,11 +70,12 @@ public class JsonContentTest {
 
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
-        .plugin(new RegisterFsResourcePlugin(
-                "provider.fs.mode", FsMode.INITIAL_CONTENT.name(),
-                "provider.initial.content.import.options", "overwrite:=true;ignoreImportProviders:=jcr.xml"
-                ))
-        .build();
+            .plugin(new RegisterFsResourcePlugin(
+                    "provider.fs.mode",
+                    FsMode.INITIAL_CONTENT.name(),
+                    "provider.initial.content.import.options",
+                    "overwrite:=true;ignoreImportProviders:=jcr.xml"))
+            .build();
 
     @Before
     public void setUp() {
@@ -104,11 +104,22 @@ public class JsonContentTest {
     public void testListChildren() {
         assertThat(root, ResourceMatchers.containsChildren("fs-test"));
         assertThat(fsroot, ResourceMatchers.hasChildren("folder1", "folder2"));
-        assertThat(fsroot.getChild("folder1"), ResourceMatchers.containsChildren("file1a.txt", "folder11", "sling:file1b.txt"));
+        assertThat(
+                fsroot.getChild("folder1"),
+                ResourceMatchers.containsChildren("file1a.txt", "folder11", "sling:file1b.txt"));
         assertThat(fsroot.getChild("folder2"), ResourceMatchers.containsChildren("content", "folder21"));
-        assertThat(fsroot.getChild("folder2/content"), ResourceMatchers.containsChildren(
-                "jcr:content", "toolbar", "child", "file2content.txt", "fileWithOverwrittenMimeType.scss", "sling:content2"));
-        assertThat(fsroot.getChild("folder2/content/child"), ResourceMatchers.containsChildren("jcr:content", "grandchild"));
+        assertThat(
+                fsroot.getChild("folder2/content"),
+                ResourceMatchers.containsChildren(
+                        "jcr:content",
+                        "toolbar",
+                        "child",
+                        "file2content.txt",
+                        "fileWithOverwrittenMimeType.scss",
+                        "sling:content2"));
+        assertThat(
+                fsroot.getChild("folder2/content/child"),
+                ResourceMatchers.containsChildren("jcr:content", "grandchild"));
     }
 
     @Test
@@ -127,7 +138,9 @@ public class JsonContentTest {
         assertEquals("app:PageContent", underTest.getValueMap().get("jcr:primaryType", String.class));
         assertEquals("sample/components/homepage", underTest.getResourceType());
         assertEquals("sample/components/supertype", underTest.getResourceSuperType());
-        assertThat(underTest, ResourceMatchers.hasChildren("par", "header", "newslist", "lead", "image", "carousel", "rightpar"));
+        assertThat(
+                underTest,
+                ResourceMatchers.hasChildren("par", "header", "newslist", "lead", "image", "carousel", "rightpar"));
     }
 
     @Test
@@ -145,12 +158,12 @@ public class JsonContentTest {
 
         assertEquals("Profiles", props.get("jcr:title", String.class));
         assertEquals(true, props.get("booleanProp", false));
-        assertEquals((Long)1234567890123L, props.get("longProp", Long.class));
+        assertEquals((Long) 1234567890123L, props.get("longProp", Long.class));
         assertEquals(1.2345d, props.get("decimalProp", Double.class), 0.00001d);
         assertEquals(new BigDecimal("1.2345"), props.get("decimalProp", BigDecimal.class));
 
-        assertArrayEquals(new String[] { "aa", "bb", "cc" }, props.get("stringPropMulti", String[].class));
-        assertArrayEquals(new Long[] { 1234567890123L, 55L }, props.get("longPropMulti", Long[].class));
+        assertArrayEquals(new String[] {"aa", "bb", "cc"}, props.get("stringPropMulti", String[].class));
+        assertArrayEquals(new Long[] {1234567890123L, 55L}, props.get("longPropMulti", Long[].class));
     }
 
     @Test
@@ -163,14 +176,17 @@ public class JsonContentTest {
         assertEquals(6, node.getDepth());
 
         assertTrue(node.hasProperty(JcrConstants.JCR_PRIMARYTYPE));
-        assertTrue(node.getProperty(JcrConstants.JCR_PRIMARYTYPE).getDefinition().isProtected());
+        assertTrue(
+                node.getProperty(JcrConstants.JCR_PRIMARYTYPE).getDefinition().isProtected());
 
         assertTrue(node.hasProperty("jcr:title"));
         assertEquals(PropertyType.STRING, node.getProperty("jcr:title").getType());
         assertFalse(node.getProperty("jcr:title").isMultiple());
         assertEquals("jcr:title", node.getProperty("jcr:title").getDefinition().getName());
         assertFalse(node.getProperty("jcr:title").getDefinition().isProtected());
-        assertEquals("/fs-test/folder2/content/toolbar/profiles/jcr:content/jcr:title", node.getProperty("jcr:title").getPath());
+        assertEquals(
+                "/fs-test/folder2/content/toolbar/profiles/jcr:content/jcr:title",
+                node.getProperty("jcr:title").getPath());
         assertEquals("Profiles", node.getProperty("jcr:title").getString());
         assertEquals(PropertyType.BOOLEAN, node.getProperty("booleanProp").getType());
         assertEquals(true, node.getProperty("booleanProp").getBoolean());
@@ -217,9 +233,9 @@ public class JsonContentTest {
         assertEquals(7, rightpar.getDepth());
         Node parent = rightpar.getParent();
         assertTrue(node.isSame(parent));
-        Node ancestor = (Node)rightpar.getAncestor(5);
+        Node ancestor = (Node) rightpar.getAncestor(5);
         assertEquals(underTest.getParent().getPath(), ancestor.getPath());
-        Node root = (Node)rightpar.getAncestor(0);
+        Node root = (Node) rightpar.getAncestor(0);
         assertEquals("/", root.getPath());
 
         // node types
@@ -237,7 +253,9 @@ public class JsonContentTest {
     @Test
     public void testFallbackNodeType() throws RepositoryException {
         Resource underTest = fsroot.getChild("folder2/content/jcr:content/par/title_2");
-        assertEquals(ParserOptions.DEFAULT_PRIMARY_TYPE, underTest.adaptTo(Node.class).getPrimaryNodeType().getName());
+        assertEquals(
+                ParserOptions.DEFAULT_PRIMARY_TYPE,
+                underTest.adaptTo(Node.class).getPrimaryNodeType().getName());
     }
 
     @Test
@@ -283,13 +301,14 @@ public class JsonContentTest {
         assertEquals("nt:file", props.get("jcr:primaryType", String.class));
         assertEquals("/my/super/type", props.get("sling:resourceSuperType", String.class));
         assertEquals("en", props.get("jcr:language", String.class));
-        assertArrayEquals(new String[] { "mix:language" }, props.get("jcr:mixinTypes", String[].class));
+        assertArrayEquals(new String[] {"mix:language"}, props.get("jcr:mixinTypes", String[].class));
 
         assertNull(fsroot.getChild("folder2/folder21/file21a.txt.xml"));
 
         Node node = file21a.adaptTo(Node.class);
         assertNotNull(node);
-        assertEquals("/my/super/type", node.getProperty("sling:resourceSuperType").getString());
+        assertEquals(
+                "/my/super/type", node.getProperty("sling:resourceSuperType").getString());
         assertEquals("en", node.getProperty("jcr:language").getString());
     }
 
@@ -314,20 +333,23 @@ public class JsonContentTest {
         assertEquals("Profiles", profilesTitle);
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void testFileHasJcrContentAndData() {
         Resource underTest = fsroot.getChild("folder2/content/file2content.txt");
         assertNotNull("failed adapting file2content.txt to InputStream", underTest.adaptTo(InputStream.class));
-        //assertThat(underTest, ResourceMatchers.hasChildren("jcr:content"));
+        // assertThat(underTest, ResourceMatchers.hasChildren("jcr:content"));
         Resource content = underTest.getChild("jcr:content");
         ValueMap props = content.getValueMap();
         assertNotNull("jcr:data is missing", props.get("jcr:data", InputStream.class));
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void testFileWithOverwrittenMimeType() {
         Resource underTest = fsroot.getChild("folder2/content/fileWithOverwrittenMimeType.scss");
-        assertNotNull("failed adapting fileWithOverwrittenMimeType.scss to InputStream",
+        assertNotNull(
+                "failed adapting fileWithOverwrittenMimeType.scss to InputStream",
                 underTest.adaptTo(InputStream.class));
         Resource content = underTest.getChild("jcr:content");
         ValueMap props = content.getValueMap();

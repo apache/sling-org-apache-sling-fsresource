@@ -18,12 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
@@ -34,6 +28,12 @@ import org.apache.sling.testing.mock.sling.junit.SlingContextBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Test access to files and folders from file system.
@@ -46,8 +46,8 @@ public class FilesFolderTest {
 
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
-        .plugin(new RegisterFsResourcePlugin())
-        .build();
+            .plugin(new RegisterFsResourcePlugin())
+            .build();
 
     @Before
     public void setUp() {
@@ -78,7 +78,9 @@ public class FilesFolderTest {
     public void testListChildren() {
         assertThat(root, ResourceMatchers.containsChildren("fs-test"));
         assertThat(fsroot, ResourceMatchers.containsChildren("folder1", "folder2", "folder3"));
-        assertThat(fsroot.getChild("folder1"), ResourceMatchers.containsChildren("file1a.txt", "folder11", "sling:file1b.txt"));
+        assertThat(
+                fsroot.getChild("folder1"),
+                ResourceMatchers.containsChildren("file1a.txt", "folder11", "sling:file1b.txt"));
         assertThat(fsroot.getChild("folder2"), ResourceMatchers.hasChildren("folder21", "content.json"));
         assertFalse(fsroot.getChild("folder1/file1a.txt").listChildren().hasNext());
     }
@@ -90,5 +92,4 @@ public class FilesFolderTest {
         String type = properties.get("folder11/jcr:primaryType", String.class);
         assertEquals("nt:folder", type);
     }
-
 }

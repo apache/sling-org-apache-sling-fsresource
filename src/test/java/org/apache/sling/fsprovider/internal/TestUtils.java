@@ -18,12 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,17 +41,25 @@ import org.apache.sling.testing.mock.osgi.context.AbstractContextPlugin;
 import org.apache.sling.testing.mock.sling.context.SlingContextImpl;
 import org.jetbrains.annotations.NotNull;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 @SuppressWarnings("null")
 class TestUtils {
 
     public static class RegisterFsResourcePlugin extends AbstractContextPlugin<SlingContextImpl> {
-        private final Map<String,Object> props;
+        private final Map<String, Object> props;
+
         public RegisterFsResourcePlugin(Object... props) {
             this.props = MapUtil.toMap(props);
         }
+
         @Override
         public void beforeSetUp(SlingContextImpl context) throws Exception {
-            Map<String,Object> config = new HashMap<>();
+            Map<String, Object> config = new HashMap<>();
             config.put("provider.file", "src/test/resources/fs-test");
             config.put("provider.root", "/fs-test");
             config.put("provider.checkinterval", 0);
@@ -65,7 +67,8 @@ class TestUtils {
             config.putAll(props);
             context.registerInjectActivateService(new FsResourceProvider(), config);
         }
-    };
+    }
+    ;
 
     public static void assertFolder(Resource resource, String path) {
         Resource folder = resource.getChild(path);
@@ -87,7 +90,9 @@ class TestUtils {
         assertEquals("nt:file", file.getResourceType());
 
         assertNull(file.getResourceSuperType());
-        assertEquals(file.getName(), Escape.fileToResourceName(file.adaptTo(File.class).getName()));
+        assertEquals(
+                file.getName(),
+                Escape.fileToResourceName(file.adaptTo(File.class).getName()));
 
         if (content != null) {
             try {
@@ -95,8 +100,7 @@ class TestUtils {
                     String data = IOUtils.toString(is, StandardCharsets.UTF_8);
                     assertEquals(content, data);
                 }
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -115,13 +119,14 @@ class TestUtils {
 
     public static class ResourceListener implements ResourceChangeListener {
         private final List<ResourceChange> allChanges = new ArrayList<>();
+
         @Override
         public void onChange(@NotNull List<ResourceChange> changes) {
             allChanges.addAll(changes);
         }
+
         public List<ResourceChange> getChanges() {
             return allChanges;
         }
     }
-
 }

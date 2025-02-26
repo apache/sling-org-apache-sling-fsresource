@@ -60,8 +60,7 @@ abstract class FsItem implements Item {
     public String getPath() throws RepositoryException {
         if (contentFile.getSubPath() == null) {
             return contentFile.getPath();
-        }
-        else {
+        } else {
             return contentFile.getPath() + "/" + contentFile.getSubPath();
         }
     }
@@ -71,8 +70,7 @@ abstract class FsItem implements Item {
         String path;
         if (depth == 0) {
             path = "/";
-        }
-        else {
+        } else {
             String[] pathParts = StringUtils.splitPreserveAllTokens(getPath(), "/");
             path = StringUtils.join(pathParts, "/", 0, depth + 1);
         }
@@ -131,19 +129,18 @@ abstract class FsItem implements Item {
             return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                     .append("path", getPath())
                     .build();
-        }
-        catch (RepositoryException ex) {
+        } catch (RepositoryException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-
     // --- unsupported methods ---
 
     @Override
-    public void save() throws AccessDeniedException, ItemExistsException, ConstraintViolationException,
-            InvalidItemStateException, ReferentialIntegrityException, VersionException, LockException,
-            NoSuchNodeTypeException, RepositoryException {
+    public void save()
+            throws AccessDeniedException, ItemExistsException, ConstraintViolationException, InvalidItemStateException,
+                    ReferentialIntegrityException, VersionException, LockException, NoSuchNodeTypeException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -153,9 +150,9 @@ abstract class FsItem implements Item {
     }
 
     @Override
-    public void remove() throws VersionException, LockException, ConstraintViolationException, AccessDeniedException,
-            RepositoryException {
+    public void remove()
+            throws VersionException, LockException, ConstraintViolationException, AccessDeniedException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 }

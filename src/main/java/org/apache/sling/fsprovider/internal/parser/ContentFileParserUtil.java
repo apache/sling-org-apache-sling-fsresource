@@ -18,11 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal.parser;
 
-import static org.apache.jackrabbit.vault.util.Constants.DOT_CONTENT_XML;
-import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.JCR_XML_SUFFIX;
-import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.JSON_SUFFIX;
-import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_SUFFIX;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +34,11 @@ import org.apache.sling.contentparser.xml.jcr.internal.JCRXMLContentParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.jackrabbit.vault.util.Constants.DOT_CONTENT_XML;
+import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.JCR_XML_SUFFIX;
+import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.JSON_SUFFIX;
+import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_SUFFIX;
+
 /**
  * Parses files that contains content fragments (e.g. JSON, JCR XML).
  */
@@ -47,8 +47,8 @@ class ContentFileParserUtil {
     private static final Logger log = LoggerFactory.getLogger(ContentFileParserUtil.class);
 
     private static final ParserOptions DEFAULT_PARSER_OPTIONS = new ParserOptions();
-    private static final ParserOptions JSON_PARSER_OPTIONS = new JSONParserOptions()
-            .withFeatures(JSONParserFeature.COMMENTS, JSONParserFeature.QUOTE_TICK);
+    private static final ParserOptions JSON_PARSER_OPTIONS =
+            new JSONParserOptions().withFeatures(JSONParserFeature.COMMENTS, JSONParserFeature.QUOTE_TICK);
     private static final ContentParser JSON_PARSER = new JSONContentParser();
     private static final ContentParser JCR_XML_PARSER = new JCRXMLContentParser();
     private static final ContentParser XML_PARSER = new XMLContentParser();
@@ -68,11 +68,11 @@ class ContentFileParserUtil {
         }
         if (StringUtils.endsWith(file.getName(), JSON_SUFFIX)) {
             return parse(file, ContentType.JSON);
-        }
-        else if (StringUtils.equals(file.getName(), DOT_CONTENT_XML) || StringUtils.endsWith(file.getName(), JCR_XML_SUFFIX)) {
+        } else if (StringUtils.equals(file.getName(), DOT_CONTENT_XML)
+                || StringUtils.endsWith(file.getName(), JCR_XML_SUFFIX)) {
             return parse(file, ContentType.JCR_XML);
-        }
-        else if (StringUtils.endsWith(file.getName(), XML_SUFFIX) && !StringUtils.endsWith(file.getName(), JCR_XML_SUFFIX)) {
+        } else if (StringUtils.endsWith(file.getName(), XML_SUFFIX)
+                && !StringUtils.endsWith(file.getName(), JCR_XML_SUFFIX)) {
             return parse(file, ContentType.XML);
         }
         return null;
@@ -90,23 +90,23 @@ class ContentFileParserUtil {
         }
         try {
             switch (contentType) {
-            case JSON:
-                return parse(JSON_PARSER, file, JSON_PARSER_OPTIONS);
-            case XML:
-                return parse(XML_PARSER, file, DEFAULT_PARSER_OPTIONS);
-            case JCR_XML:
-                return parse(JCR_XML_PARSER, file, DEFAULT_PARSER_OPTIONS);
-               default:
+                case JSON:
+                    return parse(JSON_PARSER, file, JSON_PARSER_OPTIONS);
+                case XML:
+                    return parse(XML_PARSER, file, DEFAULT_PARSER_OPTIONS);
+                case JCR_XML:
+                    return parse(JCR_XML_PARSER, file, DEFAULT_PARSER_OPTIONS);
+                default:
                     throw new IllegalArgumentException("Unexpected content type: " + contentType);
             }
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             log.warn("Error parsing content from " + file.getPath(), ex);
         }
         return null;
     }
 
-    private static ContentElement parse(ContentParser contentParser, File file, ParserOptions parserOptions) throws IOException {
+    private static ContentElement parse(ContentParser contentParser, File file, ParserOptions parserOptions)
+            throws IOException {
         try (FileInputStream fis = new FileInputStream(file);
                 BufferedInputStream bis = new BufferedInputStream(fis)) {
             ContentElementHandler handler = new ContentElementHandler();
@@ -114,5 +114,4 @@ class ContentFileParserUtil {
             return handler.getRoot();
         }
     }
-
 }

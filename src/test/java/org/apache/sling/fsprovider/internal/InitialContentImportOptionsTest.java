@@ -18,13 +18,12 @@
  */
 package org.apache.sling.fsprovider.internal;
 
+import com.google.common.collect.ImmutableSet;
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
-import com.google.common.collect.ImmutableSet;
 
 public class InitialContentImportOptionsTest {
 
@@ -44,16 +43,17 @@ public class InitialContentImportOptionsTest {
 
     @Test
     public void testOptions1() {
-        InitialContentImportOptions underTest = new InitialContentImportOptions("overwrite:=true;ignoreImportProviders:=\"xml,json\"");
+        InitialContentImportOptions underTest =
+                new InitialContentImportOptions("overwrite:=true;ignoreImportProviders:=\"xml,json\"");
         assertTrue(underTest.isOverwrite());
-        assertEquals(ImmutableSet.of("xml","json"), underTest.getIgnoreImportProviders());
+        assertEquals(ImmutableSet.of("xml", "json"), underTest.getIgnoreImportProviders());
     }
 
     @Test
     public void testOptions2() {
-        InitialContentImportOptions underTest = new InitialContentImportOptions(" overwrite := false ; ignoreImportProviders := xml ");
+        InitialContentImportOptions underTest =
+                new InitialContentImportOptions(" overwrite := false ; ignoreImportProviders := xml ");
         assertFalse(underTest.isOverwrite());
         assertEquals(ImmutableSet.of("xml"), underTest.getIgnoreImportProviders());
     }
-
 }

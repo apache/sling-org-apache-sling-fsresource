@@ -18,17 +18,17 @@
  */
 package org.apache.sling.fsprovider.internal.mapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.parser.ContentElement;
 import org.apache.sling.fsprovider.internal.parser.ContentFileCache;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ContentFileTest {
 
@@ -46,7 +46,9 @@ public class ContentFileTest {
 
         ContentElement content = underTest.getContent();
         assertEquals("app:Page", content.getProperties().get("jcr:primaryType"));
-        assertEquals("app:PageContent", content.getChild("jcr:content").getProperties().get("jcr:primaryType"));
+        assertEquals(
+                "app:PageContent",
+                content.getChild("jcr:content").getProperties().get("jcr:primaryType"));
 
         ValueMap props = underTest.getValueMap();
         assertEquals("app:Page", props.get("jcr:primaryType"));
@@ -74,7 +76,8 @@ public class ContentFileTest {
     public void testContentLevel5() {
         File file = new File("src/test/resources/fs-test/folder2/content.json");
 
-        ContentFile underTest = new ContentFile(file, "/fs-test/folder2/content", "jcr:content/par/image/file/jcr:content", contentFileCache);
+        ContentFile underTest = new ContentFile(
+                file, "/fs-test/folder2/content", "jcr:content/par/image/file/jcr:content", contentFileCache);
         assertEquals(file, underTest.getFile());
         assertEquals("jcr:content/par/image/file/jcr:content", underTest.getSubPath());
 
@@ -91,7 +94,8 @@ public class ContentFileTest {
     public void testContentProperty() {
         File file = new File("src/test/resources/fs-test/folder2/content.json");
 
-        ContentFile underTest = new ContentFile(file, "/fs-test/folder2/content", "jcr:content/jcr:title", contentFileCache);
+        ContentFile underTest =
+                new ContentFile(file, "/fs-test/folder2/content", "jcr:content/jcr:title", contentFileCache);
         assertEquals(file, underTest.getFile());
         assertEquals("jcr:content/jcr:title", underTest.getSubPath());
 
@@ -104,5 +108,4 @@ public class ContentFileTest {
         ContentFile underTest = new ContentFile(file, "/fs-test/folder1/file1a", null, contentFileCache);
         assertFalse(underTest.hasContent());
     }
-
 }

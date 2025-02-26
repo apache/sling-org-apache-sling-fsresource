@@ -40,7 +40,6 @@ public enum ContentType {
      */
     JCR_XML("jcr.xml");
 
-
     private final String extension;
 
     private ContentType(String extension) {
@@ -53,5 +52,4 @@ public enum ContentType {
     public String getExtension() {
         return extension;
     }
-
 }

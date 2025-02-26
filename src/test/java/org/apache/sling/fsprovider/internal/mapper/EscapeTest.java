@@ -18,9 +18,9 @@
  */
 package org.apache.sling.fsprovider.internal.mapper;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class EscapeTest {
 
@@ -42,5 +42,4 @@ public class EscapeTest {
         assertEquals("a%3C%3E%3A%22/%5C%7C%3F*b", Escape.resourceToFileName("a<>:\"/\\|?*b"));
         assertEquals("", Escape.resourceToFileName(""));
     }
-
 }

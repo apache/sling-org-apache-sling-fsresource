@@ -18,15 +18,15 @@
  */
 package org.apache.sling.fsprovider.internal.mapper.valuemap;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import java.lang.reflect.Array;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.ClassUtils;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * This is copied from org.apache.sling.api.wrappers.impl.Convert
@@ -39,7 +39,7 @@ final class Convert {
     }
 
     @SuppressWarnings("unchecked")
-    public static class ConversionAssert<T,U> {
+    public static class ConversionAssert<T, U> {
         private final T input1;
         private final T input2;
         private Class<T> inputType;
@@ -51,18 +51,18 @@ final class Convert {
         private ConversionAssert(T input1, T input2, boolean inputTypePrimitive) {
             this.input1 = input1;
             this.input2 = input2;
-            this.inputType = (Class<T>)input1.getClass();
+            this.inputType = (Class<T>) input1.getClass();
             if (inputTypePrimitive) {
-                this.inputType = (Class<T>)ClassUtils.wrapperToPrimitive(this.inputType);
+                this.inputType = (Class<T>) ClassUtils.wrapperToPrimitive(this.inputType);
             }
         }
 
         private void expected(U expected1, U expected2, boolean expectedTypePrimitive) {
             this.expected1 = expected1;
             this.expected2 = expected2;
-            this.expectedType = (Class<U>)expected1.getClass();
+            this.expectedType = (Class<U>) expected1.getClass();
             if (expectedTypePrimitive) {
-                expectedType = (Class<U>)ClassUtils.wrapperToPrimitive(this.expectedType);
+                expectedType = (Class<U>) ClassUtils.wrapperToPrimitive(this.expectedType);
             }
         }
 
@@ -71,7 +71,7 @@ final class Convert {
          * @param expected2 Second array expected result value
          * @return this
          */
-        public ConversionAssert<T,U> to(U expected1, U expected2) {
+        public ConversionAssert<T, U> to(U expected1, U expected2) {
             expected(expected1, expected2, false);
             return this;
         }
@@ -81,7 +81,7 @@ final class Convert {
          * @param expected2 Second array expected result value
          * @return this
          */
-        public ConversionAssert<T,U> toPrimitive(U expected1, U expected2) {
+        public ConversionAssert<T, U> toPrimitive(U expected1, U expected2) {
             expected(expected1, expected2, true);
             return this;
         }
@@ -91,7 +91,7 @@ final class Convert {
          * @param expected2 Second array expected result value
          * @return this
          */
-        public ConversionAssert<T,U> toNull(Class<U> expectedType) {
+        public ConversionAssert<T, U> toNull(Class<U> expectedType) {
             expected1 = null;
             expected2 = null;
             this.expectedType = expectedType;
@@ -101,7 +101,7 @@ final class Convert {
         /**
          * @param nullValue Result value in case of null
          */
-        public ConversionAssert<T,U> nullValue(U nullValue) {
+        public ConversionAssert<T, U> nullValue(U nullValue) {
             this.nullValue = nullValue;
             return this;
         }
@@ -110,8 +110,10 @@ final class Convert {
          * Do assertion
          */
         public void test() {
-            Class<U[]> expectedArrayType = (Class<U[]>)Array.newInstance(this.expectedType, 0).getClass();
-            assertPermuations(input1, input2, inputType, expected1, expected2, nullValue, expectedType, expectedArrayType);
+            Class<U[]> expectedArrayType =
+                    (Class<U[]>) Array.newInstance(this.expectedType, 0).getClass();
+            assertPermuations(
+                    input1, input2, inputType, expected1, expected2, nullValue, expectedType, expectedArrayType);
         }
     }
 
@@ -119,20 +121,27 @@ final class Convert {
      * @param input1 Singleton or first array input value
      * @param input2 Second array input value
      */
-    public static <T,U> ConversionAssert<T,U> from(T input1, T input2) {
-        return new ConversionAssert<T,U>(input1, input2, false);
+    public static <T, U> ConversionAssert<T, U> from(T input1, T input2) {
+        return new ConversionAssert<T, U>(input1, input2, false);
     }
 
     /**
      * @param input1 Singleton or first array input value
      * @param input2 Second array input value
      */
-    public static <T,U> ConversionAssert<T,U> fromPrimitive(T input1, T input2) {
-        return new ConversionAssert<T,U>(input1, input2, true);
+    public static <T, U> ConversionAssert<T, U> fromPrimitive(T input1, T input2) {
+        return new ConversionAssert<T, U>(input1, input2, true);
     }
 
-    private static <T,U> void assertPermuations(T input1, T input2, Class<T> inputType,
-            U expected1, U expected2, U nullValue, Class<U> expectedType, Class<U[]> expectedArrayType) {
+    private static <T, U> void assertPermuations(
+            T input1,
+            T input2,
+            Class<T> inputType,
+            U expected1,
+            U expected2,
+            U nullValue,
+            Class<U> expectedType,
+            Class<U[]> expectedArrayType) {
 
         // single value to single value
         assertConversion(expected1, input1, expectedType);
@@ -141,8 +150,7 @@ final class Convert {
         Object expectedSingletonArray;
         if (expected1 == null && expected2 == null) {
             expectedSingletonArray = Array.newInstance(expectedType, 0);
-        }
-        else {
+        } else {
             expectedSingletonArray = Array.newInstance(expectedType, 1);
             Array.set(expectedSingletonArray, 0, expected1);
         }
@@ -155,11 +163,10 @@ final class Convert {
         Object expectedDoubleArray;
         if (expected1 == null && expected2 == null) {
             expectedDoubleArray = Array.newInstance(expectedType, 0);
-        }
-        else {
+        } else {
             expectedDoubleArray = Array.newInstance(expectedType, 2);
-            Array.set(expectedDoubleArray, 0,  expected1);
-            Array.set(expectedDoubleArray, 1,  expected2);
+            Array.set(expectedDoubleArray, 0, expected1);
+            Array.set(expectedDoubleArray, 1, expected2);
         }
         assertConversion(expectedDoubleArray, inputDoubleArray, expectedArrayType);
 
@@ -182,16 +189,14 @@ final class Convert {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T,U> void assertConversion(Object expected, Object input, Class<U> type) {
+    private static <T, U> void assertConversion(Object expected, Object input, Class<U> type) {
         U result = ObjectConverter.convert(input, type);
         String msg = "Convert '" + toString(input) + "' to " + type.getSimpleName();
         if (expected == null) {
             assertNull(msg, result);
-        }
-        else if (expected.getClass().isArray()) {
-            assertArrayEquals(msg, (U[])toStringIfDate(expected), (U[])toStringIfDate(result));
-        }
-        else {
+        } else if (expected.getClass().isArray()) {
+            assertArrayEquals(msg, (U[]) toStringIfDate(expected), (U[]) toStringIfDate(result));
+        } else {
             assertEquals(msg, toStringIfDate(expected), toStringIfDate(result));
         }
     }
@@ -199,11 +204,10 @@ final class Convert {
     private static String toString(Object input) {
         if (input == null) {
             return "null";
-        }
-        else if (input.getClass().isArray()) {
+        } else if (input.getClass().isArray()) {
             StringBuilder sb = new StringBuilder();
             sb.append("[");
-            for (int i=0; i<Array.getLength(input); i++) {
+            for (int i = 0; i < Array.getLength(input); i++) {
                 if (i > 0) {
                     sb.append(",");
                 }
@@ -211,8 +215,7 @@ final class Convert {
             }
             sb.append("]");
             return sb.toString();
-        }
-        else {
+        } else {
             return toStringIfDate(input).toString();
         }
     }
@@ -222,16 +225,16 @@ final class Convert {
             return null;
         }
         if (input instanceof Calendar) {
-            return "(Calendar)" + DateUtils.calendarToString((Calendar)input);
+            return "(Calendar)" + DateUtils.calendarToString((Calendar) input);
         }
         if (input instanceof Date) {
-            return "(Date)" + DateUtils.dateToString((Date)input);
+            return "(Date)" + DateUtils.dateToString((Date) input);
         }
         if (input.getClass().isArray()) {
             if (Calendar.class.isAssignableFrom(input.getClass().getComponentType())
                     || input.getClass().getComponentType() == Date.class) {
                 Object[] resultArray = new String[Array.getLength(input)];
-                for (int i=0; i<Array.getLength(input); i++) {
+                for (int i = 0; i < Array.getLength(input); i++) {
                     resultArray[i] = toStringIfDate(Array.get(input, i));
                 }
                 return resultArray;
@@ -239,5 +242,4 @@ final class Convert {
         }
         return input;
     }
-
 }

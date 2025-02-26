@@ -19,6 +19,7 @@
 package org.apache.sling.fsprovider.internal.mapper;
 
 import java.io.File;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.AbstractMap.SimpleEntry;
 
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.collections4.Predicate;
@@ -61,15 +61,18 @@ public class FileResourceMapper {
 
     private final ContentFileResourceMapper contentFileMapper;
 
-    // if true resources from file system are only "overlayed" to JCR resources, serving JCR as fallback within the same path
+    // if true resources from file system are only "overlayed" to JCR resources, serving JCR as fallback within the same
+    // path
     protected final boolean overlayParentResourceProvider;
 
-    public FileResourceMapper(String providerRoot, File providerFile,
-                              ContentFileExtensions contentFileExtensions, 
-                              ContentFileCache contentFileCache,
-                              FileStatCache fileStatCache,
-                              final boolean overlayParentResourceProvider,
-                              final boolean createContentFileMapper) {
+    public FileResourceMapper(
+            String providerRoot,
+            File providerFile,
+            ContentFileExtensions contentFileExtensions,
+            ContentFileCache contentFileCache,
+            FileStatCache fileStatCache,
+            final boolean overlayParentResourceProvider,
+            final boolean createContentFileMapper) {
         this.providerRoot = providerRoot;
         this.providerRootPrefix = providerRoot.concat("/");
         this.providerFile = providerFile;
@@ -78,8 +81,12 @@ public class FileResourceMapper {
         this.fileStatCache = fileStatCache;
         this.overlayParentResourceProvider = overlayParentResourceProvider;
         if (contentFileExtensions != null && createContentFileMapper) {
-            this.contentFileMapper = new ContentFileResourceMapper(this.providerRoot, this.providerFile,
-                    contentFileExtensions, this.contentFileCache, this.fileStatCache);
+            this.contentFileMapper = new ContentFileResourceMapper(
+                    this.providerRoot,
+                    this.providerFile,
+                    contentFileExtensions,
+                    this.contentFileCache,
+                    this.fileStatCache);
         } else {
             this.contentFileMapper = null;
         }
@@ -98,10 +105,14 @@ public class FileResourceMapper {
         return new SimpleEntry<>(rsrc, askParentResourceProvider);
     }
 
-    protected boolean resolveChildren(final ResourceResolver resolver, final Resource parent, final List<Iterator<? extends Resource>> allChildren) {
+    protected boolean resolveChildren(
+            final ResourceResolver resolver,
+            final Resource parent,
+            final List<Iterator<? extends Resource>> allChildren) {
         // Sling-Initial-Content: get all matching folders/files and content files
         final boolean askParentResourceProvider = this.overlayParentResourceProvider;
-        Iterator<Resource> children = contentFileMapper == null ? null : contentFileMapper.getChildren(resolver, parent);
+        Iterator<Resource> children =
+                contentFileMapper == null ? null : contentFileMapper.getChildren(resolver, parent);
         if (children != null) {
             allChildren.add(children);
         }
@@ -122,7 +133,8 @@ public class FileResourceMapper {
      * method returns <code>null</code>.
      */
     @SuppressWarnings("unchecked")
-    public Resource getResource(final @NotNull ResolveContext<Object> ctx,
+    public Resource getResource(
+            final @NotNull ResolveContext<Object> ctx,
             final @NotNull String path,
             final @NotNull ResourceContext resourceContext,
             final @Nullable Resource parent) {
@@ -134,29 +146,31 @@ public class FileResourceMapper {
         Resource rsrc = resolved.getKey();
 
         if (askParentResourceProvider) {
-            // make sure directory resources from parent resource provider have higher precedence than from this provider
+            // make sure directory resources from parent resource provider have higher precedence than from this
+            // provider
             // this allows properties like sling:resourceSuperType to take effect
-            if ( rsrc == null || rsrc.getResourceMetadata().containsKey(FsResourceProvider.RESOURCE_METADATA_FILE_DIRECTORY) ) {
-            	// get resource from shadowed provider
-            	@SuppressWarnings("rawtypes")
+            if (rsrc == null
+                    || rsrc.getResourceMetadata().containsKey(FsResourceProvider.RESOURCE_METADATA_FILE_DIRECTORY)) {
+                // get resource from shadowed provider
+                @SuppressWarnings("rawtypes")
                 final ResourceProvider rp = ctx.getParentResourceProvider();
-            	@SuppressWarnings("rawtypes")
+                @SuppressWarnings("rawtypes")
                 final ResolveContext resolveContext = ctx.getParentResolveContext();
-            	if ( rp != null && resolveContext != null ) {
-            	    Resource resourceFromParentResourceProvider = rp.getResource(resolveContext,
-    	            		path,
-    	            		resourceContext, parent);
-            	    if (resourceFromParentResourceProvider != null) {
-            	        rsrc = resourceFromParentResourceProvider;
-            	    }
-            	}
+                if (rp != null && resolveContext != null) {
+                    Resource resourceFromParentResourceProvider =
+                            rp.getResource(resolveContext, path, resourceContext, parent);
+                    if (resourceFromParentResourceProvider != null) {
+                        rsrc = resourceFromParentResourceProvider;
+                    }
+                }
             }
         }
 
         return rsrc;
     }
 
-    protected void addChildren(final List<Iterator<? extends Resource>> allChildren, final Iterator<Resource> children) {
+    protected void addChildren(
+            final List<Iterator<? extends Resource>> allChildren, final Iterator<Resource> children) {
         allChildren.add(children);
     }
 
@@ -170,34 +184,37 @@ public class FileResourceMapper {
         final List<Iterator<? extends Resource>> allChildren = new ArrayList<>();
         final boolean askParentResourceProvider = this.resolveChildren(resolver, parent, allChildren);
 
-    	// get children from from shadowed provider
+        // get children from from shadowed provider
         if (askParentResourceProvider) {
-        	@SuppressWarnings("rawtypes")
+            @SuppressWarnings("rawtypes")
             final ResourceProvider parentResourceProvider = ctx.getParentResourceProvider();
             @SuppressWarnings("rawtypes")
             final ResolveContext resolveContext = ctx.getParentResolveContext();
-        	if (parentResourceProvider != null && resolveContext != null) {
-        		Iterator<Resource> children = parentResourceProvider.listChildren(resolveContext, parent);
+            if (parentResourceProvider != null && resolveContext != null) {
+                Iterator<Resource> children = parentResourceProvider.listChildren(resolveContext, parent);
                 if (children != null) {
                     this.addChildren(allChildren, children);
                 }
-        	}
+            }
         }
 
-    	if (allChildren.isEmpty()) {
-    	    return null;
-    	} else if (allChildren.size() == 1) {
-    	    return (Iterator<Resource>)allChildren.get(0);
-    	} else {
-    	    // merge all children from the different iterators, but filter out potential duplicates with same resource name
-    	    return IteratorUtils.filteredIterator(IteratorUtils.chainedIterator(allChildren), new Predicate<Resource>() {
-    	        private Set<String> names = new HashSet<>();
-                @Override
-                public boolean evaluate(final Resource resource) {
-                    return names.add(resource.getName());
-                }
-            });
-    	}
+        if (allChildren.isEmpty()) {
+            return null;
+        } else if (allChildren.size() == 1) {
+            return (Iterator<Resource>) allChildren.get(0);
+        } else {
+            // merge all children from the different iterators, but filter out potential duplicates with same resource
+            // name
+            return IteratorUtils.filteredIterator(
+                    IteratorUtils.chainedIterator(allChildren), new Predicate<Resource>() {
+                        private Set<String> names = new HashSet<>();
+
+                        @Override
+                        public boolean evaluate(final Resource resource) {
+                            return names.add(resource.getName());
+                        }
+                    });
+        }
     }
 
     private Iterator<Resource> getChildren(final ResourceResolver resolver, final Resource parent) {
@@ -221,7 +238,13 @@ public class FileResourceMapper {
                     if (providerRoot.startsWith(parentPathPrefix)) {
                         String relPath = providerRoot.substring(parentPathPrefix.length());
                         if (relPath.indexOf('/') < 0) {
-                            Resource res = new FileResource(resolver, providerRoot, providerFile, contentFileExtensions, contentFileCache, fileStatCache);
+                            Resource res = new FileResource(
+                                    resolver,
+                                    providerRoot,
+                                    providerFile,
+                                    contentFileExtensions,
+                                    contentFileCache,
+                                    fileStatCache);
                             return IteratorUtils.singletonIterator(res);
                         }
                     }
@@ -238,12 +261,13 @@ public class FileResourceMapper {
         }
 
         Arrays.sort(files, FileNameComparator.INSTANCE);
-        Iterator<File> children = IteratorUtils.filteredIterator(IteratorUtils.arrayIterator(files), new Predicate<File>() {
-            @Override
-            public boolean evaluate(final File file) {
-                return contentFileExtensions == null || !contentFileExtensions.matchesSuffix(file);
-            }
-        });
+        Iterator<File> children =
+                IteratorUtils.filteredIterator(IteratorUtils.arrayIterator(files), new Predicate<File>() {
+                    @Override
+                    public boolean evaluate(final File file) {
+                        return contentFileExtensions == null || !contentFileExtensions.matchesSuffix(file);
+                    }
+                });
         if (!children.hasNext()) {
             return null;
         }
@@ -271,7 +295,8 @@ public class FileResourceMapper {
         if (path.startsWith(providerRootPrefix)) {
             String relPath = Escape.resourceToFileName(path.substring(providerRootPrefix.length()));
             File file = new File(providerFile, relPath);
-            if ((contentFileExtensions == null || !contentFileExtensions.matchesSuffix(file)) && fileStatCache.exists(file)) {
+            if ((contentFileExtensions == null || !contentFileExtensions.matchesSuffix(file))
+                    && fileStatCache.exists(file)) {
                 return file;
             }
         }

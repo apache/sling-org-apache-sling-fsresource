@@ -18,12 +18,12 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.JCR_XML_SUFFIX;
-import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_SUFFIX;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+
+import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.JCR_XML_SUFFIX;
+import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_SUFFIX;
 
 /**
  * Matches file names for content file extensions.

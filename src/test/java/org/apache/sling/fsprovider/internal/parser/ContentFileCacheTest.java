@@ -18,10 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.io.File;
 
 import org.junit.experimental.theories.DataPoint;
@@ -29,13 +25,19 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 @RunWith(Theories.class)
 public class ContentFileCacheTest {
 
     @DataPoint
     public static final int NO_CACHE = 0;
+
     @DataPoint
     public static final int SMALL_CACHE = 1;
+
     @DataPoint
     public static final int HUGE_CACHE = 1000;
 
@@ -43,49 +45,50 @@ public class ContentFileCacheTest {
     public void testCache(int cacheSize) {
         ContentFileCache underTest = new ContentFileCache(cacheSize);
 
-        ContentElement content1 = underTest.get("/fs-test/folder2/content", new File("src/test/resources/fs-test/folder2/content.json"));
+        ContentElement content1 =
+                underTest.get("/fs-test/folder2/content", new File("src/test/resources/fs-test/folder2/content.json"));
         assertNotNull(content1);
 
         switch (cacheSize) {
-        case NO_CACHE:
-            assertEquals(0, underTest.size());
-            break;
-        case SMALL_CACHE:
-        case HUGE_CACHE:
-            assertEquals(1, underTest.size());
-            break;
+            case NO_CACHE:
+                assertEquals(0, underTest.size());
+                break;
+            case SMALL_CACHE:
+            case HUGE_CACHE:
+                assertEquals(1, underTest.size());
+                break;
         }
 
-        ContentElement content2 = underTest.get("/fs-test/folder1/file1a", new File("src/test/resources/fs-test/folder1/file1a.txt"));
+        ContentElement content2 =
+                underTest.get("/fs-test/folder1/file1a", new File("src/test/resources/fs-test/folder1/file1a.txt"));
         assertNull(content2);
 
         switch (cacheSize) {
-        case NO_CACHE:
-            assertEquals(0, underTest.size());
-            break;
-        case SMALL_CACHE:
-            assertEquals(1, underTest.size());
-            break;
-        case HUGE_CACHE:
-            assertEquals(2, underTest.size());
-            break;
+            case NO_CACHE:
+                assertEquals(0, underTest.size());
+                break;
+            case SMALL_CACHE:
+                assertEquals(1, underTest.size());
+                break;
+            case HUGE_CACHE:
+                assertEquals(2, underTest.size());
+                break;
         }
 
         underTest.remove("/fs-test/folder1/file1a");
 
         switch (cacheSize) {
-        case NO_CACHE:
-        case SMALL_CACHE:
-            assertEquals(0, underTest.size());
-            break;
-        case HUGE_CACHE:
-            assertEquals(1, underTest.size());
-            break;
+            case NO_CACHE:
+            case SMALL_CACHE:
+                assertEquals(0, underTest.size());
+                break;
+            case HUGE_CACHE:
+                assertEquals(1, underTest.size());
+                break;
         }
 
         underTest.clear();
 
         assertEquals(0, underTest.size());
     }
-
 }

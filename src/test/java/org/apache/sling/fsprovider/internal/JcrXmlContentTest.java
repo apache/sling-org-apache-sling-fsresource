@@ -18,21 +18,13 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 
 import java.util.Collections;
 import java.util.List;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-
+import com.google.common.collect.Lists;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.fsprovider.internal.TestUtils.RegisterFsResourcePlugin;
@@ -44,7 +36,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test access to files and folders from file system.
@@ -58,10 +57,11 @@ public class JcrXmlContentTest {
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
             .plugin(new RegisterFsResourcePlugin(
-                    "provider.fs.mode", FsMode.INITIAL_CONTENT.name(),
-                    "provider.initial.content.import.options", "overwrite:=true;ignoreImportProviders:=json"
-                    ))
-        .build();
+                    "provider.fs.mode",
+                    FsMode.INITIAL_CONTENT.name(),
+                    "provider.initial.content.import.options",
+                    "overwrite:=true;ignoreImportProviders:=json"))
+            .build();
 
     @Before
     public void setUp() {
@@ -90,7 +90,9 @@ public class JcrXmlContentTest {
     public void testListChildren() {
         assertThat(root, ResourceMatchers.containsChildren("fs-test"));
         assertThat(fsroot, ResourceMatchers.hasChildren("folder1", "folder2"));
-        assertThat(fsroot.getChild("folder1"), ResourceMatchers.containsChildren("file1a.txt", "folder11", "sling:file1b.txt"));
+        assertThat(
+                fsroot.getChild("folder1"),
+                ResourceMatchers.containsChildren("file1a.txt", "folder11", "sling:file1b.txt"));
         assertThat(fsroot.getChild("folder2"), ResourceMatchers.hasChildren("folder21", "content"));
     }
 
@@ -128,11 +130,11 @@ public class JcrXmlContentTest {
 
         assertEquals("en", props.get("jcr:title", String.class));
         assertEquals(true, props.get("includeAside", false));
-        assertEquals((Long)1234567890123L, props.get("longProp", Long.class));
+        assertEquals((Long) 1234567890123L, props.get("longProp", Long.class));
         assertEquals(1.2345d, props.get("decimalProp", Double.class), 0.00001d);
 
-        assertArrayEquals(new String[] { "aa", "bb", "cc" }, props.get("stringPropMulti", String[].class));
-        assertArrayEquals(new Long[] { 1234567890123L, 55L }, props.get("longPropMulti", Long[].class));
+        assertArrayEquals(new String[] {"aa", "bb", "cc"}, props.get("stringPropMulti", String[].class));
+        assertArrayEquals(new Long[] {1234567890123L, 55L}, props.get("longPropMulti", Long[].class));
     }
 
     @Test

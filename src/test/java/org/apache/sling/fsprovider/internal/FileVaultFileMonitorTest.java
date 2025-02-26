@@ -18,10 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.TestUtils.assertChange;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,6 +36,10 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.apache.sling.fsprovider.internal.TestUtils.assertChange;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test events when changing file system content (FileVault XML).
  */
@@ -57,42 +57,62 @@ public class FileVaultFileMonitorTest {
 
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
-        .beforeSetUp(new SlingContextCallback() {
-            @Override
-            public void execute(@NotNull SlingContext context) throws Exception {
-                // copy test content to temp. directory
-                tempDir.mkdirs();
-                File sourceDir = new File("src/test/resources/vaultfs-test");
-                FileUtils.copyDirectory(sourceDir, tempDir);
+            .beforeSetUp(new SlingContextCallback() {
+                @Override
+                public void execute(@NotNull SlingContext context) throws Exception {
+                    // copy test content to temp. directory
+                    tempDir.mkdirs();
+                    File sourceDir = new File("src/test/resources/vaultfs-test");
+                    FileUtils.copyDirectory(sourceDir, tempDir);
 
-                // mount temp. directory
-                context.registerInjectActivateService(new FsResourceProvider(),
-                        "provider.file", tempDir.getPath() + "/jcr_root",
-                        "provider.filevault.filterxml.path", tempDir.getPath() + "/META-INF/vault/filter.xml",
-                        "provider.root", "/content/dam/talk.png",
-                        "provider.checkinterval", CHECK_INTERVAL,
-                        "provider.fs.mode", FsMode.FILEVAULT_XML.name());
-                context.registerInjectActivateService(new FsResourceProvider(),
-                        "provider.file", tempDir.getPath() + "/jcr_root",
-                        "provider.filevault.filterxml.path", tempDir.getPath() + "/META-INF/vault/filter.xml",
-                        "provider.root", "/content/samples",
-                        "provider.checkinterval", CHECK_INTERVAL,
-                        "provider.fs.mode", FsMode.FILEVAULT_XML.name());
+                    // mount temp. directory
+                    context.registerInjectActivateService(
+                            new FsResourceProvider(),
+                            "provider.file",
+                            tempDir.getPath() + "/jcr_root",
+                            "provider.filevault.filterxml.path",
+                            tempDir.getPath() + "/META-INF/vault/filter.xml",
+                            "provider.root",
+                            "/content/dam/talk.png",
+                            "provider.checkinterval",
+                            CHECK_INTERVAL,
+                            "provider.fs.mode",
+                            FsMode.FILEVAULT_XML.name());
+                    context.registerInjectActivateService(
+                            new FsResourceProvider(),
+                            "provider.file",
+                            tempDir.getPath() + "/jcr_root",
+                            "provider.filevault.filterxml.path",
+                            tempDir.getPath() + "/META-INF/vault/filter.xml",
+                            "provider.root",
+                            "/content/samples",
+                            "provider.checkinterval",
+                            CHECK_INTERVAL,
+                            "provider.fs.mode",
+                            FsMode.FILEVAULT_XML.name());
 
-                // register resource change listener
-                context.registerService(ResourceChangeListener.class, resourceListener,
-                        ResourceChangeListener.PATHS, new String[] { "/content/dam/talk.png", "/content/samples" },
-                        ResourceChangeListener.CHANGES, new String[] { ChangeType.CHANGED.toString(), ChangeType.ADDED.toString(), ChangeType.REMOVED.toString() });
-            }
-        })
-        .afterTearDown(new SlingContextCallback() {
-            @Override
-            public void execute(@NotNull SlingContext context) throws Exception {
-                // remove temp directory
-                tempDir.delete();
-            }
-        })
-        .build();
+                    // register resource change listener
+                    context.registerService(
+                            ResourceChangeListener.class,
+                            resourceListener,
+                            ResourceChangeListener.PATHS,
+                            new String[] {"/content/dam/talk.png", "/content/samples"},
+                            ResourceChangeListener.CHANGES,
+                            new String[] {
+                                ChangeType.CHANGED.toString(),
+                                ChangeType.ADDED.toString(),
+                                ChangeType.REMOVED.toString()
+                            });
+                }
+            })
+            .afterTearDown(new SlingContextCallback() {
+                @Override
+                public void execute(@NotNull SlingContext context) throws Exception {
+                    // remove temp directory
+                    tempDir.delete();
+                }
+            })
+            .build();
 
     @Test
     public void testUpdateFile() throws Exception {
@@ -190,11 +210,14 @@ public class FileVaultFileMonitorTest {
 
         File file = new File(tempDir, "jcr_root/content/samples/fr/.content.xml");
         file.getParentFile().mkdir();
-        FileUtils.write(file, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<jcr:root xmlns:jcr=\"http://www.jcp.org/jcr/1.0\" xmlns:app=\"http://sample.com/jcr/app/1.0\" "
-                + "xmlns:sling=\"http://sling.apache.org/jcr/sling/1.0\" jcr:primaryType=\"app:Page\">\n"
-                + "<jcr:content jcr:primaryType=\"app:PageContent\"/>\n"
-                + "</jcr:root>", StandardCharsets.UTF_8);
+        FileUtils.write(
+                file,
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<jcr:root xmlns:jcr=\"http://www.jcp.org/jcr/1.0\" xmlns:app=\"http://sample.com/jcr/app/1.0\" "
+                        + "xmlns:sling=\"http://sling.apache.org/jcr/sling/1.0\" jcr:primaryType=\"app:Page\">\n"
+                        + "<jcr:content jcr:primaryType=\"app:PageContent\"/>\n"
+                        + "</jcr:root>",
+                StandardCharsets.UTF_8);
 
         Thread.sleep(WAIT_INTERVAL);
 
@@ -233,5 +256,4 @@ public class FileVaultFileMonitorTest {
         // this second event is not fully correct, but this is a quite special case, accept it for now
         assertChange(changes, "/content/samples/en", ChangeType.REMOVED);
     }
-
 }

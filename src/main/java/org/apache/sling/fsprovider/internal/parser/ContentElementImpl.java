@@ -54,15 +54,13 @@ final class ContentElementImpl implements ContentElement {
         String name = StringUtils.substringBefore(path, "/");
         ContentElement child = children.get(name);
         if (child == null) {
-          return null;
+            return null;
         }
         String remainingPath = StringUtils.substringAfter(path, "/");
         if (StringUtils.isEmpty(remainingPath)) {
-          return child;
-        }
-        else {
-          return child.getChild(remainingPath);
+            return child;
+        } else {
+            return child.getChild(remainingPath);
         }
     }
-
 }

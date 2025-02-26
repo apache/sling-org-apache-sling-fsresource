@@ -42,7 +42,6 @@ class InitialContentImportOptions {
      */
     private static final String IGNORE_CONTENT_READERS_DIRECTIVE = "ignoreImportProviders";
 
-
     private final boolean overwrite;
     private final Set<String> ignoreImportProviders;
 
@@ -51,10 +50,10 @@ class InitialContentImportOptions {
         Entry[] entries = header.getEntries();
         if (entries.length > 0) {
             overwrite = BooleanUtils.toBoolean(entries[0].getDirectiveValue(OVERWRITE_DIRECTIVE));
-            String ignoreImportProvidersString = StringUtils.defaultString(entries[0].getDirectiveValue(IGNORE_CONTENT_READERS_DIRECTIVE));
+            String ignoreImportProvidersString =
+                    StringUtils.defaultString(entries[0].getDirectiveValue(IGNORE_CONTENT_READERS_DIRECTIVE));
             ignoreImportProviders = new HashSet<>(Arrays.asList(StringUtils.split(ignoreImportProvidersString, ",")));
-        }
-        else {
+        } else {
             overwrite = false;
             ignoreImportProviders = Collections.emptySet();
         }
@@ -67,5 +66,4 @@ class InitialContentImportOptions {
     public Set<String> getIgnoreImportProviders() {
         return ignoreImportProviders;
     }
-
 }

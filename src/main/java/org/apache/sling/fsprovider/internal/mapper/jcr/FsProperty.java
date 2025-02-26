@@ -18,11 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal.mapper.jcr;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.util.Calendar;
-
 import javax.jcr.AccessDeniedException;
 import javax.jcr.Binary;
 import javax.jcr.ItemNotFoundException;
@@ -35,6 +30,11 @@ import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.PropertyDefinition;
 import javax.jcr.version.VersionException;
+
+import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.util.Calendar;
 
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.fsprovider.internal.mapper.ContentFile;
@@ -127,7 +127,7 @@ class FsProperty extends FsItem implements Property {
         Object value = props.get(propertyName);
         int size = Array.getLength(value);
         Value[] result = new Value[size];
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             result[i] = new FsValue(props, propertyName, i);
         }
         return result;
@@ -149,78 +149,89 @@ class FsProperty extends FsItem implements Property {
         return new FsPropertyDefinition(propertyName);
     }
 
-
     // --- unsupported methods ---
 
     @Override
-    public void setValue(Value value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(Value value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(Value[] values) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(Value[] values)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(String value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(String value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(String[] values) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(String[] values)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(InputStream value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(InputStream value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(Binary value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(Binary value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(long value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(long value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(double value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(double value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(BigDecimal value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(BigDecimal value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(Calendar value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(Calendar value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(boolean value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(boolean value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setValue(Node value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public void setValue(Node value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -238,5 +249,4 @@ class FsProperty extends FsItem implements Property {
     public long[] getLengths() throws ValueFormatException, RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 }

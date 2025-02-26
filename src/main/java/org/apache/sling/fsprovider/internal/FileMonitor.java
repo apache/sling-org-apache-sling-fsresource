@@ -63,12 +63,13 @@ public final class FileMonitor extends TimerTask {
      * @param contentFileCache Content file cache
      * @param fileStatCache Cache reducing file-stat lookups (file exists or not, directory vs file).
      */
-    public FileMonitor(final FsResourceProvider provider, 
-                       final File rootFile,
-                       final long interval,
-                       final ContentFileExtensions contentFileExtensions,
-                       final ContentFileCache contentFileCache,
-                       final FileStatCache fileStatCache) {
+    public FileMonitor(
+            final FsResourceProvider provider,
+            final File rootFile,
+            final long interval,
+            final ContentFileExtensions contentFileExtensions,
+            final ContentFileCache contentFileCache,
+            final FileStatCache fileStatCache) {
         this.provider = provider;
         this.contentFileExtensions = contentFileExtensions;
         this.contentFileCache = contentFileCache;
@@ -98,8 +99,7 @@ public final class FileMonitor extends TimerTask {
             while (!stopped) {
                 try {
                     timer.wait();
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     interrupted = true;
                 }
             }
@@ -123,11 +123,11 @@ public final class FileMonitor extends TimerTask {
                 return;
             }
         }
-        synchronized ( this ) {
+        synchronized (this) {
             try {
                 // if we don't have an observation reporter, we just skip the check
                 final ObservationReporter reporter = this.provider.getObservationReporter();
-                if ( reporter != null ) {
+                if (reporter != null) {
                     this.check(this.root, reporter);
                 }
             } catch (Exception e) {
@@ -148,23 +148,24 @@ public final class FileMonitor extends TimerTask {
     private void check(final Monitorable monitorable, final ObservationReporter reporter) {
         log.trace("Checking {}", monitorable.file);
         // if the file is non existing, check if it has been readded
-        if ( monitorable.status instanceof NonExistingStatus ) {
-            if ( monitorable.file.exists() ) {
+        if (monitorable.status instanceof NonExistingStatus) {
+            if (monitorable.file.exists()) {
                 // new file and reset status
                 createStatus(monitorable, contentFileExtensions, contentFileCache);
                 fileStatCache.clear();
                 sendEvents(monitorable, ChangeType.ADDED, reporter);
-                final FileStatus fs = (FileStatus)monitorable.status;
-                if ( fs instanceof DirStatus ) {
-                    final DirStatus ds = (DirStatus)fs;
-                    // remove monitorables for new folder and update folder children to send events for directory contents
+                final FileStatus fs = (FileStatus) monitorable.status;
+                if (fs instanceof DirStatus) {
+                    final DirStatus ds = (DirStatus) fs;
+                    // remove monitorables for new folder and update folder children to send events for directory
+                    // contents
                     ds.children = new Monitorable[0];
                     checkDirStatusChildren(monitorable, reporter);
                 }
             }
         } else {
             // check if the file has been removed
-            if ( !monitorable.file.exists() ) {
+            if (!monitorable.file.exists()) {
                 // removed file and update status
                 if (contentFileCache != null) {
                     contentFileCache.remove(this.provider.transformPath(monitorable.path));
@@ -174,9 +175,9 @@ public final class FileMonitor extends TimerTask {
                 sendEvents(monitorable, ChangeType.REMOVED, reporter);
             } else {
                 // check for changes
-                final FileStatus fs = (FileStatus)monitorable.status;
+                final FileStatus fs = (FileStatus) monitorable.status;
                 boolean changed = false;
-                if ( fs.lastModified < monitorable.file.lastModified() ) {
+                if (fs.lastModified < monitorable.file.lastModified()) {
                     fs.lastModified = monitorable.file.lastModified();
                     // changed
                     if (contentFileCache != null) {
@@ -185,14 +186,14 @@ public final class FileMonitor extends TimerTask {
                     sendEvents(monitorable, ChangeType.CHANGED, reporter);
                     changed = true;
                 }
-                if ( fs instanceof DirStatus ) {
+                if (fs instanceof DirStatus) {
                     // directory
-                    final DirStatus ds = (DirStatus)fs;
-                    for(int i=0; i<ds.children.length; i++) {
+                    final DirStatus ds = (DirStatus) fs;
+                    for (int i = 0; i < ds.children.length; i++) {
                         check(ds.children[i], reporter);
                     }
                     // if the dir changed we have to update
-                    if ( changed ) {
+                    if (changed) {
                         // and now update
                         checkDirStatusChildren(monitorable, reporter);
                     }
@@ -202,7 +203,7 @@ public final class FileMonitor extends TimerTask {
     }
 
     private void checkDirStatusChildren(final Monitorable dirMonitorable, final ObservationReporter reporter) {
-        final DirStatus ds = (DirStatus)dirMonitorable.status;
+        final DirStatus ds = (DirStatus) dirMonitorable.status;
         final File[] files = dirMonitorable.file.listFiles();
         if (files != null) {
             final Monitorable[] children = new Monitorable[files.length];
@@ -215,7 +216,9 @@ public final class FileMonitor extends TimerTask {
                     }
                 }
                 if (children[i] == null) {
-                    children[i] = new Monitorable(dirMonitorable.path + '/' + files[i].getName(), files[i],
+                    children[i] = new Monitorable(
+                            dirMonitorable.path + '/' + files[i].getName(),
+                            files[i],
                             contentFileExtensions.getSuffix(files[i]));
                     children[i].status = NonExistingStatus.SINGLETON;
                     check(children[i], reporter);
@@ -230,7 +233,8 @@ public final class FileMonitor extends TimerTask {
     /**
      * Send the event async via the event admin.
      */
-    private void sendEvents(final Monitorable monitorable, final ChangeType changeType, final ObservationReporter reporter) {
+    private void sendEvents(
+            final Monitorable monitorable, final ChangeType changeType, final ObservationReporter reporter) {
         final String path = this.provider.transformPath(monitorable.path);
         log.debug("Detected change for resource {} : {}", path, changeType);
 
@@ -255,29 +259,34 @@ public final class FileMonitor extends TimerTask {
     private List<ResourceChange> collectResourceChanges(final Monitorable monitorable, final ChangeType changeType) {
         List<ResourceChange> changes = new ArrayList<>();
         if (monitorable.status instanceof ContentFileStatus) {
-            ContentFile contentFile = ((ContentFileStatus)monitorable.status).contentFile;
+            ContentFile contentFile = ((ContentFileStatus) monitorable.status).contentFile;
             if (changeType == ChangeType.CHANGED) {
                 ContentElement content = contentFile.getContent();
                 // we cannot easily report the diff of resource changes between two content files
-                // so we simulate a removal of the toplevel node and then add all nodes contained in the current content file again.
-                changes.add(buildContentResourceChange(ChangeType.REMOVED,  this.provider.transformPath(monitorable.path)));
-                addContentResourceChanges(changes, ChangeType.ADDED, content, this.provider.transformPath(monitorable.path));
+                // so we simulate a removal of the toplevel node and then add all nodes contained in the current content
+                // file again.
+                changes.add(
+                        buildContentResourceChange(ChangeType.REMOVED, this.provider.transformPath(monitorable.path)));
+                addContentResourceChanges(
+                        changes, ChangeType.ADDED, content, this.provider.transformPath(monitorable.path));
+            } else {
+                addContentResourceChanges(
+                        changes, changeType, contentFile.getContent(), this.provider.transformPath(monitorable.path));
             }
-            else {
-                addContentResourceChanges(changes, changeType, contentFile.getContent(), this.provider.transformPath(monitorable.path));
-            }
-        }
-        else {
+        } else {
             changes.add(buildContentResourceChange(changeType, this.provider.transformPath(monitorable.path)));
         }
         return changes;
     }
 
-    private void addContentResourceChanges(final List<ResourceChange> changes, final ChangeType changeType,
-            final ContentElement content, final String path) {
-        changes.add(buildContentResourceChange(changeType,  path));
+    private void addContentResourceChanges(
+            final List<ResourceChange> changes,
+            final ChangeType changeType,
+            final ContentElement content,
+            final String path) {
+        changes.add(buildContentResourceChange(changeType, path));
         if (content != null) {
-            for (Map.Entry<String,ContentElement> entry : content.getChildren().entrySet()) {
+            for (Map.Entry<String, ContentElement> entry : content.getChildren().entrySet()) {
                 String childPath = path + "/" + entry.getKey();
                 addContentResourceChanges(changes, changeType, entry.getValue(), childPath);
             }
@@ -291,18 +300,22 @@ public final class FileMonitor extends TimerTask {
     /**
      * Create a status object for the monitorable
      */
-    private static void createStatus(final Monitorable monitorable, ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache) {
-        if ( !monitorable.file.exists() ) {
+    private static void createStatus(
+            final Monitorable monitorable,
+            ContentFileExtensions contentFileExtensions,
+            ContentFileCache contentFileCache) {
+        if (!monitorable.file.exists()) {
             monitorable.status = NonExistingStatus.SINGLETON;
-        } else if ( monitorable.file.isFile() ) {
+        } else if (monitorable.file.isFile()) {
             if (contentFileExtensions != null && contentFileExtensions.matchesSuffix(monitorable.file)) {
-                monitorable.status = new ContentFileStatus(monitorable.file,
-                        new ContentFile(monitorable.file, monitorable.path, null, contentFileCache));
+                monitorable.status = new ContentFileStatus(
+                        monitorable.file, new ContentFile(monitorable.file, monitorable.path, null, contentFileCache));
             } else {
                 monitorable.status = new FileStatus(monitorable.file);
             }
         } else {
-            monitorable.status = new DirStatus(monitorable.file, monitorable.path, contentFileExtensions, contentFileCache);
+            monitorable.status =
+                    new DirStatus(monitorable.file, monitorable.path, contentFileExtensions, contentFileCache);
         }
     }
 
@@ -311,6 +324,7 @@ public final class FileMonitor extends TimerTask {
         public final String path;
         public final File file;
         public Object status;
+
         public Monitorable(final String path, final File file, final String contentFileSuffix) {
             this.file = file;
             if (contentFileSuffix != null) {
@@ -324,6 +338,7 @@ public final class FileMonitor extends TimerTask {
     /** Status for files. */
     private static class FileStatus {
         public long lastModified;
+
         public FileStatus(final File file) {
             this.lastModified = file.lastModified();
         }
@@ -332,6 +347,7 @@ public final class FileMonitor extends TimerTask {
     /** Status for content files */
     private static class ContentFileStatus extends FileStatus {
         public final ContentFile contentFile;
+
         public ContentFileStatus(final File file, final ContentFile contentFile) {
             super(file);
             this.contentFile = contentFile;
@@ -342,14 +358,19 @@ public final class FileMonitor extends TimerTask {
     private static final class DirStatus extends FileStatus {
         public Monitorable[] children;
 
-        public DirStatus(final File dir, final String path,
-                final ContentFileExtensions contentFileExtensions, final ContentFileCache contentFileCache) {
+        public DirStatus(
+                final File dir,
+                final String path,
+                final ContentFileExtensions contentFileExtensions,
+                final ContentFileCache contentFileCache) {
             super(dir);
             final File[] files = dir.listFiles();
             if (files != null) {
                 this.children = new Monitorable[files.length];
                 for (int i = 0; i < files.length; i++) {
-                    this.children[i] = new Monitorable(path + '/' + files[i].getName(), files[i],
+                    this.children[i] = new Monitorable(
+                            path + '/' + files[i].getName(),
+                            files[i],
                             contentFileExtensions == null ? null : contentFileExtensions.getSuffix(files[i]));
                     FileMonitor.createStatus(this.children[i], contentFileExtensions, contentFileCache);
                 }

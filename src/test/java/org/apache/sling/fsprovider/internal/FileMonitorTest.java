@@ -18,10 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.TestUtils.assertChange;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,6 +36,10 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.apache.sling.fsprovider.internal.TestUtils.assertChange;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test events when changing file system content (Sling-Initial-Content).
  */
@@ -57,36 +57,50 @@ public class FileMonitorTest {
 
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
-        .beforeSetUp(new SlingContextCallback() {
-            @Override
-            public void execute(@NotNull SlingContext context) throws Exception {
-                // copy test content to temp. directory
-                tempDir.mkdirs();
-                File sourceDir = new File("src/test/resources/fs-test");
-                FileUtils.copyDirectory(sourceDir, tempDir);
+            .beforeSetUp(new SlingContextCallback() {
+                @Override
+                public void execute(@NotNull SlingContext context) throws Exception {
+                    // copy test content to temp. directory
+                    tempDir.mkdirs();
+                    File sourceDir = new File("src/test/resources/fs-test");
+                    FileUtils.copyDirectory(sourceDir, tempDir);
 
-                // mount temp. directory
-                context.registerInjectActivateService(new FsResourceProvider(),
-                        "provider.file", tempDir.getPath(),
-                        "provider.root", "/fs-test",
-                        "provider.checkinterval", CHECK_INTERVAL,
-                        "provider.fs.mode", FsMode.INITIAL_CONTENT.name(),
-                        "provider.initial.content.import.options", "overwrite:=true;ignoreImportProviders:=jcr.xml");
+                    // mount temp. directory
+                    context.registerInjectActivateService(
+                            new FsResourceProvider(),
+                            "provider.file",
+                            tempDir.getPath(),
+                            "provider.root",
+                            "/fs-test",
+                            "provider.checkinterval",
+                            CHECK_INTERVAL,
+                            "provider.fs.mode",
+                            FsMode.INITIAL_CONTENT.name(),
+                            "provider.initial.content.import.options",
+                            "overwrite:=true;ignoreImportProviders:=jcr.xml");
 
-                // register resource change listener
-                context.registerService(ResourceChangeListener.class, resourceListener,
-                        ResourceChangeListener.PATHS, new String[] { "/fs-test" },
-                        ResourceChangeListener.CHANGES, new String[] { ChangeType.CHANGED.toString(), ChangeType.ADDED.toString(), ChangeType.REMOVED.toString() });
-            }
-        })
-        .afterTearDown(new SlingContextCallback() {
-            @Override
-            public void execute(@NotNull SlingContext context) throws Exception {
-                // remove temp directory
-                tempDir.delete();
-            }
-        })
-        .build();
+                    // register resource change listener
+                    context.registerService(
+                            ResourceChangeListener.class,
+                            resourceListener,
+                            ResourceChangeListener.PATHS,
+                            new String[] {"/fs-test"},
+                            ResourceChangeListener.CHANGES,
+                            new String[] {
+                                ChangeType.CHANGED.toString(),
+                                ChangeType.ADDED.toString(),
+                                ChangeType.REMOVED.toString()
+                            });
+                }
+            })
+            .afterTearDown(new SlingContextCallback() {
+                @Override
+                public void execute(@NotNull SlingContext context) throws Exception {
+                    // remove temp directory
+                    tempDir.delete();
+                }
+            })
+            .build();
 
     @Test
     public void testUpdateFile() throws Exception {
@@ -207,5 +221,4 @@ public class FileMonitorTest {
         assertChange(changes, "/fs-test/folder2", ChangeType.CHANGED);
         assertChange(changes, "/fs-test/folder2/content", ChangeType.REMOVED);
     }
-
 }

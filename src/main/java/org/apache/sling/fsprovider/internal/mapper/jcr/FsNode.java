@@ -18,10 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal.mapper.jcr;
 
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.Calendar;
-
 import javax.jcr.AccessDeniedException;
 import javax.jcr.Binary;
 import javax.jcr.InvalidItemStateException;
@@ -51,6 +47,10 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionException;
 import javax.jcr.version.VersionHistory;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.Calendar;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -78,8 +78,7 @@ public final class FsNode extends FsItem implements Node {
     public String getName() throws RepositoryException {
         if (contentFile.getSubPath() == null) {
             return ResourceUtil.getName(contentFile.getPath());
-        }
-        else {
+        } else {
             return ResourceUtil.getName(contentFile.getSubPath());
         }
     }
@@ -98,17 +97,17 @@ public final class FsNode extends FsItem implements Node {
 
         // get absolute node path
         String path = relPath;
-        if (!StringUtils.startsWith(path,  "/")) {
+        if (!StringUtils.startsWith(path, "/")) {
             path = ResourceUtil.normalize(getPath() + "/" + relPath);
         }
 
-        if (StringUtils.equals(path, contentFile.getPath()) || StringUtils.startsWith(path, contentFile.getPath() + "/")) {
+        if (StringUtils.equals(path, contentFile.getPath())
+                || StringUtils.startsWith(path, contentFile.getPath() + "/")) {
             // node is contained in content file
             String subPath;
             if (StringUtils.equals(path, contentFile.getPath())) {
                 subPath = null;
-            }
-            else {
+            } else {
                 subPath = path.substring(contentFile.getPath().length() + 1);
             }
             ContentFile referencedFile = contentFile.navigateToAbsolute(subPath);
@@ -153,8 +152,7 @@ public final class FsNode extends FsItem implements Node {
         String uuid = props.get("jcr:uuid", String.class);
         if (uuid != null) {
             return uuid;
-        }
-        else {
+        } else {
             throw new UnsupportedRepositoryOperationException();
         }
     }
@@ -164,8 +162,7 @@ public final class FsNode extends FsItem implements Node {
         try {
             getNode(relPath);
             return true;
-        }
-        catch (RepositoryException ex) {
+        } catch (RepositoryException ex) {
             return false;
         }
     }
@@ -219,128 +216,144 @@ public final class FsNode extends FsItem implements Node {
     public NodeType[] getMixinNodeTypes() throws RepositoryException {
         String[] mixinTypeNames = getMixinTypeNames();
         NodeType[] mixinTypes = new NodeType[mixinTypeNames.length];
-        for (int i=0; i<mixinTypeNames.length; i++) {
+        for (int i = 0; i < mixinTypeNames.length; i++) {
             mixinTypes[i] = new FsNodeType(mixinTypeNames[i], true);
         }
         return mixinTypes;
     }
 
-
     // --- unsupported methods ---
 
     @Override
-    public Node addNode(String relPath) throws ItemExistsException, PathNotFoundException, VersionException,
-            ConstraintViolationException, LockException, RepositoryException {
+    public Node addNode(String relPath)
+            throws ItemExistsException, PathNotFoundException, VersionException, ConstraintViolationException,
+                    LockException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Node addNode(String relPath, String primaryNodeTypeName)
             throws ItemExistsException, PathNotFoundException, NoSuchNodeTypeException, LockException, VersionException,
-            ConstraintViolationException, RepositoryException {
+                    ConstraintViolationException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void orderBefore(String srcChildRelPath, String destChildRelPath)
             throws UnsupportedRepositoryOperationException, VersionException, ConstraintViolationException,
-            ItemNotFoundException, LockException, RepositoryException {
+                    ItemNotFoundException, LockException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, Value value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, Value value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, Value value, int type) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, Value value, int type)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, Value[] values) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, Value[] values)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, Value[] values, int type) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, Value[] values, int type)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, String[] values) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, String[] values)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, String[] values, int type) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, String[] values, int type)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, String value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, String value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, String value, int type) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, String value, int type)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, InputStream value) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, InputStream value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, Binary value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, Binary value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, boolean value) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, boolean value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, double value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, double value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, BigDecimal value) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, BigDecimal value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, long value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, long value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, Calendar value) throws ValueFormatException, VersionException,
-            LockException, ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, Calendar value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Property setProperty(String name, Node value) throws ValueFormatException, VersionException, LockException,
-            ConstraintViolationException, RepositoryException {
+    public Property setProperty(String name, Node value)
+            throws ValueFormatException, VersionException, LockException, ConstraintViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -365,20 +378,23 @@ public final class FsNode extends FsItem implements Node {
     }
 
     @Override
-    public void setPrimaryType(String nodeTypeName) throws NoSuchNodeTypeException, VersionException,
-            ConstraintViolationException, LockException, RepositoryException {
+    public void setPrimaryType(String nodeTypeName)
+            throws NoSuchNodeTypeException, VersionException, ConstraintViolationException, LockException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void addMixin(String mixinName) throws NoSuchNodeTypeException, VersionException,
-            ConstraintViolationException, LockException, RepositoryException {
+    public void addMixin(String mixinName)
+            throws NoSuchNodeTypeException, VersionException, ConstraintViolationException, LockException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeMixin(String mixinName) throws NoSuchNodeTypeException, VersionException,
-            ConstraintViolationException, LockException, RepositoryException {
+    public void removeMixin(String mixinName)
+            throws NoSuchNodeTypeException, VersionException, ConstraintViolationException, LockException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -388,38 +404,44 @@ public final class FsNode extends FsItem implements Node {
     }
 
     @Override
-    public Version checkin() throws VersionException, UnsupportedRepositoryOperationException,
-            InvalidItemStateException, LockException, RepositoryException {
+    public Version checkin()
+            throws VersionException, UnsupportedRepositoryOperationException, InvalidItemStateException, LockException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void checkout() throws UnsupportedRepositoryOperationException, LockException, ActivityViolationException,
-            RepositoryException {
+    public void checkout()
+            throws UnsupportedRepositoryOperationException, LockException, ActivityViolationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void doneMerge(Version version) throws VersionException, InvalidItemStateException,
-            UnsupportedRepositoryOperationException, RepositoryException {
+    public void doneMerge(Version version)
+            throws VersionException, InvalidItemStateException, UnsupportedRepositoryOperationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void cancelMerge(Version version) throws VersionException, InvalidItemStateException,
-            UnsupportedRepositoryOperationException, RepositoryException {
+    public void cancelMerge(Version version)
+            throws VersionException, InvalidItemStateException, UnsupportedRepositoryOperationException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void update(String srcWorkspace) throws NoSuchWorkspaceException, AccessDeniedException, LockException,
-            InvalidItemStateException, RepositoryException {
+    public void update(String srcWorkspace)
+            throws NoSuchWorkspaceException, AccessDeniedException, LockException, InvalidItemStateException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public NodeIterator merge(String srcWorkspace, boolean bestEffort) throws NoSuchWorkspaceException,
-            AccessDeniedException, MergeException, LockException, InvalidItemStateException, RepositoryException {
+    public NodeIterator merge(String srcWorkspace, boolean bestEffort)
+            throws NoSuchWorkspaceException, AccessDeniedException, MergeException, LockException,
+                    InvalidItemStateException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -447,28 +469,31 @@ public final class FsNode extends FsItem implements Node {
     }
 
     @Override
-    public void restore(String versionName, boolean removeExisting) throws VersionException, ItemExistsException,
-            UnsupportedRepositoryOperationException, LockException, InvalidItemStateException, RepositoryException {
+    public void restore(String versionName, boolean removeExisting)
+            throws VersionException, ItemExistsException, UnsupportedRepositoryOperationException, LockException,
+                    InvalidItemStateException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void restore(Version version, boolean removeExisting) throws VersionException, ItemExistsException,
-            InvalidItemStateException, UnsupportedRepositoryOperationException, LockException, RepositoryException {
+    public void restore(Version version, boolean removeExisting)
+            throws VersionException, ItemExistsException, InvalidItemStateException,
+                    UnsupportedRepositoryOperationException, LockException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void restore(Version version, String relPath, boolean removeExisting)
             throws PathNotFoundException, ItemExistsException, VersionException, ConstraintViolationException,
-            UnsupportedRepositoryOperationException, LockException, InvalidItemStateException, RepositoryException {
+                    UnsupportedRepositoryOperationException, LockException, InvalidItemStateException,
+                    RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void restoreByLabel(String versionLabel, boolean removeExisting)
             throws VersionException, ItemExistsException, UnsupportedRepositoryOperationException, LockException,
-            InvalidItemStateException, RepositoryException {
+                    InvalidItemStateException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -483,8 +508,9 @@ public final class FsNode extends FsItem implements Node {
     }
 
     @Override
-    public Lock lock(boolean isDeep, boolean isSessionScoped) throws UnsupportedRepositoryOperationException,
-            LockException, AccessDeniedException, InvalidItemStateException, RepositoryException {
+    public Lock lock(boolean isDeep, boolean isSessionScoped)
+            throws UnsupportedRepositoryOperationException, LockException, AccessDeniedException,
+                    InvalidItemStateException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -495,8 +521,9 @@ public final class FsNode extends FsItem implements Node {
     }
 
     @Override
-    public void unlock() throws UnsupportedRepositoryOperationException, LockException, AccessDeniedException,
-            InvalidItemStateException, RepositoryException {
+    public void unlock()
+            throws UnsupportedRepositoryOperationException, LockException, AccessDeniedException,
+                    InvalidItemStateException, RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -546,5 +573,4 @@ public final class FsNode extends FsItem implements Node {
     public PropertyIterator getProperties(String[] nameGlobs) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 }
