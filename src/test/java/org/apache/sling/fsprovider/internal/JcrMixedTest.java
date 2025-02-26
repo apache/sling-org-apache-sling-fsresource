@@ -18,10 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.not;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -35,6 +31,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
+
 /**
  * Test access mixed with JCR content on same path.
  */
@@ -46,8 +46,8 @@ public class JcrMixedTest {
 
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
-        .plugin(new RegisterFsResourcePlugin())
-        .build();
+            .plugin(new RegisterFsResourcePlugin())
+            .build();
 
     @Before
     public void setUp() throws RepositoryException {
@@ -75,9 +75,7 @@ public class JcrMixedTest {
     public void testFolders() {
         // expected properties from JCR for folders
         Resource folder1 = fsroot.getChild("folder1");
-        assertThat(folder1, ResourceMatchers.props("jcr:primaryType", "nt:folder",
-                "prop1", "value1",
-                "prop2", 123L));
+        assertThat(folder1, ResourceMatchers.props("jcr:primaryType", "nt:folder", "prop1", "value1", "prop2", 123L));
     }
 
     @Test
@@ -89,16 +87,15 @@ public class JcrMixedTest {
 
         // do not expected properties from JCR for files
         Resource file1a = fsroot.getChild("folder1/file1a.txt");
-        assertThat(file1a, not(ResourceMatchers.props(
-                "prop1", "value2",
-                "prop2", 234L)));
+        assertThat(file1a, not(ResourceMatchers.props("prop1", "value2", "prop2", 234L)));
     }
 
     @Test
     public void testListChildren() {
         assertThat(root, ResourceMatchers.containsChildren("fs-test"));
         assertThat(fsroot, ResourceMatchers.hasChildren("folder1", "folder2", "folder99"));
-        assertThat(fsroot.getChild("folder1"), ResourceMatchers.hasChildren("file1a.txt", "sling:file1b.txt", "file1c.txt"));
+        assertThat(
+                fsroot.getChild("folder1"),
+                ResourceMatchers.hasChildren("file1a.txt", "sling:file1b.txt", "file1c.txt"));
     }
-
 }

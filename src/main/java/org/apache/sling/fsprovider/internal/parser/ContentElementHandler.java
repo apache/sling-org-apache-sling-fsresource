@@ -37,8 +37,7 @@ final class ContentElementHandler implements ContentHandler {
     public void resource(String path, Map<String, Object> properties) {
         if (StringUtils.equals(path, "/")) {
             root = new ContentElementImpl(null, properties);
-        }
-        else {
+        } else {
             if (root == null) {
                 throw new RuntimeException("Root resource not set.");
             }
@@ -51,8 +50,7 @@ final class ContentElementHandler implements ContentHandler {
             ContentElement parent;
             if (StringUtils.isEmpty(relativeParentPath)) {
                 parent = root;
-            }
-            else {
+            } else {
                 parent = root.getChild(relativeParentPath);
             }
             if (parent == null) {
@@ -65,5 +63,4 @@ final class ContentElementHandler implements ContentHandler {
     public ContentElement getRoot() {
         return root;
     }
-
 }

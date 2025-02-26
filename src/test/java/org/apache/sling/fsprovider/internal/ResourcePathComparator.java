@@ -28,5 +28,4 @@ class ResourcePathComparator implements Comparator<Resource> {
     public int compare(Resource o1, Resource o2) {
         return o1.getPath().compareTo(o2.getPath());
     }
-
 }

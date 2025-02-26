@@ -18,11 +18,11 @@
  */
 package org.apache.sling.fsprovider.internal.mapper.jcr;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.fsprovider.internal.mapper.ContentFile;
@@ -35,7 +35,7 @@ class FsNodeIterator implements NodeIterator {
 
     private final ContentFile contentFile;
     private final ResourceResolver resolver;
-    private final Iterator<Map.Entry<String,ContentElement>> children;
+    private final Iterator<Map.Entry<String, ContentElement>> children;
 
     public FsNodeIterator(ContentFile contentFile, ResourceResolver resolver) {
         this.contentFile = contentFile;
@@ -54,10 +54,9 @@ class FsNodeIterator implements NodeIterator {
 
     @Override
     public Node nextNode() {
-        Map.Entry<String,ContentElement> nextEntry = children.next();
+        Map.Entry<String, ContentElement> nextEntry = children.next();
         return new FsNode(contentFile.navigateToRelative(nextEntry.getKey()), resolver);
     }
-
 
     // --- unsupported methods ---
 
@@ -79,5 +78,4 @@ class FsNodeIterator implements NodeIterator {
     public long getPosition() {
         throw new UnsupportedOperationException();
     }
-
 }

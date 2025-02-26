@@ -18,34 +18,32 @@
  */
 package org.apache.sling.fsprovider.internal.mapper.valuemap;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.sling.api.resource.ValueMap;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class ValueMapUtilTest {
 
     @Test
     public void testToValueMap() {
-        Map<String,Object> content = new HashMap<>();
+        Map<String, Object> content = new HashMap<>();
         content.put("stringProp", "abc");
         content.put("intProp", 123);
-        content.put("stringArray", new String[] { "a", "b", "c" });
+        content.put("stringArray", new String[] {"a", "b", "c"});
         content.put("stringList", ImmutableList.of("ab", "cd"));
         content.put("intList", ImmutableList.of(12, 34));
 
         ValueMap props = ValueMapUtil.toValueMap(content);
         assertEquals("abc", props.get("stringProp", String.class));
-        assertEquals((Integer)123, props.get("intProp", 0));
-        assertArrayEquals(new String[] { "a", "b", "c" }, props.get("stringArray", String[].class));
-        assertArrayEquals(new String[] { "ab", "cd" }, props.get("stringList", String[].class));
-        assertArrayEquals(new Integer[] { 12, 34 }, props.get("intList", Integer[].class));
+        assertEquals((Integer) 123, props.get("intProp", 0));
+        assertArrayEquals(new String[] {"a", "b", "c"}, props.get("stringArray", String[].class));
+        assertArrayEquals(new String[] {"ab", "cd"}, props.get("stringList", String[].class));
+        assertArrayEquals(new Integer[] {12, 34}, props.get("intList", Integer[].class));
     }
-
 }

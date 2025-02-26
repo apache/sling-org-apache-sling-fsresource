@@ -18,21 +18,12 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
-import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
@@ -45,6 +36,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFile;
+import static org.apache.sling.fsprovider.internal.TestUtils.assertFolder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test access FileFault XML files, folders and content.
  */
@@ -56,19 +56,17 @@ public class FileVaultContentTest {
 
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
-        .plugin(new RegisterFsResourcePlugin(
-                "provider.fs.mode", FsMode.FILEVAULT_XML.name(),
-                "provider.file", "src/test/resources/vaultfs-test/jcr_root",
-                "provider.filevault.filterxml.path", "src/test/resources/vaultfs-test/META-INF/vault/filter.xml",
-                "provider.root", "/content/dam/talk.png"
-                ))
-        .plugin(new RegisterFsResourcePlugin(
-                "provider.fs.mode", FsMode.FILEVAULT_XML.name(),
-                "provider.file", "src/test/resources/vaultfs-test/jcr_root",
-                "provider.filevault.filterxml.path", "src/test/resources/vaultfs-test/META-INF/vault/filter.xml",
-                "provider.root", "/content/samples"
-                ))
-        .build();
+            .plugin(new RegisterFsResourcePlugin(
+                    "provider.fs.mode", FsMode.FILEVAULT_XML.name(),
+                    "provider.file", "src/test/resources/vaultfs-test/jcr_root",
+                    "provider.filevault.filterxml.path", "src/test/resources/vaultfs-test/META-INF/vault/filter.xml",
+                    "provider.root", "/content/dam/talk.png"))
+            .plugin(new RegisterFsResourcePlugin(
+                    "provider.fs.mode", FsMode.FILEVAULT_XML.name(),
+                    "provider.file", "src/test/resources/vaultfs-test/jcr_root",
+                    "provider.filevault.filterxml.path", "src/test/resources/vaultfs-test/META-INF/vault/filter.xml",
+                    "provider.root", "/content/samples"))
+            .build();
 
     @Before
     public void setUp() {
@@ -88,7 +86,7 @@ public class FileVaultContentTest {
         Resource metadata = content.getChild("metadata");
         assertNotNull(metadata);
         ValueMap props = metadata.getValueMap();
-        assertEquals((Integer)4, props.get("app:Bitsperpixel", Integer.class));
+        assertEquals((Integer) 4, props.get("app:Bitsperpixel", Integer.class));
 
         assertFolder(content, "renditions");
         assertFile(content, "renditions/original", null);
@@ -101,7 +99,9 @@ public class FileVaultContentTest {
         assertEquals("sling:OrderedFolder", sampleContent.getResourceType());
 
         Resource enContent = sampleContent.getChild("en/jcr:content");
-        assertArrayEquals(new String[] { "/etc/mobile/groups/responsive" }, enContent.getValueMap().get("app:deviceGroups", String[].class));
+        assertArrayEquals(
+                new String[] {"/etc/mobile/groups/responsive"},
+                enContent.getValueMap().get("app:deviceGroups", String[].class));
     }
 
     @Test
@@ -109,7 +109,9 @@ public class FileVaultContentTest {
         Resource en = sampleContent.getChild("en");
         // about_us and about_them are not defined for ordering in en/.content.xml and thus sorted last
         assertThat(en, ResourceMatchers.containsChildren("jcr:content", "tools", "extra", "about_them", "about_us"));
-        assertEquals("samples/sample-app/components/content/page/homepage", en.getChild("jcr:content").getResourceType());
+        assertEquals(
+                "samples/sample-app/components/content/page/homepage",
+                en.getChild("jcr:content").getResourceType());
         assertEquals("app:Page", en.getChild("tools").getResourceType());
 
         // another child (conference) is hidden because of filter
@@ -138,7 +140,10 @@ public class FileVaultContentTest {
 
         // list children with mixed content
         Resource enResource = sampleContent.getChild("en");
-        assertThat(enResource, ResourceMatchers.containsChildren("jcr:content", "tools", "extra", "about_them", "about_us", "conference"));
+        assertThat(
+                enResource,
+                ResourceMatchers.containsChildren(
+                        "jcr:content", "tools", "extra", "about_them", "about_us", "conference"));
     }
 
     @Test
@@ -176,7 +181,7 @@ public class FileVaultContentTest {
             childrenByName.put(child.getName(), child);
         }
 
-        assertEquals("Wrong child count for 'aggregates'",1, childrenByName.size());
+        assertEquals("Wrong child count for 'aggregates'", 1, childrenByName.size());
         assertTrue("Child named 'sling:aggregate' does not exist", childrenByName.containsKey("sling:aggregate"));
     }
 }

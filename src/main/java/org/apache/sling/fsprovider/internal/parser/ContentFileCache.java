@@ -29,8 +29,8 @@ import org.apache.commons.collections4.map.LRUMap;
  */
 public final class ContentFileCache {
 
-    private final Map<String,ContentElement> contentCache;
-    private final ContentElement NULL_ELEMENT = new ContentElementImpl(null, Collections.<String,Object>emptyMap());
+    private final Map<String, ContentElement> contentCache;
+    private final ContentElement NULL_ELEMENT = new ContentElementImpl(null, Collections.<String, Object>emptyMap());
 
     /**
      * @param maxSize Cache size. 0 = caching disabled.
@@ -114,5 +114,4 @@ public final class ContentFileCache {
             return 0;
         }
     }
-
 }

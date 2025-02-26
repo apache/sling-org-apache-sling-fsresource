@@ -86,7 +86,6 @@ class FsNodeType implements NodeType {
         return StringUtils.equals(name, nodeTypeName);
     }
 
-
     // --- unsupported methods ---
 
     @Override
@@ -153,5 +152,4 @@ class FsNodeType implements NodeType {
     public boolean canRemoveProperty(String propertyName) {
         throw new UnsupportedOperationException();
     }
-
 }

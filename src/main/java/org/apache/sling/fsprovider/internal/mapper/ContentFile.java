@@ -59,7 +59,8 @@ public final class ContentFile {
      * @param contentFileCache Content file cache
      * @param contentType Content type
      */
-    public ContentFile(File file, String path, String subPath, ContentFileCache contentFileCache, ContentType contentType) {
+    public ContentFile(
+            File file, String path, String subPath, ContentFileCache contentFileCache, ContentType contentType) {
         this.file = file;
         this.path = path;
         this.subPath = subPath;
@@ -97,8 +98,7 @@ public final class ContentFile {
             ContentElement rootContent = contentFileCache.get(path, file, contentType);
             if (subPath == null) {
                 content = rootContent;
-            }
-            else if (rootContent != null) {
+            } else if (rootContent != null) {
                 content = rootContent.getChild(subPath);
             }
             contentInitialized = true;
@@ -121,8 +121,7 @@ public final class ContentFile {
             ContentElement currentContent = getContent();
             if (currentContent != null) {
                 valueMap = ValueMapUtil.toValueMap(currentContent.getProperties());
-            }
-            else {
+            } else {
                 valueMap = ValueMap.EMPTY;
             }
         }
@@ -132,7 +131,7 @@ public final class ContentFile {
     /**
      * @return Child maps.
      */
-    public Iterator<Map.Entry<String,ContentElement>> getChildren() {
+    public Iterator<Map.Entry<String, ContentElement>> getChildren() {
         return getContent().getChildren().entrySet().iterator();
     }
 
@@ -154,11 +153,9 @@ public final class ContentFile {
         String absoluteSubPath;
         if (newSubPath == null) {
             absoluteSubPath = this.subPath;
-        }
-        else {
+        } else {
             absoluteSubPath = (this.subPath != null ? this.subPath + "/" : "") + newSubPath;
         }
         return new ContentFile(file, path, absoluteSubPath, contentFileCache);
     }
-
 }

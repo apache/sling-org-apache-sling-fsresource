@@ -18,6 +18,8 @@
  */
 package org.apache.sling.fsprovider.internal.mapper;
 
+import javax.jcr.Node;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,8 +29,6 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.jcr.Node;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -57,11 +57,18 @@ import org.slf4j.LoggerFactory;
  * The <code>FileResource</code> represents a file system file or folder as
  * a Sling Resource.
  */
-@Adaptable(adaptableClass=Resource.class, adapters={
-    @Adapter({File.class, URL.class, ValueMap.class}),
-    @Adapter(value=InputStream.class, condition="If the adaptable is a FileResource and is a readable file."),
-    @Adapter(value=Node.class, condition="If the adaptable is a FileResource and is providing content in JSON or FileVault XML format.")
-})
+@Adaptable(
+        adaptableClass = Resource.class,
+        adapters = {
+            @Adapter({File.class, URL.class, ValueMap.class}),
+            @Adapter(
+                    value = InputStream.class,
+                    condition = "If the adaptable is a FileResource and is a readable file."),
+            @Adapter(
+                    value = Node.class,
+                    condition =
+                            "If the adaptable is a FileResource and is providing content in JSON or FileVault XML format.")
+        })
 public final class FileResource extends AbstractResource {
 
     /**
@@ -112,9 +119,13 @@ public final class FileResource extends AbstractResource {
         this(resolver, resourcePath, file, null, null, fileStatCache);
     }
 
-    FileResource(ResourceResolver resolver, String resourcePath, File file,
-                 ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
-                 FileStatCache fileStatCache) {
+    FileResource(
+            ResourceResolver resolver,
+            String resourcePath,
+            File file,
+            ContentFileExtensions contentFileExtensions,
+            ContentFileCache contentFileCache,
+            FileStatCache fileStatCache) {
         this.resolver = resolver;
         this.resourcePath = resourcePath;
         this.file = file;
@@ -180,40 +191,33 @@ public final class FileResource extends AbstractResource {
      * plus those supported by the adapter manager.
      */
     @Override
-    @SuppressWarnings({ "unchecked", "null" })
+    @SuppressWarnings({"unchecked", "null"})
     public @Nullable <AdapterType> AdapterType adaptTo(@NotNull Class<AdapterType> type) {
         if (type == File.class) {
             return (AdapterType) file;
-        }
-        else if (type == InputStream.class) {
+        } else if (type == InputStream.class) {
             if (fileStatCache.isFile(file) && file.canRead()) {
                 try {
                     return (AdapterType) new FileInputStream(file);
-                }
-                catch (IOException ioe) {
+                } catch (IOException ioe) {
                     log.info("adaptTo: Cannot open a stream on the file " + file, ioe);
                 }
-            }
-            else {
+            } else {
                 log.debug("adaptTo: File {} is not a readable file", file);
             }
-        }
-        else if (type == URL.class) {
+        } else if (type == URL.class) {
             try {
                 return (AdapterType) file.toURI().toURL();
-            }
-            catch (MalformedURLException mue) {
+            } catch (MalformedURLException mue) {
                 log.info("adaptTo: Cannot convert the file path " + file + " to an URL", mue);
             }
-        }
-        else if (type == ValueMap.class) {
+        } else if (type == ValueMap.class) {
             return (AdapterType) getValueMap();
-        }
-        else if (type == Node.class) {
+        } else if (type == Node.class) {
             ContentFile contentFile = getNodeDescriptorContentFile();
             if (contentFile != null) {
                 // support a subset of JCR API for content file resources
-                return (AdapterType)new FsNode(contentFile, getResourceResolver());
+                return (AdapterType) new FsNode(contentFile, getResourceResolver());
             }
         }
         return super.adaptTo(type);
@@ -234,7 +238,7 @@ public final class FileResource extends AbstractResource {
             // this resource simulates nt:file/nt:folder behavior by returning it as resource type
             // we should simulate the corresponding JCR properties in a value map as well
             if (fileStatCache.exists(file) && file.canRead()) {
-                Map<String,Object> props = new HashMap<String, Object>();
+                Map<String, Object> props = new HashMap<String, Object>();
                 props.put("jcr:primaryType", fileStatCache.isFile(file) ? RESOURCE_TYPE_FILE : RESOURCE_TYPE_FOLDER);
                 props.put("jcr:createdBy", "system");
 
@@ -245,10 +249,11 @@ public final class FileResource extends AbstractResource {
                 // overlay properties with those from node descriptor content file, if it exists
                 ContentFile contentFile = getNodeDescriptorContentFile();
                 if (contentFile != null) {
-                    for (Map.Entry<String, Object> entry : contentFile.getValueMap().entrySet()) {
+                    for (Map.Entry<String, Object> entry :
+                            contentFile.getValueMap().entrySet()) {
                         // skip primary type if it is the default type assigned by contentparser when none is defined
                         if (StringUtils.equals(entry.getKey(), "jcr:primaryType")
-                                && StringUtils.equals((String)entry.getValue(), ParserOptions.DEFAULT_PRIMARY_TYPE)) {
+                                && StringUtils.equals((String) entry.getValue(), ParserOptions.DEFAULT_PRIMARY_TYPE)) {
                             continue;
                         }
                         props.put(entry.getKey(), entry.getValue());
@@ -273,5 +278,4 @@ public final class FileResource extends AbstractResource {
         }
         return null;
     }
-
 }

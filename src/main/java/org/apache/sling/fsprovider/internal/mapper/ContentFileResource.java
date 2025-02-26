@@ -59,8 +59,8 @@ public final class ContentFileResource extends AbstractResource {
     ContentFileResource(ResourceResolver resolver, ContentFile contentFile) {
         this.resolver = resolver;
         this.contentFile = contentFile;
-        this.resourcePath = contentFile.getPath()
-                + (contentFile.getSubPath() != null ? "/" + contentFile.getSubPath() : "");
+        this.resourcePath =
+                contentFile.getPath() + (contentFile.getSubPath() != null ? "/" + contentFile.getSubPath() : "");
     }
 
     public @NotNull String getPath() {
@@ -102,14 +102,12 @@ public final class ContentFileResource extends AbstractResource {
     @SuppressWarnings("unchecked")
     public <AdapterType> AdapterType adaptTo(@Nullable Class<AdapterType> type) {
         if (type == ContentFile.class) {
-            return (AdapterType)this.contentFile;
-        }
-        else if (type == ValueMap.class) {
-            return (AdapterType)new DeepReadValueMapDecorator(this, contentFile.getValueMap());
-        }
-        else if (type == Node.class) {
+            return (AdapterType) this.contentFile;
+        } else if (type == ValueMap.class) {
+            return (AdapterType) new DeepReadValueMapDecorator(this, contentFile.getValueMap());
+        } else if (type == Node.class) {
             // support a subset of JCR API for content file resources
-            return (AdapterType)new FsNode(contentFile, getResourceResolver());
+            return (AdapterType) new FsNode(contentFile, getResourceResolver());
         }
         return super.adaptTo(type);
     }
@@ -123,5 +121,4 @@ public final class ContentFileResource extends AbstractResource {
                 .append("resourceType", getResourceType())
                 .build();
     }
-
 }

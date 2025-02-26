@@ -48,5 +48,4 @@ public interface ContentElement {
      * @return Child or null if no child found with this path
      */
     ContentElement getChild(String path);
-
 }

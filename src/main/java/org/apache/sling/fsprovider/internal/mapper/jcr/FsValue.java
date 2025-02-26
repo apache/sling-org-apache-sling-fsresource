@@ -18,16 +18,16 @@
  */
 package org.apache.sling.fsprovider.internal.mapper.jcr;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.util.Calendar;
-
 import javax.jcr.Binary;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
+
+import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.util.Calendar;
 
 import org.apache.sling.api.resource.ValueMap;
 
@@ -60,8 +60,7 @@ class FsValue implements Value {
                 return null;
             }
             return array[arrayIndex];
-        }
-        else {
+        } else {
             return props.get(propertyName, String.class);
         }
     }
@@ -74,8 +73,7 @@ class FsValue implements Value {
                 return 0;
             }
             return array[arrayIndex];
-        }
-        else {
+        } else {
             return props.get(propertyName, 0L);
         }
     }
@@ -88,8 +86,7 @@ class FsValue implements Value {
                 return 0;
             }
             return array[arrayIndex];
-        }
-        else {
+        } else {
             return props.get(propertyName, 0d);
         }
     }
@@ -102,8 +99,7 @@ class FsValue implements Value {
                 return null;
             }
             return array[arrayIndex];
-        }
-        else {
+        } else {
             return props.get(propertyName, BigDecimal.ZERO);
         }
     }
@@ -116,8 +112,7 @@ class FsValue implements Value {
                 return null;
             }
             return array[arrayIndex];
-        }
-        else {
+        } else {
             return props.get(propertyName, Calendar.class);
         }
     }
@@ -130,8 +125,7 @@ class FsValue implements Value {
                 return false;
             }
             return array[arrayIndex];
-        }
-        else {
+        } else {
             return props.get(propertyName, false);
         }
     }
@@ -170,7 +164,6 @@ class FsValue implements Value {
         return PropertyType.UNDEFINED;
     }
 
-
     // --- unsupported methods ---
 
     @Override
@@ -182,5 +175,4 @@ class FsValue implements Value {
     public Binary getBinary() throws RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 }

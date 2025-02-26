@@ -46,9 +46,12 @@ public final class ContentFileResourceMapper {
     private final ContentFileCache contentFileCache;
     private final FileStatCache fileStatCache;
 
-    public ContentFileResourceMapper(String providerRoot, File providerFile,
-                                     ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
-                                     FileStatCache fileStatCache) {
+    public ContentFileResourceMapper(
+            String providerRoot,
+            File providerFile,
+            ContentFileExtensions contentFileExtensions,
+            ContentFileCache contentFileCache,
+            FileStatCache fileStatCache) {
         this.providerRootPrefix = providerRoot.concat("/");
         this.providerFile = providerFile;
         this.contentFileExtensions = contentFileExtensions;
@@ -66,18 +69,21 @@ public final class ContentFileResourceMapper {
 
     public Iterator<Resource> getChildren(final ResourceResolver resolver, final Resource parent) {
         final String parentPath = parent.getPath();
-        final ContentFile parentContentFile = getFile(parentPath, null);;
+        final ContentFile parentContentFile = getFile(parentPath, null);
+        ;
 
         final List<Iterator<? extends Resource>> childIterators = new ArrayList<>(2);
 
         // add children from parsed content
         if (parentContentFile != null && parentContentFile.hasContent()) {
-            childIterators.add(IteratorUtils.transformedIterator(parentContentFile.getContent().getChildren().keySet().iterator(), new Transformer<String, Resource>() {
-                @Override
-                public Resource transform(final String name) {
-                    return new ContentFileResource(resolver, parentContentFile.navigateToRelative(name));
-                }
-            }));
+            childIterators.add(IteratorUtils.transformedIterator(
+                    parentContentFile.getContent().getChildren().keySet().iterator(),
+                    new Transformer<String, Resource>() {
+                        @Override
+                        public Resource transform(final String name) {
+                            return new ContentFileResource(resolver, parentContentFile.navigateToRelative(name));
+                        }
+                    }));
         }
 
         // add children from filesystem folder
@@ -86,20 +92,27 @@ public final class ContentFileResourceMapper {
             File[] files = parentDir.listFiles();
             if (files != null) {
                 Arrays.sort(files, FileNameComparator.INSTANCE);
-                childIterators.add(IteratorUtils.transformedIterator(IteratorUtils.arrayIterator(files), new Transformer<File, Resource>() {
-                    @Override
-                    public Resource transform(final File file) {
-                        String path = parentPath + "/" + Escape.fileToResourceName(file.getName());
-                        String filenameSuffix = contentFileExtensions.getSuffix(file);
-                        if (filenameSuffix != null) {
-                            path = StringUtils.substringBeforeLast(path, filenameSuffix);
-                            ContentFile contentFile = new ContentFile(file, path, null, contentFileCache);
-                            return new ContentFileResource(resolver, contentFile);
-                        } else {
-                            return new FileResource(resolver, path, file, contentFileExtensions, contentFileCache, fileStatCache);
-                        }
-                    }
-                }));
+                childIterators.add(IteratorUtils.transformedIterator(
+                        IteratorUtils.arrayIterator(files), new Transformer<File, Resource>() {
+                            @Override
+                            public Resource transform(final File file) {
+                                String path = parentPath + "/" + Escape.fileToResourceName(file.getName());
+                                String filenameSuffix = contentFileExtensions.getSuffix(file);
+                                if (filenameSuffix != null) {
+                                    path = StringUtils.substringBeforeLast(path, filenameSuffix);
+                                    ContentFile contentFile = new ContentFile(file, path, null, contentFileCache);
+                                    return new ContentFileResource(resolver, contentFile);
+                                } else {
+                                    return new FileResource(
+                                            resolver,
+                                            path,
+                                            file,
+                                            contentFileExtensions,
+                                            contentFileCache,
+                                            fileStatCache);
+                                }
+                            }
+                        }));
             }
         }
 
@@ -126,9 +139,7 @@ public final class ContentFileResourceMapper {
         if (parentPath == null) {
             return null;
         }
-        String nextSubPath = path.substring(parentPath.length() + 1)
-                + (subPath != null ? "/" + subPath : "");
+        String nextSubPath = path.substring(parentPath.length() + 1) + (subPath != null ? "/" + subPath : "");
         return getFile(parentPath, nextSubPath);
     }
-
 }

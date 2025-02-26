@@ -18,11 +18,11 @@
  */
 package org.apache.sling.fsprovider.internal.mapper.jcr;
 
-import java.util.Iterator;
-
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
+
+import java.util.Iterator;
 
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.fsprovider.internal.mapper.ContentFile;
@@ -37,7 +37,8 @@ class FsPropertyIterator implements PropertyIterator {
     private final ResourceResolver resolver;
     private final Node node;
 
-    public FsPropertyIterator(Iterator<String> propertyNames, ContentFile contentFile, ResourceResolver resolver, Node node) {
+    public FsPropertyIterator(
+            Iterator<String> propertyNames, ContentFile contentFile, ResourceResolver resolver, Node node) {
         this.propertyNames = propertyNames;
         this.contentFile = contentFile;
         this.resolver = resolver;
@@ -56,7 +57,6 @@ class FsPropertyIterator implements PropertyIterator {
     public Property nextProperty() {
         return new FsProperty(contentFile, resolver, propertyNames.next(), node);
     }
-
 
     // --- unsupported methods ---
 
@@ -78,5 +78,4 @@ class FsPropertyIterator implements PropertyIterator {
     public long getPosition() {
         throw new UnsupportedOperationException();
     }
-
 }

@@ -33,20 +33,12 @@ public final class Escape {
      * List of characters typically prohibited on unix and windows file systems.
      * "/" is not included because it is neither allowed in resource nor in file names on any system.
      */
-    private static final char[] RESERVED_CHARS = {
-            '<',
-            '>',
-            ':',
-            '"',
-            '\\',
-            '|',
-            '?',
-            '*',
-            0x00
-    };
+    private static final char[] RESERVED_CHARS = {'<', '>', ':', '"', '\\', '|', '?', '*', 0x00};
+
     private static final BitSet RESERVED_CHARS_SET = new BitSet();
+
     static {
-        for (int i=0; i<RESERVED_CHARS.length; i++) {
+        for (int i = 0; i < RESERVED_CHARS.length; i++) {
             RESERVED_CHARS_SET.set(RESERVED_CHARS[i]);
         }
     }
@@ -67,8 +59,7 @@ public final class Escape {
         if (path.indexOf('%') >= 0) {
             try {
                 return URLDecoder.decode(path, "UTF-8");
-            }
-            catch (UnsupportedEncodingException ex) {
+            } catch (UnsupportedEncodingException ex) {
                 throw new RuntimeException("Unsupported encoding.", ex);
             }
         }
@@ -84,20 +75,17 @@ public final class Escape {
     public static String resourceToFileName(String path) {
         try {
             StringBuilder result = new StringBuilder();
-            for (int i=0; i<path.length(); i++) {
+            for (int i = 0; i < path.length(); i++) {
                 char c = path.charAt(i);
                 if (RESERVED_CHARS_SET.get(c)) {
                     result.append(URLEncoder.encode(String.valueOf(c), StandardCharsets.UTF_8.name()));
-                }
-                else {
+                } else {
                     result.append(c);
                 }
             }
             return result.toString();
-        }
-        catch (UnsupportedEncodingException ex) {
+        } catch (UnsupportedEncodingException ex) {
             throw new RuntimeException("Unsupported encoding.", ex);
         }
     }
-
 }

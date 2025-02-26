@@ -18,9 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal.mapper;
 
-import static org.apache.jackrabbit.vault.util.Constants.DOT_CONTENT_XML;
-import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_SUFFIX;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
@@ -50,6 +47,9 @@ import org.apache.sling.fsprovider.internal.parser.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.jackrabbit.vault.util.Constants.DOT_CONTENT_XML;
+import static org.apache.sling.fsprovider.internal.parser.ContentFileTypes.XML_SUFFIX;
+
 public final class FileVaultResourceMapper extends FileResourceMapper {
 
     private static final String DOT_CONTENT_XML_SUFFIX = "/" + DOT_CONTENT_XML;
@@ -61,12 +61,22 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
 
     private static final Logger log = LoggerFactory.getLogger(FileVaultResourceMapper.class);
 
-    public FileVaultResourceMapper(String providerRoot, File providerFile,
-                              ContentFileExtensions contentFileExtensions, ContentFileCache contentFileCache,
-                              FileStatCache fileStatCache,
-                              final boolean overlayParentResourceProvider,
-                              final File filterXmlFile) {
-        super(providerRoot, providerFile, contentFileExtensions, contentFileCache, fileStatCache, overlayParentResourceProvider, false);
+    public FileVaultResourceMapper(
+            String providerRoot,
+            File providerFile,
+            ContentFileExtensions contentFileExtensions,
+            ContentFileCache contentFileCache,
+            FileStatCache fileStatCache,
+            final boolean overlayParentResourceProvider,
+            final File filterXmlFile) {
+        super(
+                providerRoot,
+                providerFile,
+                contentFileExtensions,
+                contentFileCache,
+                fileStatCache,
+                overlayParentResourceProvider,
+                false);
         this.filterXmlFile = filterXmlFile;
         this.workspaceFilter = getWorkspaceFilter();
     }
@@ -91,7 +101,10 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
     }
 
     @Override
-    protected boolean resolveChildren(final ResourceResolver resolver, final Resource parent, final List<Iterator<? extends Resource>> allChildren) {
+    protected boolean resolveChildren(
+            final ResourceResolver resolver,
+            final Resource parent,
+            final List<Iterator<? extends Resource>> allChildren) {
         // filevault: always ask provider, it checks itself if children matches the filters
         final boolean askParentResourceProvider = true;
         final Iterator<Resource> children = this.findChildren(resolver, parent);
@@ -102,7 +115,8 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
     }
 
     @Override
-    protected void addChildren(final List<Iterator<? extends Resource>> allChildren, final Iterator<Resource> children) {
+    protected void addChildren(
+            final List<Iterator<? extends Resource>> allChildren, final Iterator<Resource> children) {
         // filevault: include all children from parent resource provider that do not match the filters
         allChildren.add(IteratorUtils.filteredIterator(children, new Predicate<Resource>() {
             @Override
@@ -142,9 +156,9 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
         // get children from content resource of parent
         ContentFile parentContentFile = getContentFile(parentPath, null);
         if (parentContentFile != null) {
-            Iterator<Map.Entry<String,ContentElement>> childMaps = parentContentFile.getChildren();
+            Iterator<Map.Entry<String, ContentElement>> childMaps = parentContentFile.getChildren();
             while (childMaps.hasNext()) {
-                Map.Entry<String,ContentElement> entry = childMaps.next();
+                Map.Entry<String, ContentElement> entry = childMaps.next();
                 String childPath = parentPath + "/" + entry.getKey();
                 if (pathMatches(childPath)) {
                     childPaths.add(childPath);
@@ -201,8 +215,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
                 } catch (IOException | ConfigurationException ex) {
                     log.error("Unable to parse workspace filter: " + filterXmlFile.getPath(), ex);
                 }
-            }
-            else {
+            } else {
                 log.debug("Workspace filter not found: {}", filterXmlFile.getPath());
             }
         }
@@ -221,8 +234,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
         }
         if (workspaceFilter == null) {
             return true;
-        }
-        else {
+        } else {
             return workspaceFilter.contains(path);
         }
     }
@@ -263,8 +275,7 @@ public final class FileVaultResourceMapper extends FileResourceMapper {
         if (parentPath == null) {
             return null;
         }
-        String nextSubPath = path.substring(parentPath.length() + 1)
-                + (subPath != null ? "/" + subPath : "");
+        String nextSubPath = path.substring(parentPath.length() + 1) + (subPath != null ? "/" + subPath : "");
         return getContentFile(parentPath, nextSubPath);
     }
 

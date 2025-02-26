@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -30,108 +30,19 @@
     <version>2.2.1-SNAPSHOT</version>
 
     <name>Apache Sling File System Resource Provider</name>
-    <description>
-        Provides a ResourceProvider implementation supporting file system based resources.
-    </description>
+    <description>Provides a ResourceProvider implementation supporting file system based resources.</description>
 
     <scm>
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-fsresource.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-fsresource.git</developerConnection>
-        <url>https://github.com/apache/sling-org-apache-sling-fsresource.git</url>
         <tag>HEAD</tag>
+        <url>https://github.com/apache/sling-org-apache-sling-fsresource.git</url>
     </scm>
 
     <properties>
         <sling.java.version>8</sling.java.version>
         <project.build.outputTimestamp>2021-08-30T16:40:10Z</project.build.outputTimestamp>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>sling-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-adapter-metadata</id>
-                        <goals>
-                            <goal>generate-adapter-metadata</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                      <exclude>bnd-simple.bnd</exclude>
-                      <exclude>src/test/resources/fs-test/**</exclude>
-                      <exclude>src/test/resources/invalid-test/**</exclude>
-                      <exclude>src/test/resources/vaultfs-test/**/original</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-
-        <!-- Simple JAR -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-classes-to-simple</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/classes-simple</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.outputDirectory}</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>biz.aQute.bnd</groupId>
-                <artifactId>bnd-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>bnd-process-simple</id>
-                        <goals>
-                            <goal>bnd-process</goal>
-                        </goals>
-                        <configuration>
-                            <bndfile>bnd-simple.bnd</bndfile>
-                            <classesDir>${project.build.directory}/classes-simple</classesDir>
-                            <outputDir>${project.build.directory}/classes-simple</outputDir>
-                            <manifestPath>${project.build.directory}/classes-simple/manifest/MANIFEST.MF</manifestPath>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>simple-jar</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>simple</classifier>
-                            <classesDirectory>${project.build.directory}/classes-simple</classesDirectory>
-                            <archive>
-                                <manifestFile>${project.build.directory}/classes-simple/manifest/MANIFEST.MF</manifestFile>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -268,4 +179,91 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>sling-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-adapter-metadata</id>
+                        <goals>
+                            <goal>generate-adapter-metadata</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>bnd-simple.bnd</exclude>
+                        <exclude>src/test/resources/fs-test/**</exclude>
+                        <exclude>src/test/resources/invalid-test/**</exclude>
+                        <exclude>src/test/resources/vaultfs-test/**/original</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- Simple JAR -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-classes-to-simple</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes-simple</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.outputDirectory}</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bnd-process-simple</id>
+                        <goals>
+                            <goal>bnd-process</goal>
+                        </goals>
+                        <configuration>
+                            <bndfile>bnd-simple.bnd</bndfile>
+                            <classesDir>${project.build.directory}/classes-simple</classesDir>
+                            <outputDir>${project.build.directory}/classes-simple</outputDir>
+                            <manifestPath>${project.build.directory}/classes-simple/manifest/MANIFEST.MF</manifestPath>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>simple-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>simple</classifier>
+                            <classesDirectory>${project.build.directory}/classes-simple</classesDirectory>
+                            <archive>
+                                <manifestFile>${project.build.directory}/classes-simple/manifest/MANIFEST.MF</manifestFile>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

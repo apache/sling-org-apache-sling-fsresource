@@ -18,13 +18,13 @@
  */
 package org.apache.sling.fsprovider.internal.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.io.File;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ContentFileParserUtilTest {
 
@@ -34,7 +34,9 @@ public class ContentFileParserUtilTest {
         ContentElement content = ContentFileParserUtil.parse(file);
         assertNotNull(content);
         assertEquals("app:Page", content.getProperties().get("jcr:primaryType"));
-        assertEquals("app:PageContent", content.getChild("jcr:content").getProperties().get("jcr:primaryType"));
+        assertEquals(
+                "app:PageContent",
+                content.getChild("jcr:content").getProperties().get("jcr:primaryType"));
     }
 
     @Test
@@ -50,7 +52,9 @@ public class ContentFileParserUtilTest {
         ContentElement content = ContentFileParserUtil.parse(file);
         assertNotNull(content);
         assertEquals("app:Page", content.getProperties().get("jcr:primaryType"));
-        assertEquals("app:PageContent", content.getChild("jcr:content").getProperties().get("jcr:primaryType"));
+        assertEquals(
+                "app:PageContent",
+                content.getChild("jcr:content").getProperties().get("jcr:primaryType"));
     }
 
     @Test
@@ -67,5 +71,4 @@ public class ContentFileParserUtilTest {
         assertNotNull(content);
         assertEquals("sling:OrderedFolder", content.getProperties().get("jcr:primaryType"));
     }
-
 }

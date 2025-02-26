@@ -18,9 +18,6 @@
  */
 package org.apache.sling.fsprovider.internal;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-
 import java.io.File;
 
 import org.apache.sling.api.resource.Resource;
@@ -34,6 +31,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
 /**
  * Test with invalid fs folder.
  */
@@ -43,15 +43,15 @@ public class InvalidRootFolderTest {
 
     @Rule
     public SlingContext context = new SlingContextBuilder(ResourceResolverType.JCR_MOCK)
-        .plugin(new RegisterFsResourcePlugin("provider.file", "target/temp/invalid-folder"))
-        .afterTearDown(new SlingContextCallback() {
-            @Override
-            public void execute(@NotNull SlingContext context) throws Exception {
-                File file = new File("target/temp/invalid-folder");
-                file.delete();
-            }
-        })
-        .build();
+            .plugin(new RegisterFsResourcePlugin("provider.file", "target/temp/invalid-folder"))
+            .afterTearDown(new SlingContextCallback() {
+                @Override
+                public void execute(@NotNull SlingContext context) throws Exception {
+                    File file = new File("target/temp/invalid-folder");
+                    file.delete();
+                }
+            })
+            .build();
 
     @Before
     public void setUp() {
@@ -72,5 +72,4 @@ public class InvalidRootFolderTest {
     public void testListChildren() {
         assertFalse(fsroot.listChildren().hasNext());
     }
-
 }
