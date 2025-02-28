@@ -113,8 +113,8 @@ class TestUtils {
                 .map(ResourceChange::getType)
                 .collect(Collectors.toList());
         assertTrue(
-                "Change with path=" + path + ", changeType=" + changeType + " expected, but found: ["
-                        + changeTypesForPath + "]",
+                "Change with path=" + path + ", changeType=" + changeType + " expected, but found: "
+                        + changeTypesForPath,
                 changeTypesForPath.contains(changeType));
     }
 

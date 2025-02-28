@@ -46,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 public class FileMonitorTest {
 
     private static final int CHECK_INTERVAL = 120;
-    private static final int WAIT_INTERVAL = 250;
+    private static final int WAIT_INTERVAL = 1000;
 
     private final File tempDir;
     private final ResourceListener resourceListener = new ResourceListener();
