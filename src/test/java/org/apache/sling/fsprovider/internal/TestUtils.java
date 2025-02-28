@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -107,14 +108,14 @@ class TestUtils {
     }
 
     public static void assertChange(List<ResourceChange> changes, String path, ChangeType changeType) {
-        boolean found = false;
-        for (ResourceChange change : changes) {
-            if (StringUtils.equals(change.getPath(), path) && change.getType() == changeType) {
-                found = true;
-                break;
-            }
-        }
-        assertTrue("Change with path=" + path + ", changeType=" + changeType + " expected", found);
+        List<ChangeType> changeTypesForPath = changes.stream()
+                .filter(change -> StringUtils.equals(change.getPath(), path))
+                .map(ResourceChange::getType)
+                .collect(Collectors.toList());
+        assertTrue(
+                "Change with path=" + path + ", changeType=" + changeType + " expected, but found: "
+                        + changeTypesForPath,
+                changeTypesForPath.contains(changeType));
     }
 
     public static class ResourceListener implements ResourceChangeListener {
